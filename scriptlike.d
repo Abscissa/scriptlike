@@ -1206,9 +1206,9 @@ unittest
 
 	writeln("Running 'scriptlike.d' unittests: std.file wrappers");
 	
-	immutable tempname  = buildPath(tempDir(), "deleteme.scriptlike.unittest.pid"  ~ to!string(thisProcessID));
-	immutable tempname2 = buildPath(tempDir(), "deleteme.scriptlike.unittest2.pid" ~ to!string(thisProcessID));
-	immutable tempname3 = buildPath(tempDir(), "deleteme.scriptlike.unittest3.pid" ~ to!string(thisProcessID), "somefile");
+	immutable tempname  = buildPath(tempDir(), "deleteme.script like.unit test.pid"  ~ to!string(thisProcessID));
+	immutable tempname2 = buildPath(tempDir(), "deleteme.script like.unit test2.pid" ~ to!string(thisProcessID));
+	immutable tempname3 = buildPath(tempDir(), "deleteme.script like.unit test3.pid" ~ to!string(thisProcessID), "somefile");
 	auto tempPath  = path(tempname);
 	auto tempPath2 = path(tempname2);
 	auto tempPath3 = path(tempname3);
