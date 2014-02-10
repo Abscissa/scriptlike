@@ -860,7 +860,8 @@ template slurp(Types...)
 	}
 }
 
-// -- std.path Workarounds for DMD Issue #12111 -------------------
+// -- Many of these (except for the ones that call echoCommand) -------------------
+// -- are std.file Workarounds for DMD Issue #12111 -------------------
 
 alias FileException = std.file.FileException;
 alias SpanMode      = std.file.SpanMode;
@@ -1185,19 +1186,15 @@ unittest
 version(unittest_scriptlike_d)
 unittest
 {
-	// std.file.slurp doesn't seem to work on Linux (Posix?) DMD 2.064.2
-	// so don't test it there.
+	// std.file.slurp seems to randomly trigger an internal std.algorithm
+	// assert failure on DMD 2.064.2, so don't test it there. Seems
+	// to be fixed in DMD 2.065.
 	static import std.compiler;
 	static if(
 		std.compiler.vendor == std.compiler.Vendor.digitalMars ||
 		(std.compiler.version_major == 2 && std.compiler.version_minor == 64)
 	)
-	{
-		version(Posix)
-			enum testSlurp = false;
-		else
-			enum testSlurp = true;
-	}
+		enum testSlurp = false;
 	else
 		enum testSlurp = true;
 
