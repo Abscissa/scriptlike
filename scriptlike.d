@@ -10,7 +10,7 @@ public import std.bigint;
 public import std.conv;
 public import std.datetime;
 public import std.exception;
-import std.file; // Private import as part of workaround for DMD issue #12111
+import std.file; // Private import partially as part of workaround for DMD issue #12111
 public import std.getopt;
 public import std.math;
 import std.path; // Private import as part of workaround for DMD issue #12111
@@ -286,7 +286,7 @@ private void echoCommand(lazy string command)
 		writeln(command);
 }
 
-int runShell(string command)
+int runShell()(string command)
 {
 	echoCommand(command);
 	return system(command);
@@ -1212,6 +1212,10 @@ unittest
 	auto tempPath  = path(tempname);
 	auto tempPath2 = path(tempname2);
 	auto tempPath3 = path(tempname3);
+	assert(!tempname.exists());
+	assert(!tempname2.exists());
+	assert(!tempname3.dirName().exists());
+	assert(!tempname3.exists());
 	
 	{
 		scope(exit)
@@ -1289,6 +1293,7 @@ unittest
 		{
 			if(exists(tempname))  rmdir(tempname);
 			if(exists(tempname3)) rmdir(tempname3);
+			if(exists(tempname3.dirName())) rmdir(tempname3.dirName());
 		}
 		
 		assert(!tempPath.exists());
@@ -1356,8 +1361,8 @@ unittest
 			
 			tempPath.symlink(tempPath2);
 			assert(tempPath2.exists());
-			assert(!tempPath2.isFile());
-			assert(!tempPath2.existsAsFile());
+			assert(tempPath2.isFile());
+			assert(tempPath2.existsAsFile());
 			assert(!tempPath2.isDir());
 			assert(!tempPath2.existsAsDir());
 			assert(tempPath2.isSymlink());
@@ -1366,5 +1371,39 @@ unittest
 			auto linkTarget = tempPath2.readLink();
 			assert(linkTarget.toRawString() == tempname);
 		}
+	}
+	
+	{
+		assert(!tempPath.exists());
+
+		scope(exit)
+		{
+			if(exists(tempname)) remove(tempname);
+		}
+		
+		runShell(`echo TestScriptStuff > `~tempPath.to!string());
+		assert(tempPath.exists());
+		assert(tempPath.isFile());
+		assert((cast(string)tempPath.read()).strip() == "TestScriptStuff");
+	}
+	
+	{
+		assert(!tempPath3.exists());
+		assert(!tempPath3.up.exists());
+
+		scope(exit)
+		{
+			if(exists(tempname3)) remove(tempname3);
+			if(exists(tempname3.dirName())) rmdir(tempname3.dirName());
+		}
+		
+		tempPath3.up.mkdir();
+		assert(tempPath3.up.exists());
+		assert(tempPath3.up.isDir());
+				
+		tempPath3.up.runShell(`echo MoreTestStuff > `~tempPath3.baseName().to!string());
+		assert(tempPath3.exists());
+		assert(tempPath3.isFile());
+		assert((cast(string)tempPath3.read()).strip() == "MoreTestStuff");
 	}
 }
