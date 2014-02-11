@@ -8,6 +8,10 @@
 
 module scriptlike;
 
+// Import privately because this module wraps all the members.
+import std.file;
+import std.path;
+
 // Automatically pull in anything likely to be useful for scripts.
 // curl is deliberately left out here because it involves an extra
 // link dependency.
@@ -17,10 +21,8 @@ public import std.bigint;
 public import std.conv;
 public import std.datetime;
 public import std.exception;
-import std.file; // Private import partially as part of workaround for DMD issue #12111
 public import std.getopt;
 public import std.math;
-import std.path; // Private import as part of workaround for DMD issue #12111
 public import std.process;
 public import std.random;
 public import std.range;
@@ -324,6 +326,8 @@ private void echoCommand(lazy string command)
 /// program's stdout/in/err.
 ///
 /// Optionally takes a working directory to run the command from.
+///
+/// The command is echoed if scriptlikeTraceCommands is true.
 int runShell()(string command)
 {
 	echoCommand(command);
@@ -342,6 +346,15 @@ int runShell(C)(Path!C workingDirectory, string command)
 
 // -- Wrappers for std.path --------------------
 
+/// Part of workaround for DMD Issue #12111
+alias dirSeparator   = std.path.dirSeparator;
+alias pathSeparator  = std.path.pathSeparator; ///ditto
+alias isDirSeparator = std.path.isDirSeparator; ///ditto
+alias CaseSensitive  = std.path.CaseSensitive; ///ditto
+alias osDefaultCaseSensitivity = std.path.osDefaultCaseSensitivity; ///ditto
+alias buildPath                = std.path.buildPath; ///ditto
+alias buildNormalizedPath      = std.path.buildNormalizedPath; ///ditto
+
 /// Just like std.path.baseName, but operates on Path.
 Path!C baseName(C)(Path!C path)
 	@trusted pure
@@ -358,10 +371,34 @@ Path!C baseName(CaseSensitive cs = CaseSensitive.osDefault, C, C1)
 	return Path!C( path.str.baseName!cs(suffix) );
 }
 
+/// Part of workaround for DMD Issue #12111
+inout(C)[] baseName(C)(inout(C)[] path)
+	@trusted pure
+	if (isSomeChar!C)
+{
+	return std.path.baseName(path);
+}
+
+///ditto
+inout(C)[] baseName(CaseSensitive cs = CaseSensitive.osDefault, C, C1)
+	(inout(C)[] path, in C1[] suffix)
+	@safe pure
+	if (isSomeChar!C && isSomeChar!C1)
+{
+	return std.path.baseName(path, suffix);
+}
+
 /// Just like std.path.dirName, but operates on Path.
 Path!C dirName(C)(Path!C path) if(isSomeChar!C)
 {
 	return Path!C( path.str.dirName() );
+}
+
+/// Part of workaround for DMD Issue #12111
+C[] dirName(C)(C[] path)
+	if (isSomeChar!C)
+{
+	return std.path.dirName(path);
 }
 
 /// Just like std.path.rootName, but operates on Path.
@@ -370,10 +407,23 @@ Path!C rootName(C)(Path!C path) @safe pure nothrow
 	return Path!C( path.str.rootName() );
 }
 
+/// Part of workaround for DMD Issue #12111
+inout(C)[] rootName(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.rootName(path);
+}
+
 /// Just like std.path.driveName, but operates on Path.
 Path!C driveName(C)(Path!C path) @safe pure nothrow
 {
 	return Path!C( path.str.driveName() );
+}
+
+/// Part of workaround for DMD Issue #12111
+inout(C)[] driveName(C)(inout(C)[] path)  @safe pure nothrow
+	if (isSomeChar!C)
+{
+	return std.path.driveName(path);
 }
 
 /// Just like std.path.stripDrive, but operates on Path.
@@ -382,16 +432,35 @@ Path!C stripDrive(C)(Path!C path) @safe pure nothrow
 	return Path!C( path.str.stripDrive() );
 }
 
+/// Part of workaround for DMD Issue #12111
+inout(C)[] stripDrive(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.stripDrive(path);
+}
+
 /// Just like std.path.extension, but takes a Path and returns an Ext.
 Ext!C extension(C)(in Path!C path) @safe pure nothrow
 {
 	return Ext!C( path.str.extension() );
 }
 
+/// Part of workaround for DMD Issue #12111
+inout(C)[] extension(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.extension(path);
+}
+
 /// Just like std.path.stripExtension, but operates on Path.
 Path!C stripExtension(C)(Path!C path) @safe pure nothrow
 {
 	return Path!C( path.str.stripExtension() );
+}
+
+/// Part of workaround for DMD Issue #12111
+inout(C)[] stripExtension(C)(inout(C)[] path)  @safe pure nothrow
+	if (isSomeChar!C)
+{
+	return std.path.stripExtension(path);
 }
 
 /// Just like std.path.setExtension, but operates on Path.
@@ -409,6 +478,22 @@ Path!C setExtension(C)(Path!C path, Ext!C ext)
 	return path.setExtension(ext.toString());
 }
 
+/// Part of workaround for DMD Issue #12111
+immutable(Unqual!C1)[] setExtension(C1, C2)(in C1[] path, in C2[] ext)
+	@trusted pure nothrow
+	if (isSomeChar!C1 && !is(C1 == immutable) && is(Unqual!C1 == Unqual!C2))
+{
+	return std.path.setExtension(path, ext);
+}
+
+/// Part of workaround for DMD Issue #12111
+immutable(C1)[] setExtension(C1, C2)(immutable(C1)[] path, const(C2)[] ext)
+	@trusted pure nothrow
+	if (isSomeChar!C1 && is(Unqual!C1 == Unqual!C2))
+{
+	return std.path.setExtension(path, ext);
+}
+
 /// Just like std.path.defaultExtension, but operates on Path and optionally Ext.
 Path!C defaultExtension(C, C2)(Path!C path, in C2[] ext)
 	@trusted pure
@@ -424,6 +509,14 @@ Path!C defaultExtension(C)(Path!C path, Ext!C ext)
 	return path.defaultExtension(ext.toString());
 }
 
+/// Part of workaround for DMD Issue #12111
+immutable(Unqual!C1)[] defaultExtension(C1, C2)(in C1[] path, in C2[] ext)
+	@trusted pure
+	if (isSomeChar!C1 && is(Unqual!C1 == Unqual!C2))
+{
+	return std.path.defaultExtension(path, ext);
+}
+
 /// Just like std.path.pathSplitter. Note this returns a range of strings,
 /// not a range of Path.
 auto pathSplitter(C)(Path!C path) @safe pure nothrow
@@ -431,6 +524,12 @@ auto pathSplitter(C)(Path!C path) @safe pure nothrow
 	return pathSplitter(path.str);
 }
 
+/// Part of workaround for DMD Issue #12111
+ReturnType!(std.path.pathSplitter!C) pathSplitter(C)(const(C)[] path) @safe pure nothrow
+	if (isSomeChar!C)
+{
+	return std.path.pathSplitter(path);
+}
 
 /// Just like std.path.isRooted, but operates on Path.
 bool isRooted(C)(in Path!C path) @safe pure nothrow
@@ -438,10 +537,23 @@ bool isRooted(C)(in Path!C path) @safe pure nothrow
 	return path.str.isRooted();
 }
 
+/// Part of workaround for DMD Issue #12111
+bool isRooted(C)(in C[] path)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.isRooted(path);
+}
+
 /// Just like std.path.isAbsolute, but operates on Path.
 bool isAbsolute(C)(in Path!C path) @safe pure nothrow
 {
 	return path.str.isAbsolute();
+}
+
+/// Part of workaround for DMD Issue #12111
+bool isAbsolute(C)(in C[] path)  @safe pure nothrow
+	if (isSomeChar!C)
+{
+	return std.path.isAbsolute(path);
 }
 
 /// Just like std.path.absolutePath, but operates on Path.
@@ -458,6 +570,13 @@ Path!C absolutePath(C)(Path!C path, Path!C base)
 	return Path!C( path.str.absolutePath(base.str.to!string()) );
 }
 
+/// Part of workaround for DMD Issue #12111
+string absolutePath(string path, lazy string base = getcwd())
+	@safe pure
+{
+	return std.path.absolutePath(path, base);
+}
+
 /// Just like std.path.relativePath, but operates on Path.
 Path!C relativePath(CaseSensitive cs = CaseSensitive.osDefault, C)
 	(Path!C path, lazy string base = getcwd())
@@ -470,6 +589,20 @@ Path!C relativePath(CaseSensitive cs = CaseSensitive.osDefault, C)
 	(Path!C path, Path!C base)
 {
 	return Path!C( path.str.relativePath!cs(base.str.to!string()) );
+}
+
+/// Part of workaround for DMD Issue #12111
+string relativePath(CaseSensitive cs = CaseSensitive.osDefault)
+	(string path, lazy string base = getcwd())
+{
+	return std.path.relativePath(path, base);
+}
+
+/// Part of workaround for DMD Issue #12111
+int filenameCharCmp(CaseSensitive cs = CaseSensitive.osDefault)(dchar a, dchar b)
+	@safe pure nothrow
+{
+	return std.path.filenameCharCmp(a, b);
 }
 
 /// Just like std.path.filenameCmp, but operates on Path.
@@ -498,6 +631,14 @@ int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault, C, C2)
 	return path.filenameCmp(filename2.str);
 }
 
+/// Part of workaround for DMD Issue #12111
+int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault, C1, C2)
+	(const(C1)[] filename1, const(C2)[] filename2)
+	@safe pure
+	if (isSomeChar!C1 && isSomeChar!C2)
+{
+	return std.path.filenameCmp(filename1, filename2);
+}
 
 /// Just like std.path.globMatch, but operates on Path.
 bool globMatch(CaseSensitive cs = CaseSensitive.osDefault, C)
@@ -507,16 +648,37 @@ bool globMatch(CaseSensitive cs = CaseSensitive.osDefault, C)
 	return path.str.globMatch!cs(pattern);
 }
 
+/// Part of workaround for DMD Issue #12111
+bool globMatch(CaseSensitive cs = CaseSensitive.osDefault, C)
+	(const(C)[] path, const(C)[] pattern)
+	@safe pure nothrow
+	if (isSomeChar!C)
+{
+	return std.path.globMatch(path, pattern);
+}
+
 /// Just like std.path.isValidFilename, but operates on Path.
 bool isValidFilename(C)(in Path!C path) @safe pure nothrow
 {
 	return path.str.isValidFilename();
 }
 
+/// Part of workaround for DMD Issue #12111
+bool isValidFilename(C)(in C[] filename)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.isValidFilename(filename);
+}
+
 /// Just like std.path.isValidPath, but operates on Path.
 bool isValidPath(C)(in Path!C path) @safe pure nothrow
 {
 	return path.str.isValidPath();
+}
+
+/// Part of workaround for DMD Issue #12111
+bool isValidPath(C)(in C[] path)  @safe pure nothrow  if (isSomeChar!C)
+{
+	return std.path.isValidPath(path);
 }
 
 /// Just like std.path.expandTilde, but operates on Path.
@@ -528,146 +690,7 @@ Path!C expandTilde(C)(Path!C path)
 		return Path!C( path.to!string().expandTilde().to!(C[])() );
 }
 
-// -- std.path Workarounds for DMD Issue #12111 -------------------
-
-alias dirSeparator   = std.path.dirSeparator;
-alias pathSeparator  = std.path.pathSeparator;
-alias isDirSeparator = std.path.isDirSeparator;
-alias CaseSensitive  = std.path.CaseSensitive;
-alias osDefaultCaseSensitivity = std.path.osDefaultCaseSensitivity;
-alias buildPath                = std.path.buildPath;
-alias buildNormalizedPath      = std.path.buildNormalizedPath;
-
-inout(C)[] baseName(C)(inout(C)[] path)
-	@trusted pure
-	if (isSomeChar!C)
-{
-	return std.path.baseName(path);
-}
-
-inout(C)[] baseName(CaseSensitive cs = CaseSensitive.osDefault, C, C1)
-	(inout(C)[] path, in C1[] suffix)
-	@safe pure
-	if (isSomeChar!C && isSomeChar!C1)
-{
-	return std.path.baseName(path, suffix);
-}
-
-C[] dirName(C)(C[] path)
-	if (isSomeChar!C)
-{
-	return std.path.dirName(path);
-}
-
-inout(C)[] rootName(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.rootName(path);
-}
-
-inout(C)[] driveName(C)(inout(C)[] path)  @safe pure nothrow
-	if (isSomeChar!C)
-{
-	return std.path.driveName(path);
-}
-
-inout(C)[] stripDrive(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.stripDrive(path);
-}
-
-inout(C)[] extension(C)(inout(C)[] path)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.extension(path);
-}
-
-inout(C)[] stripExtension(C)(inout(C)[] path)  @safe pure nothrow
-	if (isSomeChar!C)
-{
-	return std.path.stripExtension(path);
-}
-
-immutable(Unqual!C1)[] setExtension(C1, C2)(in C1[] path, in C2[] ext)
-	@trusted pure nothrow
-	if (isSomeChar!C1 && !is(C1 == immutable) && is(Unqual!C1 == Unqual!C2))
-{
-	return std.path.setExtension(path, ext);
-}
-
-immutable(C1)[] setExtension(C1, C2)(immutable(C1)[] path, const(C2)[] ext)
-	@trusted pure nothrow
-	if (isSomeChar!C1 && is(Unqual!C1 == Unqual!C2))
-{
-	return std.path.setExtension(path, ext);
-}
-
-immutable(Unqual!C1)[] defaultExtension(C1, C2)(in C1[] path, in C2[] ext)
-	@trusted pure
-	if (isSomeChar!C1 && is(Unqual!C1 == Unqual!C2))
-{
-	return std.path.defaultExtension(path, ext);
-}
-
-ReturnType!(std.path.pathSplitter!C) pathSplitter(C)(const(C)[] path) @safe pure nothrow
-	if (isSomeChar!C)
-{
-	return std.path.pathSplitter(path);
-}
-
-bool isRooted(C)(in C[] path)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.isRooted(path);
-}
-
-bool isAbsolute(C)(in C[] path)  @safe pure nothrow
-	if (isSomeChar!C)
-{
-	return std.path.isAbsolute(path);
-}
-
-string absolutePath(string path, lazy string base = getcwd())
-	@safe pure
-{
-	return std.path.absolutePath(path, base);
-}
-
-string relativePath(CaseSensitive cs = CaseSensitive.osDefault)
-	(string path, lazy string base = getcwd())
-{
-	return std.path.relativePath(path, base);
-}
-
-int filenameCharCmp(CaseSensitive cs = CaseSensitive.osDefault)(dchar a, dchar b)
-	@safe pure nothrow
-{
-	return std.path.filenameCharCmp(a, b);
-}
-
-int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault, C1, C2)
-	(const(C1)[] filename1, const(C2)[] filename2)
-	@safe pure
-	if (isSomeChar!C1 && isSomeChar!C2)
-{
-	return std.path.filenameCmp(filename1, filename2);
-}
-
-bool globMatch(CaseSensitive cs = CaseSensitive.osDefault, C)
-	(const(C)[] path, const(C)[] pattern)
-	@safe pure nothrow
-	if (isSomeChar!C)
-{
-	return std.path.globMatch(path, pattern);
-}
-
-bool isValidFilename(C)(in C[] filename)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.isValidFilename(filename);
-}
-
-bool isValidPath(C)(in C[] path)  @safe pure nothrow  if (isSomeChar!C)
-{
-	return std.path.isValidPath(path);
-}
-
+/// Part of workaround for DMD Issue #12111
 string expandTilde(string inputPath)
 {
 	return std.path.expandTilde(inputPath);
@@ -675,10 +698,26 @@ string expandTilde(string inputPath)
 
 // -- Wrappers for std.file --------------------
 
+/// Part of workaround for DMD Issue #12111
+alias FileException = std.file.FileException;
+alias SpanMode      = std.file.SpanMode;
+alias attrIsDir     = std.file.attrIsDir;
+alias attrIsFile    = std.file.attrIsFile;
+alias attrIsSymlink = std.file.attrIsSymlink;
+alias getcwd        = std.file.getcwd;
+alias thisExePath   = std.file.thisExePath;
+alias tempDir       = std.file.tempDir;
+
 /// Just like std.file.read, but takes a Path.
 void[] read(C)(in Path!C name, size_t upTo = size_t.max) if(isSomeChar!C)
 {
 	return read(name.str.to!string(), upTo);
+}
+
+/// Part of workaround for DMD Issue #12111
+void[] read(in char[] name, size_t upTo = size_t.max)
+{
+	return std.file.read(name, upTo);
 }
 
 /// Just like std.file.readText, but takes a Path.
@@ -690,10 +729,22 @@ template readText(S = string)
 	}
 }
 
+/// Part of workaround for DMD Issue #12111
+S readText(S = string)(in char[] name)
+{
+	return std.file.readText(name);
+}
+
 /// Just like std.file.write, but takes a Path.
 void write(C)(in Path!C name, const void[] buffer) if(isSomeChar!C)
 {
 	write(name.str.to!string(), buffer);
+}
+
+/// Part of workaround for DMD Issue #12111
+void write(in char[] name, const void[] buffer)
+{
+	std.file.write(name, buffer);
 }
 
 /// Just like std.file.append, but takes a Path.
@@ -702,7 +753,13 @@ void append(C)(in Path!C name, in void[] buffer) if(isSomeChar!C)
 	append(name.str.to!string(), buffer);
 }
 
-/// Just like std.file.rename, but takes Path.
+/// Part of workaround for DMD Issue #12111
+void append(in char[] name, in void[] buffer)
+{
+	std.file.append(name, buffer);
+}
+
+/// Just like std.file.rename, but takes Path, and echoes if scriptlikeTraceCommands is true.
 void rename(C)(in Path!C from, in Path!C to) if(isSomeChar!C)
 {
 	rename(from.str.to!string(), to.str.to!string());
@@ -720,10 +777,24 @@ void rename(C)(in Path!C from, in char[] to) if(isSomeChar!C)
 	rename(from.str.to!string(), to);
 }
 
-/// Just like std.file.remove, but takes a Path.
+/// Just like std.file.rename, but echoes if scriptlikeTraceCommands is true.
+void rename(in char[] from, in char[] to)
+{
+	echoCommand("rename: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
+	std.file.rename(from, to);
+}
+
+/// Just like std.file.remove, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void remove(C)(in Path!C name) if(isSomeChar!C)
 {
 	remove(name.str.to!string());
+}
+
+/// Just like std.file.remove, but echoes if scriptlikeTraceCommands is true.
+void remove(in char[] name)
+{
+	echoCommand("remove: "~name.escapeShellPath());
+	std.file.remove(name);
 }
 
 /// Just like std.file.getSize, but takes a Path.
@@ -732,12 +803,26 @@ ulong getSize(C)(in Path!C name) if(isSomeChar!C)
 	return getSize(name.str.to!string());
 }
 
+/// Part of workaround for DMD Issue #12111
+ulong getSize(in char[] name)
+{
+	return std.file.getSize(name);
+}
+
 /// Just like std.file.getTimes, but takes a Path.
 void getTimes(C)(in Path!C name,
 	out SysTime accessTime,
 	out SysTime modificationTime) if(isSomeChar!C)
 {
 	getTimes(name.str.to!string(), accessTime, modificationTime);
+}
+
+/// Part of workaround for DMD Issue #12111
+void getTimes(in char[] name,
+	out SysTime accessTime,
+	out SysTime modificationTime)
+{
+	std.file.getTimes(name, accessTime, modificationTime);
 }
 
 /// Windows-only. Just like std.file.getTimesWin, but takes a Path.
@@ -749,12 +834,29 @@ version(Windows) void getTimesWin(C)(in Path!C name,
 	getTimesWin(name.str.to!string(), fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
+/// Part of workaround for DMD Issue #12111
+version(Windows) void getTimesWin(in char[] name,
+	out SysTime fileCreationTime,
+	out SysTime fileAccessTime,
+	out SysTime fileModificationTime)
+{
+	std.file.getTimesWin(name, fileCreationTime, fileAccessTime, fileModificationTime);
+}
+
 /// Just like std.file.setTimes, but takes a Path.
 void setTimes(C)(in Path!C name,
 	SysTime accessTime,
 	SysTime modificationTime) if(isSomeChar!C)
 {
 	setTimes(name.str.to!string(), accessTime, modificationTime);
+}
+
+/// Part of workaround for DMD Issue #12111
+void setTimes(in char[] name,
+	SysTime accessTime,
+	SysTime modificationTime)
+{
+	return std.file.setTimes(name, accessTime, modificationTime);
 }
 
 /// Just like std.file.timeLastModified, but takes a Path.
@@ -769,10 +871,28 @@ SysTime timeLastModified(C)(in Path!C name, SysTime returnIfMissing) if(isSomeCh
 	return timeLastModified(name.str.to!string(), returnIfMissing);
 }
 
+/// Part of workaround for DMD Issue #12111
+SysTime timeLastModified(in char[] name)
+{
+	return std.file.timeLastModified(name);
+}
+
+///ditto
+SysTime timeLastModified(in char[] name, SysTime returnIfMissing)
+{
+	return std.file.timeLastModified(name, returnIfMissing);
+}
+
 /// Just like std.file.exists, but takes a Path.
 bool exists(C)(in Path!C name) @trusted if(isSomeChar!C)
 {
 	return exists(name.str.to!string());
+}
+
+/// Part of workaround for DMD Issue #12111
+bool exists(in char[] name) @trusted
+{
+	return std.file.exists(name);
 }
 
 /// Just like std.file.getAttributes, but takes a Path.
@@ -781,10 +901,22 @@ uint getAttributes(C)(in Path!C name) if(isSomeChar!C)
 	return getAttributes(name.str.to!string());
 }
 
+/// Part of workaround for DMD Issue #12111
+uint getAttributes(in char[] name)
+{
+	return std.file.getAttributes(name);
+}
+
 /// Just like std.file.getLinkAttributes, but takes a Path.
 uint getLinkAttributes(C)(in Path!C name) if(isSomeChar!C)
 {
 	return getLinkAttributes(name.str.to!string());
+}
+
+/// Part of workaround for DMD Issue #12111
+uint getLinkAttributes(in char[] name)
+{
+	return std.file.getLinkAttributes(name);
 }
 
 /// Just like std.file.isDir, but takes a Path.
@@ -793,10 +925,22 @@ uint getLinkAttributes(C)(in Path!C name) if(isSomeChar!C)
 	return isDir(name.str.to!string());
 }
 
+/// Part of workaround for DMD Issue #12111
+@property bool isDir(in char[] name)
+{
+	return std.file.isDir(name);
+}
+
 /// Just like std.file.isFile, but takes a Path.
 @property bool isFile(C)(in Path!C name) if(isSomeChar!C)
 {
 	return isFile(name.str.to!string());
+}
+
+/// Part of workaround for DMD Issue #12111
+@property bool isFile(in char[] name)
+{
+	return std.file.isFile(name);
 }
 
 /// Just like std.file.isSymlink, but takes a Path.
@@ -805,31 +949,65 @@ uint getLinkAttributes(C)(in Path!C name) if(isSomeChar!C)
 	return isSymlink(name.str.to!string());
 }
 
-/// Just like std.file.chdir, but takes a Path.
+/// Part of workaround for DMD Issue #12111
+@property bool isSymlink(C)(const(C)[] name)
+{
+	return std.file.isSymlink(name);
+}
+
+/// Just like std.file.chdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void chdir(C)(in Path!C pathname) if(isSomeChar!C)
 {
 	chdir(pathname.str.to!string());
 }
 
-/// Just like std.file.mkdir, but takes a Path.
+/// Just like std.file.chdir, but echoes if scriptlikeTraceCommands is true.
+void chdir(in char[] pathname)
+{
+	echoCommand("chdir: "~pathname.escapeShellPath());
+	std.file.chdir(pathname);
+}
+
+/// Just like std.file.mkdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void mkdir(C)(in Path!C pathname) if(isSomeChar!C)
 {
 	mkdir(pathname.str.to!string());
 }
 
-/// Just like std.file.mkdirRecurse, but takes a Path.
+/// Just like std.file.mkdir, but echoes if scriptlikeTraceCommands is true.
+void mkdir(in char[] pathname)
+{
+	echoCommand("mkdir: "~pathname.escapeShellPath());
+	std.file.mkdir(pathname);
+}
+
+/// Just like std.file.mkdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void mkdirRecurse(C)(in Path!C pathname) if(isSomeChar!C)
 {
 	mkdirRecurse(pathname.str.to!string());
 }
 
-/// Just like std.file.rmdir, but takes a Path.
+/// Just like std.file.mkdirRecurse, but echoes if scriptlikeTraceCommands is true.
+void mkdirRecurse(in char[] pathname)
+{
+	echoCommand("mkdirRecurse: "~pathname.escapeShellPath());
+	std.file.mkdirRecurse(pathname);
+}
+
+/// Just like std.file.rmdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void rmdir(C)(in Path!C pathname) if(isSomeChar!C)
 {
 	rmdir(pathname.str.to!string());
 }
 
-/// Posix-only. Just like std.file.symlink, but takes Path.
+/// Just like std.file.rmdir, but echoes if scriptlikeTraceCommands is true.
+void rmdir(in char[] pathname)
+{
+	echoCommand("rmdir: "~pathname.escapeShellPath());
+	std.file.rmdir(pathname);
+}
+
+/// Posix-only. Just like std.file.symlink, but takes Path, and echoes if scriptlikeTraceCommands is true.
 version(Posix) void symlink(C1, C2)(Path!C1 original, Path!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
 {
 	symlink(original.str.to!string(), link.str.to!string());
@@ -847,13 +1025,26 @@ version(Posix) void symlink(C1, C2)(Path!C1 original, const(C2)[] link) if(isSom
 	symlink(original.str.to!string(), link);
 }
 
+/// Just like std.file.symlink, but echoes if scriptlikeTraceCommands is true.
+version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
+{
+	echoCommand("symlink: [original] "~original.escapeShellPath()~" : [symlink] "~link.escapeShellPath());
+	std.file.symlink(original, link);
+}
+
 /// Posix-only. Just like std.file.readLink, but operates on Path.
 version(Posix) Path!C readLink(C)(Path!C link) if(isSomeChar!C)
 {
 	return Path!C( readLink(link.str.to!string()) );
 }
 
-/// Just like std.file.copy, but takes Path.
+/// Part of workaround for DMD Issue #12111
+version(Posix) string readLink(C)(const(C)[] link)
+{
+	return std.file.readLink(link);
+}
+
+/// Just like std.file.copy, but takes Path, and echoes if scriptlikeTraceCommands is true.
 void copy(C)(in Path!C from, in Path!C to) if(isSomeChar!C)
 {
 	copy(from.str.to!string(), to.str.to!string());
@@ -871,10 +1062,24 @@ void copy(C)(in Path!C from, in char[] to) if(isSomeChar!C)
 	copy(from.str.to!string(), to);
 }
 
-/// Just like std.file.rmdirRecurse, but takes a Path.
+/// Just like std.file.copy, but echoes if scriptlikeTraceCommands is true.
+void copy(in char[] from, in char[] to)
+{
+	echoCommand("copy: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
+	std.file.copy(from, to);
+}
+
+/// Just like std.file.rmdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void rmdirRecurse(C)(in Path!C pathname) if(isSomeChar!C)
 {
 	rmdirRecurse(pathname.str.to!string());
+}
+
+/// Just like std.file.rmdirRecurse, but echoes if scriptlikeTraceCommands is true.
+void rmdirRecurse(in char[] pathname)
+{
+	echoCommand("rmdirRecurse: "~pathname.escapeShellPath());
+	std.file.rmdirRecurse(pathname);
 }
 
 /// Just like std.file.dirEntries, but takes a Path.
@@ -890,6 +1095,19 @@ auto dirEntries(C)(Path!C path, string pattern, SpanMode mode,
 	return dirEntries(path.str.to!string(), pattern, mode, followSymlink);
 }
 
+/// Part of workaround for DMD Issue #12111
+auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
+{
+	return std.file.dirEntries(path, mode, followSymlink);
+}
+
+///ditto
+auto dirEntries(string path, string pattern, SpanMode mode,
+	bool followSymlink = true)
+{
+	return std.file.dirEntries(path, pattern, mode, followSymlink);
+}
+
 /// Just like std.file.slurp, but takes a Path.
 template slurp(Types...)
 {
@@ -899,172 +1117,7 @@ template slurp(Types...)
 	}
 }
 
-// -- Many of these (except for the ones that call echoCommand) -------------------
-// -- are std.file Workarounds for DMD Issue #12111 -------------------
-
-alias FileException = std.file.FileException;
-alias SpanMode      = std.file.SpanMode;
-alias getcwd        = std.file.getcwd;
-alias thisExePath   = std.file.thisExePath;
-alias tempDir       = std.file.tempDir;
-
-void[] read(in char[] name, size_t upTo = size_t.max)
-{
-	return std.file.read(name, upTo);
-}
-
-S readText(S = string)(in char[] name)
-{
-	return std.file.readText(name);
-}
-
-void write(in char[] name, const void[] buffer)
-{
-	std.file.write(name, buffer);
-}
-
-void append(in char[] name, in void[] buffer)
-{
-	std.file.append(name, buffer);
-}
-
-void rename(in char[] from, in char[] to)
-{
-	echoCommand("rename: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
-	std.file.rename(from, to);
-}
-
-void remove(in char[] name)
-{
-	echoCommand("remove: "~name.escapeShellPath());
-	std.file.remove(name);
-}
-
-ulong getSize(in char[] name)
-{
-	return std.file.getSize(name);
-}
-
-void getTimes(in char[] name,
-	out SysTime accessTime,
-	out SysTime modificationTime)
-{
-	std.file.getTimes(name, accessTime, modificationTime);
-}
-
-version(Windows) void getTimesWin(in char[] name,
-	out SysTime fileCreationTime,
-	out SysTime fileAccessTime,
-	out SysTime fileModificationTime)
-{
-	std.file.getTimesWin(name, fileCreationTime, fileAccessTime, fileModificationTime);
-}
-
-void setTimes(in char[] name,
-	SysTime accessTime,
-	SysTime modificationTime)
-{
-	return std.file.setTimes(name, accessTime, modificationTime);
-}
-
-SysTime timeLastModified(in char[] name)
-{
-	return std.file.timeLastModified(name);
-}
-
-SysTime timeLastModified(in char[] name, SysTime returnIfMissing)
-{
-	return std.file.timeLastModified(name, returnIfMissing);
-}
-
-bool exists(in char[] name) @trusted
-{
-	return std.file.exists(name);
-}
-
-uint getAttributes(in char[] name)
-{
-	return std.file.getAttributes(name);
-}
-
-uint getLinkAttributes(in char[] name)
-{
-	return std.file.getLinkAttributes(name);
-}
-
-@property bool isDir(in char[] name)
-{
-	return std.file.isDir(name);
-}
-
-@property bool isFile(in char[] name)
-{
-	return std.file.isFile(name);
-}
-
-@property bool isSymlink(C)(const(C)[] name)
-{
-	return std.file.isSymlink(name);
-}
-
-void chdir(in char[] pathname)
-{
-	echoCommand("chdir: "~pathname.escapeShellPath());
-	std.file.chdir(pathname);
-}
-
-void mkdir(in char[] pathname)
-{
-	echoCommand("mkdir: "~pathname.escapeShellPath());
-	std.file.mkdir(pathname);
-}
-
-void mkdirRecurse(in char[] pathname)
-{
-	echoCommand("mkdirRecurse: "~pathname.escapeShellPath());
-	std.file.mkdirRecurse(pathname);
-}
-
-void rmdir(in char[] pathname)
-{
-	echoCommand("rmdir: "~pathname.escapeShellPath());
-	std.file.rmdir(pathname);
-}
-
-version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
-{
-	echoCommand("symlink: [original] "~original.escapeShellPath()~" : [symlink] "~link.escapeShellPath());
-	std.file.symlink(original, link);
-}
-
-version(Posix) string readLink(C)(const(C)[] link)
-{
-	return std.file.readLink(link);
-}
-
-void copy(in char[] from, in char[] to)
-{
-	echoCommand("copy: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
-	std.file.copy(from, to);
-}
-
-void rmdirRecurse(in char[] pathname)
-{
-	echoCommand("rmdirRecurse: "~pathname.escapeShellPath());
-	std.file.rmdirRecurse(pathname);
-}
-
-auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
-{
-	return std.file.dirEntries(path, mode, followSymlink);
-}
-
-auto dirEntries(string path, string pattern, SpanMode mode,
-	bool followSymlink = true)
-{
-	return std.file.dirEntries(path, pattern, mode, followSymlink);
-}
-
+/// Part of workaround for DMD Issue #12111
 Select!(Types.length == 1, Types[0][], Tuple!(Types)[])
 slurp(Types...)(string filename, in char[] format)
 {
