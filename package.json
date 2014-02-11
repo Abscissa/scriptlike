@@ -1,0 +1,10 @@
+{
+	"name": "scriptlike",
+	"description": "Utility to aid in script-like programs.",
+	"authors": ["Nick Sabalausky"],
+	"homepage": "https://github.com/abscissa/scriptlike",
+	"license": "zlib/libpng",
+
+    "importPaths": ["."],
+    "targetType":  "library"
+}

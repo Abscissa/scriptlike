@@ -1,10 +1,19 @@
-// Utility to aid in script-like programs.
-//
-// This is deliberately created as one file for easier usage
-// in script-like programs.
-//
-// Written in the D programming language.
-// Tested with DMD 2.064.2
+/++
+Utility to aid in script-like programs.
+
+This is deliberately created as one file for easier usage
+in script-like programs.
+
+Written in the D programming language.
+Tested with DMD 2.064.2
+Licensed under The zlib/libpng License
+
+Homepage:
+https://github.com/abscissa/scriptlike
+
+API Reference:
+http://semitwist.com/scriptlike
++/
 
 module scriptlike;
 
