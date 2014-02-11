@@ -318,12 +318,19 @@ private void echoCommand(lazy string command)
 		writeln(command);
 }
 
+/// Runs a command, through the system's command shell interpreter,
+/// in typical shell-script style: Synchronously, with the command's
+/// stdout/in/err automatically forwarded through your
+/// program's stdout/in/err.
+///
+/// Optionally takes a working directory to run the command from.
 int runShell()(string command)
 {
 	echoCommand(command);
 	return system(command);
 }
 
+///ditto
 int runShell(C)(Path!C workingDirectory, string command)
 {
 	auto saveDir = getcwd();
@@ -356,7 +363,7 @@ Path!C dirName(C)(Path!C path) if(isSomeChar!C)
 {
 	return Path!C( path.str.dirName() );
 }
-	
+
 /// Just like std.path.rootName, but operates on Path.
 Path!C rootName(C)(Path!C path) @safe pure nothrow
 {
