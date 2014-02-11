@@ -11,7 +11,7 @@ Tested with DMD 2.064.2
 
 * [API Reference](http://semitwist.com/scriptlike)
 * [DUB](http://code.dlang.org/about) [Package](http://code.dlang.org/packages/scriptlike)
-* [Small article explaining the motivations behind scriptlike](https://semitwist.com/articles/article/view/scriptlike-shell-scripting-in-d-annoyances-and-a-library-solution)
+* [Small article explaining the motivations behind scriptlike](http://semitwist.com/articles/article/view/scriptlike-shell-scripting-in-d-annoyances-and-a-library-solution)
 
 Features
 --------
