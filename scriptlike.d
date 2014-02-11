@@ -784,6 +784,19 @@ void rename(in char[] from, in char[] to)
 	std.file.rename(from, to);
 }
 
+/// If 'from' exists, then rename. Otherwise do nothing.
+/// Returns: Success?
+bool tryRename(T1, T2)(T1 from, T2 to)
+{
+	if(from.exists())
+	{
+		rename(from, to);
+		return true;
+	}
+
+	return false;
+}
+
 /// Just like std.file.remove, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void remove(C)(in Path!C name) if(isSomeChar!C)
 {
@@ -795,6 +808,19 @@ void remove(in char[] name)
 {
 	echoCommand("remove: "~name.escapeShellPath());
 	std.file.remove(name);
+}
+
+/// If 'name' exists, then remove. Otherwise do nothing.
+/// Returns: Success?
+bool tryRemove(T)(T name)
+{
+	if(name.exists())
+	{
+		remove(name);
+		return true;
+	}
+	
+	return false;
 }
 
 /// Just like std.file.getSize, but takes a Path.
@@ -981,6 +1007,19 @@ void mkdir(in char[] pathname)
 	std.file.mkdir(pathname);
 }
 
+/// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
+/// Returns: Success?
+bool tryMkdir(T)(T name)
+{
+	if(!name.exists())
+	{
+		mkdir(name);
+		return true;
+	}
+	
+	return false;
+}
+
 /// Just like std.file.mkdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void mkdirRecurse(C)(in Path!C pathname) if(isSomeChar!C)
 {
@@ -994,6 +1033,19 @@ void mkdirRecurse(in char[] pathname)
 	std.file.mkdirRecurse(pathname);
 }
 
+/// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
+/// Returns: Success?
+bool tryMkdirRecurse(T)(T name)
+{
+	if(!name.exists())
+	{
+		mkdirRecurse(name);
+		return true;
+	}
+	
+	return false;
+}
+
 /// Just like std.file.rmdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void rmdir(C)(in Path!C pathname) if(isSomeChar!C)
 {
@@ -1005,6 +1057,19 @@ void rmdir(in char[] pathname)
 {
 	echoCommand("rmdir: "~pathname.escapeShellPath());
 	std.file.rmdir(pathname);
+}
+
+/// If 'name' exists, then rmdir. Otherwise do nothing.
+/// Returns: Success?
+bool tryRmdir(T)(T name)
+{
+	if(name.exists())
+	{
+		rmdir(name);
+		return true;
+	}
+	
+	return false;
 }
 
 /// Posix-only. Just like std.file.symlink, but takes Path, and echoes if scriptlikeTraceCommands is true.
@@ -1030,6 +1095,19 @@ version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
 {
 	echoCommand("symlink: [original] "~original.escapeShellPath()~" : [symlink] "~link.escapeShellPath());
 	std.file.symlink(original, link);
+}
+
+/// If 'original' exists, then symlink. Otherwise do nothing.
+/// Returns: Success?
+bool trySymlink(T1, T2)(T1 original, T2 link)
+{
+	if(original.exists())
+	{
+		symlink(original, link);
+		return true;
+	}
+	
+	return false;
 }
 
 /// Posix-only. Just like std.file.readLink, but operates on Path.
@@ -1069,6 +1147,19 @@ void copy(in char[] from, in char[] to)
 	std.file.copy(from, to);
 }
 
+/// If 'from' exists, then copy. Otherwise do nothing.
+/// Returns: Success?
+bool tryCopy(T1, T2)(T1 from, T2 to)
+{
+	if(from.exists())
+	{
+		copy(from, to);
+		return true;
+	}
+	
+	return false;
+}
+
 /// Just like std.file.rmdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
 void rmdirRecurse(C)(in Path!C pathname) if(isSomeChar!C)
 {
@@ -1080,6 +1171,19 @@ void rmdirRecurse(in char[] pathname)
 {
 	echoCommand("rmdirRecurse: "~pathname.escapeShellPath());
 	std.file.rmdirRecurse(pathname);
+}
+
+/// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
+/// Returns: Success?
+bool tryRmdirRecurse(T)(T name)
+{
+	if(name.exists())
+	{
+		rmdirRecurse(name);
+		return true;
+	}
+	
+	return false;
 }
 
 /// Just like std.file.dirEntries, but takes a Path.
@@ -1494,5 +1598,29 @@ unittest
 		assert(tempPath3.exists());
 		assert(tempPath3.isFile());
 		assert((cast(string)tempPath3.read()).strip() == "MoreTestStuff");
+	}
+
+	{
+		scope(exit)
+		{
+			if(exists(tempname))  rmdir(tempname);
+			if(exists(tempname3)) rmdir(tempname3);
+			if(exists(tempname3.dirName())) rmdir(tempname3.dirName());
+		}
+		
+		assert(!tempPath.exists());
+		assert(!tempPath3.exists());
+		
+		assert(!tempPath.tryMkdir());
+		assert(!tempPath.exists());
+		assert(!tempPath.tryMkdirRecurse());
+		assert(!tempPath.exists());
+
+		assert(!tempPath.tryRmdir());
+		assert(!tempPath.tryRmdirRecurse());
+		assert(!tempPath.tryRemove());
+		assert(!tempPath.tryRename(tempPath3));
+		assert(!tempPath.trySymlink(tempPath3));
+		assert(!tempPath.tryCopy(tempPath3));
 	}
 }
