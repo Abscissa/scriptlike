@@ -135,7 +135,43 @@ struct Ext(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 		return str;
 	}
 	
-	//TODO: Implement comparisons, concat, and any other applicable parts of std.path
+	/// Compare using OS-specific case-sensitivity rules. If you want to force
+	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	int opCmp(ref const Ext!C other) const
+	{
+		return filenameCmp(this.str, other.str);
+	}
+
+	///ditto
+	int opCmp(Ext!C other) const
+	{
+		return filenameCmp(this.str, other.str);
+	}
+
+	///ditto
+	int opCmp(string other) const
+	{
+		return filenameCmp(this.str, other);
+	}
+
+	/// Compare using OS-specific case-sensitivity rules. If you want to force
+	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	int opEquals(ref const Ext!C other) const
+	{
+		return opCmp(other) == 0;
+	}
+
+	///ditto
+	int opEquals(Ext!C other) const
+	{
+		return opCmp(other) == 0;
+	}
+
+	///ditto
+	int opEquals(string other) const
+	{
+		return opCmp(other) == 0;
+	}
 }
 
 /// Helper for creating a Path.
@@ -147,7 +183,9 @@ auto path(T)(T str = ".") if(isSomeString!T)
 	return Path!( Unqual!(ElementEncodingType!T) )(str);
 }
 
-/// Represents a filesystem path.
+/// Represents a filesystem path. The path is always kept normalized
+/// automatically (as performed by buildNormalizedPathFixed).
+///
 /// wchar and dchar versions not yet supported, blocked by DMD issue #12112
 struct Path(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 {
@@ -246,7 +284,43 @@ struct Path(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 		return this;
 	}
 	
-	//TODO: Comparisons
+	/// Compare using OS-specific case-sensitivity rules. If you want to force
+	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	int opCmp(ref const Path!C other) const
+	{
+		return filenameCmp(this.str, other.str);
+	}
+
+	///ditto
+	int opCmp(Path!C other) const
+	{
+		return filenameCmp(this.str, other.str);
+	}
+
+	///ditto
+	int opCmp(string other) const
+	{
+		return filenameCmp(this.str, other);
+	}
+
+	/// Compare using OS-specific case-sensitivity rules. If you want to force
+	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	int opEquals(ref const Path!C other) const
+	{
+		return opCmp(other) == 0;
+	}
+
+	///ditto
+	int opEquals(Path!C other) const
+	{
+		return opCmp(other) == 0;
+	}
+
+	///ditto
+	int opEquals(string other) const
+	{
+		return opCmp(other) == 0;
+	}
 
 	/// Returns the parent path, according to std.path.dirName.
 	@property Path!C up()
@@ -314,7 +388,7 @@ bool existsAsSymlink(C)(in Path!C path) @trusted if(isSomeChar!C)
 /// are no inputs, this still returns "" just like buildNormalizedPath.
 immutable(C)[] buildNormalizedPathFixed(C)(const(C[])[] paths...)
 	@trusted pure nothrow
-	if (isSomeChar!C)
+	if(isSomeChar!C)
 {
 	if(all!`a==""`(paths))
 		return "";
@@ -1108,7 +1182,7 @@ version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
 
 /// If 'original' exists, then symlink. Otherwise do nothing.
 /// Returns: Success?
-bool trySymlink(T1, T2)(T1 original, T2 link)
+version(Posix) bool trySymlink(T1, T2)(T1 original, T2 link)
 {
 	if(original.exists())
 	{
@@ -1254,6 +1328,29 @@ unittest
 	foreach(C; TypeTuple!(char/+, wchar, dchar+/))
 	{
 		//pragma(msg, "==="~C.stringof);
+
+		{
+			auto e = ext(".txt");
+			assert(e != ext(".dat"));
+			assert(e == ext(".txt"));
+			version(Windows)
+				assert(e == ext(".TXT"));
+			else version(OSX)
+				assert(e == ext(".TXT"));
+			else version(Posix)
+				assert(e != ext(".TXT"));
+			else
+				static assert(0, "This platform not supported.");
+			
+			// Test the other comparison overloads
+			assert(e != Ext!C(".dat"));
+			assert(e == Ext!C(".txt"));
+			assert(Ext!C(".dat") != e);
+			assert(Ext!C(".txt") == e);
+			assert(".dat" != e);
+			assert(".txt" == e);
+		}
+
 		auto p = Path!C();
 		assert(p.str == ".");
 		assert(!p.empty);
@@ -1384,6 +1481,25 @@ unittest
 			assert(p.isValidPath());
 			
 			assert(p.expandTilde().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
+			
+			assert(p != path("/dir/subdir/filename.ext"));
+			assert(p == path("/foo/bar/filename.ext"));
+			version(Windows)
+				assert(p == path("/FOO/BAR/FILENAME.EXT"));
+			else version(OSX)
+				assert(p == path("/FOO/BAR/FILENAME.EXT"));
+			else version(Posix)
+				assert(p != path("/FOO/BAR/FILENAME.EXT"));
+			else
+				static assert(0, "This platform not supported.");
+			
+			// Test the other comparison overloads
+			assert(p != Path!C("/dir/subdir/filename.ext"));
+			assert(p == Path!C("/foo/bar/filename.ext"));
+			assert(Path!C("/dir/subdir/filename.ext") != p);
+			assert(Path!C("/foo/bar/filename.ext")    == p);
+			assert("/dir/subdir/filename.ext" != p);
+			assert("/foo/bar/filename.ext"    == p);
 		}
 	}
 }
@@ -1620,16 +1736,23 @@ unittest
 		assert(!tempPath.exists());
 		assert(!tempPath3.exists());
 		
-		assert(!tempPath.tryMkdir());
-		assert(!tempPath.exists());
-		assert(!tempPath.tryMkdirRecurse());
-		assert(!tempPath.exists());
-
 		assert(!tempPath.tryRmdir());
 		assert(!tempPath.tryRmdirRecurse());
 		assert(!tempPath.tryRemove());
 		assert(!tempPath.tryRename(tempPath3));
-		assert(!tempPath.trySymlink(tempPath3));
+		version(Posix) assert(!tempPath.trySymlink(tempPath3));
 		assert(!tempPath.tryCopy(tempPath3));
+
+		assert(tempPath.tryMkdir());
+		assert(tempPath.exists());
+		assert(!tempPath.tryMkdir());
+		assert(!tempPath.tryMkdirRecurse());
+
+		assert(tempPath.tryRmdir());
+		assert(!tempPath.exists());
+
+		assert(tempPath.tryMkdirRecurse());
+		assert(tempPath.exists());
+		assert(!tempPath.tryMkdirRecurse());
 	}
 }
