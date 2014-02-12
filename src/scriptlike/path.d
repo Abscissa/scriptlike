@@ -47,11 +47,6 @@ auto ext(T)(T str) if(isSomeString!T)
 }
 
 /// Represents a file extension.
-alias Ext  = ExtT!char;
-alias WExt = ExtT!wchar; ///ditto
-alias DExt = ExtT!dchar; ///ditto
-
-///ditto
 struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 {
 	private immutable(C)[] str;
@@ -118,6 +113,9 @@ struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 		return !!str;
 	}
 }
+alias Ext  = ExtT!char;  ///ditto
+alias WExt = ExtT!wchar; ///ditto
+alias DExt = ExtT!dchar; ///ditto
 
 /// Helper for creating a Path.
 ///
@@ -132,11 +130,6 @@ auto path(T)(T str = ".") if(isSomeString!T)
 /// automatically (as performed by buildNormalizedPathFixed).
 ///
 /// wchar and dchar versions not yet supported, blocked by DMD issue #12112
-alias Path  = PathT!char;
-//alias WPath = PathT!wchar; ///ditto
-//alias DPath = PathT!dchar; ///ditto
-
-///ditto
 struct PathT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 {
 	private immutable(C)[] str = ".";
@@ -290,6 +283,9 @@ struct PathT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 		return str == "";
 	}
 }
+alias Path  = PathT!char; ///ditto
+//alias WPath = PathT!wchar; ///ditto
+//alias DPath = PathT!dchar; ///ditto
 
 /// Convenience aliases
 alias extOf      = extension;
