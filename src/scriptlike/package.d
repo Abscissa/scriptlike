@@ -6,10 +6,20 @@ Tested with DMD 2.064.2
 Licensed under The zlib/libpng License
 
 Homepage:
-https://github.com/abscissa/scriptlike
+$(LINK https://github.com/abscissa/scriptlike)
 
-API Reference:
-http://semitwist.com/scriptlike
+This API Reference:
+$(LINK http://semitwist.com/scriptlike)
+
+Import all:
+------------
+import scriptlike;
+------------
+
+Modules:
+$(LINK2 std.html,scriptlike.std)$(BR)
+$(LINK2 path.html,scriptlike.path)$(BR)
+$(LINK2 fail.html,scriptlike.fail)$(BR)
 +/
 
 module scriptlike;

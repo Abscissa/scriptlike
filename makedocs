@@ -1,4 +1,4 @@
 #!/bin/sh
-rdmd -Isrc --build-only -c -Dddocs src/scriptlike/package.d
-dmd -c -o- -Dddocs src/scriptlike/index.d
+rdmd -Isrc --build-only --force -c -Dddocs src/scriptlike/package.d
+mv docs/package.html docs/index.html
 rm src/scriptlike/package
