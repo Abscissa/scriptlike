@@ -1,0 +1,4 @@
+#!/bin/sh
+rdmd -Isrc --build-only -c -Dddocs src/scriptlike/package.d
+dmd -c -o- -Dddocs src/scriptlike/index.d
+rm src/scriptlike/package
