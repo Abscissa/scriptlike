@@ -111,6 +111,12 @@ struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 	{
 		return opCmp(other) == 0;
 	}
+
+	/// Convert to bool
+	T opCast(T)() if(is(T==bool))
+	{
+		return !!str;
+	}
 }
 
 /// Helper for creating a Path.
@@ -265,7 +271,13 @@ struct PathT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 	{
 		return opCmp(other) == 0;
 	}
-
+	
+	/// Convert to bool
+	T opCast(T)() if(is(T==bool))
+	{
+		return !!str;
+	}
+	
 	/// Returns the parent path, according to std.path.dirName.
 	@property PathT!C up()
 	{
@@ -334,6 +346,9 @@ immutable(C)[] buildNormalizedPathFixed(C)(const(C[])[] paths...)
 	@trusted pure nothrow
 	if(isSomeChar!C)
 {
+	if(all!`a is null`(paths))
+		return null;
+	
 	if(all!`a==""`(paths))
 		return "";
 	
@@ -1293,6 +1308,11 @@ unittest
 			assert(ExtT!C(".txt") == e);
 			assert(".dat" != e);
 			assert(".txt" == e);
+
+			assert(ext("foo"));
+			assert(ext(""));
+			assert(Ext(null).str is null);
+			assert(!Ext(null));
 		}
 
 		auto p = PathT!C();
@@ -1304,6 +1324,11 @@ unittest
 		
 		p = path(cast(immutable(C)[])".");
 		assert(!p.empty);
+		
+		assert(path("foo"));
+		assert(path(""));
+		assert(Path(null).str is null);
+		assert(!Path(null));
 		
 		version(Windows)
 			auto testStrings = [cast(immutable(C)[])"/foo/bar", "/foo/bar/", `\foo\bar`, `\foo\bar\`];
