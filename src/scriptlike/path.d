@@ -1,86 +1,20 @@
-/++
-Utility to aid in script-like programs.
+// Scriptlike: Utility to aid in script-like programs.
+// Written in the D programming language.
 
-This is deliberately created as one file for easier usage
-in script-like programs.
+module scriptlike.path;
 
-Written in the D programming language.
-Tested with DMD 2.064.2
-Licensed under The zlib/libpng License
-
-Homepage:
-https://github.com/abscissa/scriptlike
-
-API Reference:
-http://semitwist.com/scriptlike
-+/
-
-module scriptlike;
-
-// Import privately because this module wraps all the members.
+import std.algorithm;
+import std.conv;
+import std.datetime;
 import std.file;
 import std.path;
-
-// Automatically pull in anything likely to be useful for scripts.
-// curl is deliberately left out here because it involves an extra
-// link dependency.
-public import std.algorithm;
-public import std.array;
-public import std.bigint;
-public import std.conv;
-public import std.datetime;
-public import std.exception;
-public import std.getopt;
-public import std.math;
-public import std.process;
-public import std.random;
-public import std.range;
-public import std.regex;
-public import std.stdio;
-public import std.string;
-public import std.system;
-public import std.traits;
-public import std.typecons;
-public import std.typetuple;
-public import std.uni;
-public import std.variant;
-
-/++
-In your main(), catch this Fail exception, then output Fail.msg and
-return an error code.
-
-Example:
-
-int main()
-{
-	try
-	{
-		// Your code here
-	}
-	catch(Fail e)
-	{
-		writeln("mytool: ERROR: ", e.msg);
-		return 1;
-	}
-	
-	return 0;
-}
-+/
-class Fail : Exception
-{
-	this(string msg, string file=__FILE__, int line=__LINE__)
-	{
-		super(msg, file, line);
-	}
-}
-
-/// If you've set up your main() to handle the Fail exception (as shown in
-/// Fail's documentation, then call this to end your program with an error
-/// message in an exception-safe way.
-void fail(string msg, string file=__FILE__, int line=__LINE__)
-{
-	throw new Fail(msg, file, line);
-}
+import std.process;
+import std.range;
+import std.stdio;
+import std.string;
+import std.traits;
+import std.typecons;
+import std.typetuple;
 
 //TODO: Support optional OutputRange sink as an alternative to stdout
 /// If true, all commands will be echoed to stdout
