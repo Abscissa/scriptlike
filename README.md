@@ -10,6 +10,7 @@ Since this is intended for script-like programs, the focus is on making such scr
 Tested with DMD 2.064.2.
 
 * [API Reference](http://semitwist.com/scriptlike)
+* [Changelog](https://github.com/Abscissa/scriptlike/blob/master/CHANGELOG.md)
 * [DUB](http://code.dlang.org/about) [Package](http://code.dlang.org/packages/scriptlike)
 * [Small article explaining the motivations behind scriptlike](http://semitwist.com/articles/article/view/scriptlike-shell-scripting-in-d-annoyances-and-a-library-solution)
 
