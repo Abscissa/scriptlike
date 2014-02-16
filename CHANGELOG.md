@@ -10,7 +10,7 @@ v0.6.0 - TBD
 - **Enhancement:** Added scripts to run unittests and build API docs.
 - **Enhancement:** Added [opCast](http://semitwist.com/scriptlike/path.html#opCast)!bool for Path and Ext.
 - **Enhancement:** ```[fail](http://semitwist.com/scriptlike/fail.html)()``` no longer requires any boilerplate in main(). [NG link](http://forum.dlang.org/thread/ldc6qt$22tv$1@digitalmars.com)
-- **Enhancement:** Added [ArgsT](http://semitwist.com/scriptlike/path.html#ArgsT) (and Args helper alias) to safely build command strings from parts.
+- **Enhancement:** #13: Added [ArgsT](http://semitwist.com/scriptlike/path.html#ArgsT) (and Args helper alias) to safely build command strings from parts.
 - **Enhancement:** Added this changelog.
 - **Fixed:** Path(null) and Ext(null) were automatically changed to empty string.
 
