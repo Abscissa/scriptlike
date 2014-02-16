@@ -20,23 +20,6 @@ import std.typetuple;
 /// If true, all commands will be echoed to stdout
 bool scriptlikeTraceCommands = false;
 
-string escapeShellPath(T)(T str) if(isSomeString!T)
-{
-	string s = str.to!string();
-
-	if(str.canFind(' '))
-	{
-		version(Windows)
-			return escapeWindowsArgument(s);
-		else version(Posix)
-			return escapeShellFileName(s);
-		else
-			static assert(0, "This platform not supported.");
-	}
-	else
-		return s;
-}
-
 /// Helper for creating an Ext.
 ///
 /// Returns either ExtT!char, ExtT!wchar or ExtT!dchar depending on the
@@ -162,7 +145,7 @@ struct PathT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 	/// Convert to string, quoting or escaping spaces if necessary.
 	string toString()
 	{
-		return escapeShellPath(str);
+		return escapeShellArg(str);
 	}
 	
 	/// Convert to string, wstring or dstring, depending on the type of Path.
@@ -350,6 +333,24 @@ immutable(C)[] buildNormalizedPathFixed(C)(const(C[])[] paths...)
 	
 	auto result = buildNormalizedPath(paths);
 	return result==""? "." : result;
+}
+
+/// Properly escape arguments containing spaces for the command shell, if necessary.
+string escapeShellArg(T)(T str) if(isSomeString!T)
+{
+	string s = str.to!string();
+
+	if(str.canFind(' '))
+	{
+		version(Windows)
+			return escapeWindowsArgument(s);
+		else version(Posix)
+			return escapeShellFileName(s);
+		else
+			static assert(0, "This platform not supported.");
+	}
+	else
+		return s;
 }
 
 private void echoCommand(lazy string command)
@@ -834,7 +835,7 @@ void rename(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
 /// Just like std.file.rename, but echoes if scriptlikeTraceCommands is true.
 void rename(in char[] from, in char[] to)
 {
-	echoCommand("rename: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
+	echoCommand("rename: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
 	std.file.rename(from, to);
 }
 
@@ -860,7 +861,7 @@ void remove(C)(in PathT!C name) if(isSomeChar!C)
 /// Just like std.file.remove, but echoes if scriptlikeTraceCommands is true.
 void remove(in char[] name)
 {
-	echoCommand("remove: "~name.escapeShellPath());
+	echoCommand("remove: "~name.escapeShellArg());
 	std.file.remove(name);
 }
 
@@ -1044,7 +1045,7 @@ void chdir(C)(in PathT!C pathname) if(isSomeChar!C)
 /// Just like std.file.chdir, but echoes if scriptlikeTraceCommands is true.
 void chdir(in char[] pathname)
 {
-	echoCommand("chdir: "~pathname.escapeShellPath());
+	echoCommand("chdir: "~pathname.escapeShellArg());
 	std.file.chdir(pathname);
 }
 
@@ -1057,7 +1058,7 @@ void mkdir(C)(in PathT!C pathname) if(isSomeChar!C)
 /// Just like std.file.mkdir, but echoes if scriptlikeTraceCommands is true.
 void mkdir(in char[] pathname)
 {
-	echoCommand("mkdir: "~pathname.escapeShellPath());
+	echoCommand("mkdir: "~pathname.escapeShellArg());
 	std.file.mkdir(pathname);
 }
 
@@ -1083,7 +1084,7 @@ void mkdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 /// Just like std.file.mkdirRecurse, but echoes if scriptlikeTraceCommands is true.
 void mkdirRecurse(in char[] pathname)
 {
-	echoCommand("mkdirRecurse: "~pathname.escapeShellPath());
+	echoCommand("mkdirRecurse: "~pathname.escapeShellArg());
 	std.file.mkdirRecurse(pathname);
 }
 
@@ -1109,7 +1110,7 @@ void rmdir(C)(in PathT!C pathname) if(isSomeChar!C)
 /// Just like std.file.rmdir, but echoes if scriptlikeTraceCommands is true.
 void rmdir(in char[] pathname)
 {
-	echoCommand("rmdir: "~pathname.escapeShellPath());
+	echoCommand("rmdir: "~pathname.escapeShellArg());
 	std.file.rmdir(pathname);
 }
 
@@ -1147,7 +1148,7 @@ version(Posix) void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSo
 /// Just like std.file.symlink, but echoes if scriptlikeTraceCommands is true.
 version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
 {
-	echoCommand("symlink: [original] "~original.escapeShellPath()~" : [symlink] "~link.escapeShellPath());
+	echoCommand("symlink: [original] "~original.escapeShellArg()~" : [symlink] "~link.escapeShellArg());
 	std.file.symlink(original, link);
 }
 
@@ -1197,7 +1198,7 @@ void copy(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
 /// Just like std.file.copy, but echoes if scriptlikeTraceCommands is true.
 void copy(in char[] from, in char[] to)
 {
-	echoCommand("copy: "~from.escapeShellPath()~" -> "~to.escapeShellPath());
+	echoCommand("copy: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
 	std.file.copy(from, to);
 }
 
@@ -1223,7 +1224,7 @@ void rmdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 /// Just like std.file.rmdirRecurse, but echoes if scriptlikeTraceCommands is true.
 void rmdirRecurse(in char[] pathname)
 {
-	echoCommand("rmdirRecurse: "~pathname.escapeShellPath());
+	echoCommand("rmdirRecurse: "~pathname.escapeShellArg());
 	std.file.rmdirRecurse(pathname);
 }
 
@@ -1345,7 +1346,7 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 	void put(immutable(C)[] item)
 	{
 		putSpacer();
-		buf.put(escapeShellPath(item));
+		buf.put(escapeShellArg(item));
 		_length += 2;
 	}
 
