@@ -358,14 +358,26 @@ private void echoCommand(lazy string command)
 		writeln(command);
 }
 
-/// Runs a command, through the system's command shell interpreter,
-/// in typical shell-script style: Synchronously, with the command's
-/// stdout/in/err automatically forwarded through your
-/// program's stdout/in/err.
-///
-/// Optionally takes a working directory to run the command from.
-///
-/// The command is echoed if scriptlikeTraceCommands is true.
+/++
+Runs a command, through the system's command shell interpreter,
+in typical shell-script style: Synchronously, with the command's
+stdout/in/err automatically forwarded through your
+program's stdout/in/err.
+
+Optionally takes a working directory to run the command from.
+
+The command is echoed if scriptlikeTraceCommands is true.
+
+Example:
+---------------------
+Args cmd;
+cmd ~= path("some tool");
+cmd ~= "-o";
+cmd ~= path(`dir/out file.txt`);
+cmd ~= ["--abc", "--def", "-g"];
+auto errLevel = path("some working dir").runShell(cmd.data);
+---------------------
++/
 int runShell()(string command)
 {
 	echoCommand(command);
@@ -1266,6 +1278,110 @@ slurp(Types...)(string filename, in char[] format)
 	return std.file.slurp(filename, format);
 }
 
+/++
+Much like std.array.Appender!string, but specifically geared towards
+building a command string out of arguments. String and Path can both
+be appended. All elements added will automatically be escaped,
+and separated by spaces, as necessary.
+
+Example:
+-------------------
+Args args;
+args ~= path(`some/big path/here/foobar`);
+args ~= "-A";
+args ~= "--bcd";
+args ~= "Hello World";
+args ~= path("file.ext");
+
+// On windows:
+assert(args.data == `"some\big path\here\foobar" -A --bcd "Hello World" file.ext`);
+// On linux:
+assert(args.data == `'some/big path/here/foobar' -A --bcd 'Hello World' file.ext`);
+-------------------
+
+wchar and dchar versions not yet supported, blocked by DMD issue #12112
++/
+struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
+{
+	// Internal note: For every element the user adds to ArgsT,
+	// *two* elements will be added to this internal buf: first a spacer
+	// (normally a space, or an empty string in the case of the very first
+	// element the user adds) and then the actual element the user added.
+	private Appender!(immutable(C)[]) buf;
+	private size_t _length = 0;
+	
+    void reserve(size_t newCapacity) @safe pure nothrow
+	{
+		// "*2" to account for the spacers
+		buf.reserve(newCapacity * 2);
+	}
+
+
+    @property size_t capacity() const @safe pure nothrow
+	{
+		// "/2" to account for the spacers
+		return buf.capacity / 2;
+	}
+
+	@property immutable(C)[] data() inout @trusted pure nothrow
+	{
+		return buf.data;
+	}
+	
+	@property size_t length()
+	{
+		return _length;
+	}
+	
+	private void putSpacer()
+	{
+		buf.put(_length==0? "" : " ");
+	}
+	
+	void put(immutable(C)[] item)
+	{
+		putSpacer();
+		buf.put(escapeShellPath(item));
+		_length += 2;
+	}
+
+	void put(PathT!C item)
+	{
+		put(item.toRawString());
+	}
+
+	void put(Range)(Range items)
+		if(
+			isInputRange!Range &&
+			(is(ElementType!Range == string) || is(ElementType!Range == PathT!C))
+		)
+	{
+		for(; !items.empty; items.popFront())
+			put(items.front);
+	}
+
+	void opOpAssign(string op)(immutable(C)[] item) if(op == "~")
+	{
+		put(item);
+	}
+
+	void opOpAssign(string op)(PathT!C item) if(op == "~")
+	{
+		put(item);
+	}
+
+	void opOpAssign(string op, Range)(Range items)
+		if(
+			op == "~" &&
+			isInputRange!Range &&
+			(is(ElementType!Range == string) || is(ElementType!Range == PathT!C))
+		)
+	{
+		put(items);
+	}
+}
+alias Args = ArgsT!char; ///ditto
+
 // The unittests in this module mainly check that all the templates compile
 // correctly and that the appropriate Phobos functions are correctly called.
 //
@@ -1720,4 +1836,23 @@ unittest
 		assert(tempPath.exists());
 		assert(!tempPath.tryMkdirRecurse());
 	}
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.stdio : writeln;
+	writeln("Running 'scriptlike.d' unittests: ArgsT");
+
+	Args args;
+	args ~= path(`some/big path/here/foobar`);
+	args ~= "-A";
+	args ~= "--bcd";
+	args ~= "Hello World";
+	args ~= path("file.ext");
+
+	version(Windows)
+		assert(args.data == `"some\big path\here\foobar" -A --bcd "Hello World" file.ext`);
+	else version(Posix)
+		assert(args.data == `'some/big path/here/foobar' -A --bcd 'Hello World' file.ext`);
 }
