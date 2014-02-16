@@ -1574,7 +1574,7 @@ version(unittest_scriptlike_d)
 unittest
 {
 	import std.stdio : writeln;
-	writeln("Running 'scriptlike.d' unittests: std.path wrappers");
+	writeln("Running Scriptlike unittests: std.path wrappers");
 	
 	alias dirSep = dirSeparator;
 
@@ -1785,7 +1785,7 @@ unittest
 	import std.stdio : writeln;
 	import core.thread;
 
-	writeln("Running 'scriptlike.d' unittests: std.file wrappers");
+	writeln("Running Scriptlike unittests: std.file wrappers");
 	
 	immutable tempname  = buildPath(tempDir(), "deleteme.script like.unit test.pid"  ~ to!string(thisProcessID));
 	immutable tempname2 = buildPath(tempDir(), "deleteme.script like.unit test2.pid" ~ to!string(thisProcessID));
@@ -2037,7 +2037,7 @@ version(unittest_scriptlike_d)
 unittest
 {
 	import std.stdio : writeln;
-	writeln("Running 'scriptlike.d' unittests: ArgsT");
+	writeln("Running Scriptlike unittests: ArgsT");
 
 	Args args;
 	args ~= Path(`some/big path/here/foobar`);
