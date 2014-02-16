@@ -16,8 +16,8 @@ import std.traits;
 import std.typecons;
 import std.typetuple;
 
-//TODO: Support optional OutputRange sink as an alternative to stdout
-/// If true, all commands will be echoed to stdout
+/// If true, all commands will be echoed. By default, they will be
+/// echoed to stdout, but you can override this with scriptlikeCustomEcho.
 bool scriptlikeTraceCommands = false;
 
 /++
@@ -53,6 +53,17 @@ Scriptlike cannot anticipate or handle such situations. So it's up to you to
 make sure your script is dryrun-safe.
 +/
 bool scriptlikeDryRun = false;
+
+/++
+By default, scriptlikeTraceCommands and scriptlikeDryRun echo to stdout.
+You can override this behavior by setting scriptlikeCustomEcho to your own
+sink delegate. Set this to null to go back to Scriptlike's default
+of "echo to stdout" again.
+
+Note, setting this does not automatically enable echoing. You still need to
+set either scriptlikeTraceCommands or scriptlikeDryRun to true.
++/
+void delegate(string) scriptlikeCustomEcho;
 
 /// Indicates a command returned a non-zero errorlevel.
 class ErrorLevelException : Exception
@@ -387,7 +398,12 @@ string escapeShellArg(T)(T str) if(isSomeString!T)
 private void echoCommand(lazy string command)
 {
 	if(scriptlikeTraceCommands || scriptlikeDryRun)
-		writeln(command);
+	{
+		if(scriptlikeCustomEcho)
+			scriptlikeCustomEcho(command);
+		else
+			writeln(command);
+	}
 }
 
 /++
