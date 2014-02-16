@@ -18,12 +18,16 @@ import std.typetuple;
 
 /// If true, all commands will be echoed. By default, they will be
 /// echoed to stdout, but you can override this with scriptlikeCustomEcho.
-bool scriptlikeTraceCommands = false;
+bool scriptlikeEcho = false;
+
+/// Alias for backwards-compatibility. This will be deprecated in the future.
+/// You should use scriptlikeEcho insetad.
+alias scriptlikeTraceCommands = scriptlikeEcho;
 
 /++
 If true, then run, tryRun, file write, file append, and all the echoable
 commands that modify the filesystem will be echoed to stdout (regardless
-of scriptlikeTraceCommands) and NOT actually executed.
+of scriptlikeEcho) and NOT actually executed.
 
 Warning! This is NOT a "set it and forget it" switch. You must still take
 care to write your script in a way that's dryrun-safe. Two things to remember:
@@ -55,13 +59,13 @@ make sure your script is dryrun-safe.
 bool scriptlikeDryRun = false;
 
 /++
-By default, scriptlikeTraceCommands and scriptlikeDryRun echo to stdout.
+By default, scriptlikeEcho and scriptlikeDryRun echo to stdout.
 You can override this behavior by setting scriptlikeCustomEcho to your own
 sink delegate. Set this to null to go back to Scriptlike's default
 of "echo to stdout" again.
 
 Note, setting this does not automatically enable echoing. You still need to
-set either scriptlikeTraceCommands or scriptlikeDryRun to true.
+set either scriptlikeEcho or scriptlikeDryRun to true.
 +/
 void delegate(string) scriptlikeCustomEcho;
 
@@ -397,7 +401,7 @@ string escapeShellArg(T)(T str) if(isSomeString!T)
 
 private void echoCommand(lazy string command)
 {
-	if(scriptlikeTraceCommands || scriptlikeDryRun)
+	if(scriptlikeEcho || scriptlikeDryRun)
 	{
 		if(scriptlikeCustomEcho)
 			scriptlikeCustomEcho(command);
@@ -414,7 +418,7 @@ program's stdout/in/err.
 
 Optionally takes a working directory to run the command from.
 
-The command is echoed if scriptlikeTraceCommands is true.
+The command is echoed if scriptlikeEcho is true.
 
 ErrorLevelException is thrown if the process returns a non-zero error level.
 If you want to handle the error level yourself, use tryRun instead of run.
@@ -454,7 +458,7 @@ program's stdout/in/err.
 
 Optionally takes a working directory to run the command from.
 
-The command is echoed if scriptlikeTraceCommands is true.
+The command is echoed if scriptlikeEcho is true.
 
 Returns: The error level the process exited with.
 
@@ -884,7 +888,7 @@ S readText(S = string)(in char[] name)
 }
 
 /// Just like std.file.write, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void write(C)(in PathT!C name, const void[] buffer) if(isSomeChar!C)
 {
 	write(name.str.to!string(), buffer);
@@ -900,7 +904,7 @@ void write(in char[] name, const void[] buffer)
 }
 
 /// Just like std.file.append, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void append(C)(in PathT!C name, in void[] buffer) if(isSomeChar!C)
 {
 	append(name.str.to!string(), buffer);
@@ -916,7 +920,7 @@ void append(in char[] name, in void[] buffer)
 }
 
 /// Just like std.file.rename, but optionally takes Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void rename(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
 {
 	rename(from.str.to!string(), to.str.to!string());
@@ -944,7 +948,7 @@ void rename(in char[] from, in char[] to)
 }
 
 /// If 'from' exists, then rename. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRename(T1, T2)(T1 from, T2 to)
 {
@@ -958,7 +962,7 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 }
 
 /// Just like std.file.remove, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void remove(C)(in PathT!C name) if(isSomeChar!C)
 {
 	remove(name.str.to!string());
@@ -974,7 +978,7 @@ void remove(in char[] name)
 }
 
 /// If 'name' exists, then remove. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRemove(T)(T name)
 {
@@ -1048,7 +1052,7 @@ else version(Windows) void getTimesWin(in char[] name,
 }
 
 /// Just like std.file.setTimes, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void setTimes(C)(in PathT!C name,
 	SysTime accessTime,
 	SysTime modificationTime) if(isSomeChar!C)
@@ -1166,13 +1170,13 @@ uint getLinkAttributes(in char[] name)
 	return std.file.isSymlink(name);
 }
 
-/// Just like std.file.chdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.chdir, but takes a Path, and echoes if scriptlikeEcho is true.
 void chdir(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	chdir(pathname.str.to!string());
 }
 
-/// Just like std.file.chdir, but echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.chdir, but echoes if scriptlikeEcho is true.
 void chdir(in char[] pathname)
 {
 	echoCommand("chdir: "~pathname.escapeShellArg());
@@ -1180,7 +1184,7 @@ void chdir(in char[] pathname)
 }
 
 /// Just like std.file.mkdir, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void mkdir(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	mkdir(pathname.str.to!string());
@@ -1196,7 +1200,7 @@ void mkdir(in char[] pathname)
 }
 
 /// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryMkdir(T)(T name)
 {
@@ -1210,7 +1214,7 @@ bool tryMkdir(T)(T name)
 }
 
 /// Just like std.file.mkdirRecurse, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void mkdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	mkdirRecurse(pathname.str.to!string());
@@ -1226,7 +1230,7 @@ void mkdirRecurse(in char[] pathname)
 }
 
 /// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryMkdirRecurse(T)(T name)
 {
@@ -1240,7 +1244,7 @@ bool tryMkdirRecurse(T)(T name)
 }
 
 /// Just like std.file.rmdir, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void rmdir(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	rmdir(pathname.str.to!string());
@@ -1256,7 +1260,7 @@ void rmdir(in char[] pathname)
 }
 
 /// If 'name' exists, then rmdir. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRmdir(T)(T name)
 {
@@ -1272,7 +1276,7 @@ bool tryRmdir(T)(T name)
 version(ddoc_scriptlike_d)
 {
 	/// Posix-only. Just like std.file.symlink, but optionally takes Path,
-	/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+	/// and obeys scriptlikeEcho and scriptlikeDryRun.
 	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
 
 	///ditto
@@ -1285,7 +1289,7 @@ version(ddoc_scriptlike_d)
 	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link);
 
 	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
-	/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+	/// Obeys scriptlikeEcho and scriptlikeDryRun.
 	/// Returns: Success?
 	bool trySymlink(T1, T2)(T1 original, T2 link);
 
@@ -1343,7 +1347,7 @@ else version(Posix)
 }
 
 /// Just like std.file.copy, but optionally takes Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void copy(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
 {
 	copy(from.str.to!string(), to.str.to!string());
@@ -1371,7 +1375,7 @@ void copy(in char[] from, in char[] to)
 }
 
 /// If 'from' exists, then copy. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryCopy(T1, T2)(T1 from, T2 to)
 {
@@ -1385,7 +1389,7 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 }
 
 /// Just like std.file.rmdirRecurse, but optionally takes a Path,
-/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// and obeys scriptlikeEcho and scriptlikeDryRun.
 void rmdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	rmdirRecurse(pathname.str.to!string());
@@ -1401,7 +1405,7 @@ void rmdirRecurse(in char[] pathname)
 }
 
 /// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
-/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
+/// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRmdirRecurse(T)(T name)
 {

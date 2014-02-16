@@ -8,6 +8,7 @@ v0.6.0 - TBD
 - **Change:** Internally split into separate modules, but uses package.d to preserve ```import scriptlike;```.
 - **Change**: Rename ```escapeShellPath``` -> [```escapeShellArg```](http://semitwist.com/scriptlike/path.html#escapeShellArg).
 - **Change**: Rename ```runShell``` -> [```tryRun```](http://semitwist.com/scriptlike/path.html#tryRun). Temporarily keep ```runShell``` as an alias.
+- **Change**: Rename ```scriptlikeTraceCommands``` -> [```scriptlikeEcho```](http://semitwist.com/scriptlike/path.html#scriptlikeEcho). Temporarily keep ```scriptlikeTraceCommands``` as an alias.
 - **Enhancement:** Added scripts to run unittests and build API docs.
 - **Enhancement:** Added [```opCast!bool```](http://semitwist.com/scriptlike/path.html#opCast) for Path and Ext.
 - **Enhancement:** [```fail()```](http://semitwist.com/scriptlike/fail.html) no longer requires any boilerplate in main(). [NG link](http://forum.dlang.org/thread/ldc6qt$22tv$1@digitalmars.com)
