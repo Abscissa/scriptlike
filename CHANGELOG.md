@@ -15,6 +15,7 @@ v0.6.0 - TBD
 - **Enhancement:** Added [```run```](http://semitwist.com/scriptlike/path.html#run) to run a shell command like tryRun, but automatically throw if the process returns a non-zero error level.
 - **Enhancement:** Added this changelog.
 - **Fixed:** Path(null) and Ext(null) were automatically changed to empty string.
+- **Fixed:** [#10](https://github.com/Abscissa/scriptlike/issues/10): Docs should include all OS-specific functions.
 
 v0.5.0 - 2014/2/11
 ------------------
