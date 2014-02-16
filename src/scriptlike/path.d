@@ -375,24 +375,28 @@ cmd ~= path("some tool");
 cmd ~= "-o";
 cmd ~= path(`dir/out file.txt`);
 cmd ~= ["--abc", "--def", "-g"];
-auto errLevel = path("some working dir").runShell(cmd.data);
+auto errLevel = path("some working dir").run(cmd.data);
 ---------------------
 +/
-int runShell()(string command)
+int run()(string command)
 {
 	echoCommand(command);
 	return system(command);
 }
 
 ///ditto
-int runShell(C)(PathT!C workingDirectory, string command)
+int run(C)(PathT!C workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
 	scope(exit) saveDir.chdir();
 	
-	return runShell(command);
+	return run(command);
 }
+
+/// Backwards-compatibility alias. runShell may become depricated in the
+/// future, so you should use run insetad.
+alias runShell = run;
 
 // -- Wrappers for std.path --------------------
 
@@ -1780,7 +1784,7 @@ unittest
 			if(exists(tempname)) remove(tempname);
 		}
 		
-		runShell(`echo TestScriptStuff > `~tempPath.to!string());
+		run(`echo TestScriptStuff > `~tempPath.to!string());
 		assert(tempPath.exists());
 		assert(tempPath.isFile());
 		assert((cast(string)tempPath.read()).strip() == "TestScriptStuff");
@@ -1800,7 +1804,7 @@ unittest
 		assert(tempPath3.up.exists());
 		assert(tempPath3.up.isDir());
 				
-		tempPath3.up.runShell(`echo MoreTestStuff > `~tempPath3.baseName().to!string());
+		tempPath3.up.run(`echo MoreTestStuff > `~tempPath3.baseName().to!string());
 		assert(tempPath3.exists());
 		assert(tempPath3.isFile());
 		assert((cast(string)tempPath3.read()).strip() == "MoreTestStuff");
