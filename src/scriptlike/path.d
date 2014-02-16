@@ -20,15 +20,6 @@ import std.typetuple;
 /// If true, all commands will be echoed to stdout
 bool scriptlikeTraceCommands = false;
 
-/// Helper for creating an Ext.
-///
-/// Returns either ExtT!char, ExtT!wchar or ExtT!dchar depending on the
-/// type of string given.
-auto ext(T)(T str) if(isSomeString!T)
-{
-	return ExtT!( Unqual!(ElementEncodingType!T) )(str);
-}
-
 /// Represents a file extension.
 struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 {
@@ -99,15 +90,6 @@ struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 alias Ext  = ExtT!char;  ///ditto
 alias WExt = ExtT!wchar; ///ditto
 alias DExt = ExtT!dchar; ///ditto
-
-/// Helper for creating a Path.
-///
-/// Returns either PathT!char, PathT!wchar or PathT!dchar depending on the
-/// type of string given.
-auto path(T)(T str = ".") if(isSomeString!T)
-{
-	return PathT!( Unqual!(ElementEncodingType!T) )(str);
-}
 
 /// Represents a filesystem path. The path is always kept normalized
 /// automatically (as performed by buildNormalizedPathFixed).
@@ -1406,15 +1388,15 @@ unittest
 		//pragma(msg, "==="~C.stringof);
 
 		{
-			auto e = ext(".txt");
-			assert(e != ext(".dat"));
-			assert(e == ext(".txt"));
+			auto e = Ext(".txt");
+			assert(e != Ext(".dat"));
+			assert(e == Ext(".txt"));
 			version(Windows)
-				assert(e == ext(".TXT"));
+				assert(e == Ext(".TXT"));
 			else version(OSX)
-				assert(e == ext(".TXT"));
+				assert(e == Ext(".TXT"));
 			else version(Posix)
-				assert(e != ext(".TXT"));
+				assert(e != Ext(".TXT"));
 			else
 				static assert(0, "This platform not supported.");
 			
@@ -1426,8 +1408,8 @@ unittest
 			assert(".dat" != e);
 			assert(".txt" == e);
 
-			assert(ext("foo"));
-			assert(ext(""));
+			assert(Ext("foo"));
+			assert(Ext(""));
 			assert(Ext(null).str is null);
 			assert(!Ext(null));
 		}
@@ -1437,13 +1419,13 @@ unittest
 		assert(!p.empty);
 		
 		assert(PathT!C("").empty);
-		assert(path(cast(immutable(C)[])"").empty);
+		assert(Path(cast(immutable(C)[])"").empty);
 		
-		p = path(cast(immutable(C)[])".");
+		p = Path(cast(immutable(C)[])".");
 		assert(!p.empty);
 		
-		assert(path("foo"));
-		assert(path(""));
+		assert(Path("foo"));
+		assert(Path(""));
 		assert(Path(null).str is null);
 		assert(!Path(null));
 		
@@ -1462,7 +1444,7 @@ unittest
 			assert(!p.empty);
 			assert(p.str == dirSep~"foo"~dirSep~"bar");
 			
-			p = path(str);
+			p = Path(str);
 			assert(p.str == dirSep~"foo"~dirSep~"bar");
 			assert(p.toRawString() == p.str);
 			assert(p.toString()    == p.str.to!string());
@@ -1472,7 +1454,7 @@ unittest
 
 			assert((p~"sub").toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"sub");
 			assert((p~"sub"~"2").toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"sub"~dirSep~"2");
-			assert((p~path("sub")).toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"sub");
+			assert((p~Path("sub")).toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"sub");
 			
 			version(Windows)
 				assert((p~"sub dir").toString() == `"`~dirSep~"foo"~dirSep~"bar"~dirSep~"sub dir"~`"`);
@@ -1482,18 +1464,18 @@ unittest
 				static assert(0, "This platform not supported.");
 
 			assert(("dir"~p).toString() == dirSep~"foo"~dirSep~"bar");
-			assert(("dir"~path(str[1..$])).toString() == "dir"~dirSep~"foo"~dirSep~"bar");
+			assert(("dir"~Path(str[1..$])).toString() == "dir"~dirSep~"foo"~dirSep~"bar");
 			
 			p ~= "blah";
 			assert(p.toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"blah");
 			
-			p ~= path("more");
+			p ~= Path("more");
 			assert(p.toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"blah"~dirSep~"more");
 			
 			p ~= "..";
 			assert(p.toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"blah");
 			
-			p ~= path("..");
+			p ~= Path("..");
 			assert(p.toString() == dirSep~"foo"~dirSep~"bar");
 			
 			p ~= "sub dir";
@@ -1505,7 +1487,7 @@ unittest
 			assert((p~ExtT!C("txt")).toString()  == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.txt");
 			assert((p~ExtT!C("")).toString()     == dirSep~"foo"~dirSep~"bar"~dirSep~"filename");
 
-			p ~= ext(".ext");
+			p ~= Ext(".ext");
 			assert(p.toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
 			assert(p.baseName().toString() == "filename.ext");
 			assert(p.dirName().toString() == dirSep~"foo"~dirSep~"bar");
@@ -1514,8 +1496,8 @@ unittest
 			assert(p.stripDrive().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
 			version(Windows)
 			{
-				assert(( path("C:"~p.toRawString()) ).toString() == "C:"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
-				assert(( path("C:"~p.toRawString()) ).stripDrive().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
+				assert(( Path("C:"~p.toRawString()) ).toString() == "C:"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
+				assert(( Path("C:"~p.toRawString()) ).stripDrive().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
 			}
 			assert(p.extension().toString() == ".ext");
 			assert(p.stripExtension().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename");
@@ -1539,18 +1521,18 @@ unittest
 			else
 				static assert(0, "This platform not supported.");
 
-			assert(!( path("dir"~p.toRawString()) ).isRooted());
-			assert(!( path("dir"~p.toRawString()) ).isAbsolute());
+			assert(!( Path("dir"~p.toRawString()) ).isRooted());
+			assert(!( Path("dir"~p.toRawString()) ).isAbsolute());
 			
 			version(Windows)
 			{
-				assert(( path("dir"~p.toRawString()) ).absolutePath("C:/main").toString() == "C:"~dirSep~"main"~dirSep~"dir"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
-				assert(( path("C:"~p.toRawString()) ).relativePath("C:/foo").toString() == "bar"~dirSep~"filename.ext");
-				assert(( path("C:"~p.toRawString()) ).relativePath("C:/foo/bar").toString() == "filename.ext");
+				assert(( Path("dir"~p.toRawString()) ).absolutePath("C:/main").toString() == "C:"~dirSep~"main"~dirSep~"dir"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
+				assert(( Path("C:"~p.toRawString()) ).relativePath("C:/foo").toString() == "bar"~dirSep~"filename.ext");
+				assert(( Path("C:"~p.toRawString()) ).relativePath("C:/foo/bar").toString() == "filename.ext");
 			}
 			else version(Posix)
 			{
-				assert(( path("dir"~p.toRawString()) ).absolutePath("/main").toString() == dirSep~"main"~dirSep~"dir"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
+				assert(( Path("dir"~p.toRawString()) ).absolutePath("/main").toString() == dirSep~"main"~dirSep~"dir"~dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
 				assert(p.relativePath("/foo").toString() == "bar"~dirSep~"filename.ext");
 				assert(p.relativePath("/foo/bar").toString() == "filename.ext");
 			}
@@ -1568,14 +1550,14 @@ unittest
 			
 			assert(p.expandTilde().toString() == dirSep~"foo"~dirSep~"bar"~dirSep~"filename.ext");
 			
-			assert(p != path("/dir/subdir/filename.ext"));
-			assert(p == path("/foo/bar/filename.ext"));
+			assert(p != Path("/dir/subdir/filename.ext"));
+			assert(p == Path("/foo/bar/filename.ext"));
 			version(Windows)
-				assert(p == path("/FOO/BAR/FILENAME.EXT"));
+				assert(p == Path("/FOO/BAR/FILENAME.EXT"));
 			else version(OSX)
-				assert(p == path("/FOO/BAR/FILENAME.EXT"));
+				assert(p == Path("/FOO/BAR/FILENAME.EXT"));
 			else version(Posix)
-				assert(p != path("/FOO/BAR/FILENAME.EXT"));
+				assert(p != Path("/FOO/BAR/FILENAME.EXT"));
 			else
 				static assert(0, "This platform not supported.");
 			
@@ -1613,9 +1595,9 @@ unittest
 	immutable tempname  = buildPath(tempDir(), "deleteme.script like.unit test.pid"  ~ to!string(thisProcessID));
 	immutable tempname2 = buildPath(tempDir(), "deleteme.script like.unit test2.pid" ~ to!string(thisProcessID));
 	immutable tempname3 = buildPath(tempDir(), "deleteme.script like.unit test3.pid" ~ to!string(thisProcessID), "somefile");
-	auto tempPath  = path(tempname);
-	auto tempPath2 = path(tempname2);
-	auto tempPath3 = path(tempname3);
+	auto tempPath  = Path(tempname);
+	auto tempPath2 = Path(tempname2);
+	auto tempPath3 = Path(tempname3);
 	assert(!tempname.exists());
 	assert(!tempname2.exists());
 	assert(!tempname3.dirName().exists());
@@ -1722,7 +1704,7 @@ unittest
 		assert(!tempPath3.existsAsSymlink());
 		
 		auto saveDirName = getcwd();
-		auto saveDir = path(saveDirName);
+		auto saveDir = Path(saveDirName);
 		scope(exit) chdir(saveDirName);
 
 		tempPath.chdir();
@@ -1850,11 +1832,11 @@ unittest
 	writeln("Running 'scriptlike.d' unittests: ArgsT");
 
 	Args args;
-	args ~= path(`some/big path/here/foobar`);
+	args ~= Path(`some/big path/here/foobar`);
 	args ~= "-A";
 	args ~= "--bcd";
 	args ~= "Hello World";
-	args ~= path("file.ext");
+	args ~= Path("file.ext");
 
 	version(Windows)
 		assert(args.data == `"some\big path\here\foobar" -A --bcd "Hello World" file.ext`);

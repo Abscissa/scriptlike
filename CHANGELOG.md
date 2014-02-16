@@ -4,6 +4,7 @@ Scriptlike - Changelog
 v0.6.0 - TBD
 ------------
 - **Change:** [```Path```](http://semitwist.com/scriptlike/path.html#PathT) and [```Ext```](http://semitwist.com/scriptlike/path.html#ExtT) are now aliases for the UTF-8 instantiations, and the template structs are now named ```PathT``` and ```ExtT```.
+- **Change:** Removed ```path()``` and ```ext()``` helper functions to free up useful names from the namespace, since they are no longer needed. Use ```Path()``` and ```Ext()``` instead.
 - **Change:** Internally split into separate modules, but uses package.d to preserve ```import scriptlike;```.
 - **Change**: Rename ```escapeShellPath``` -> [```escapeShellArg```](http://semitwist.com/scriptlike/path.html#escapeShellArg).
 - **Change**: Rename ```runShell``` -> [```run```](http://semitwist.com/scriptlike/path.html#run). Temporarily keep ```runShell``` as an alias.
