@@ -426,11 +426,11 @@ If you want to handle the error level yourself, use tryRun instead of run.
 Example:
 ---------------------
 Args cmd;
-cmd ~= path("some tool");
+cmd ~= Path("some tool");
 cmd ~= "-o";
-cmd ~= path(`dir/out file.txt`);
+cmd ~= Path(`dir/out file.txt`);
 cmd ~= ["--abc", "--def", "-g"];
-path("some working dir").run(cmd.data);
+Path("some working dir").run(cmd.data);
 ---------------------
 +/
 void run()(string command)
@@ -465,11 +465,11 @@ Returns: The error level the process exited with.
 Example:
 ---------------------
 Args cmd;
-cmd ~= path("some tool");
+cmd ~= Path("some tool");
 cmd ~= "-o";
-cmd ~= path(`dir/out file.txt`);
+cmd ~= Path(`dir/out file.txt`);
 cmd ~= ["--abc", "--def", "-g"];
-auto errLevel = path("some working dir").run(cmd.data);
+auto errLevel = Path("some working dir").run(cmd.data);
 ---------------------
 +/
 int tryRun()(string command)
@@ -1469,11 +1469,11 @@ and separated by spaces, as necessary.
 Example:
 -------------------
 Args args;
-args ~= path(`some/big path/here/foobar`);
+args ~= Path(`some/big path/here/foobar`);
 args ~= "-A";
 args ~= "--bcd";
 args ~= "Hello World";
-args ~= path("file.ext");
+args ~= Path("file.ext");
 
 // On windows:
 assert(args.data == `"some\big path\here\foobar" -A --bcd "Hello World" file.ext`);
