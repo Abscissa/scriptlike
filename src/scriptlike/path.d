@@ -945,8 +945,15 @@ void getTimes(in char[] name,
 	std.file.getTimes(name, accessTime, modificationTime);
 }
 
-/// Windows-only. Just like std.file.getTimesWin, but takes a Path.
-version(Windows) void getTimesWin(C)(in PathT!C name,
+version(ddoc_scriptlike_d)
+{
+	/// Windows-only. Just like std.file.getTimesWin, but takes a Path.
+	void getTimesWin(C)(in PathT!C name,
+		out SysTime fileCreationTime,
+		out SysTime fileAccessTime,
+		out SysTime fileModificationTime) if(isSomeChar!C);
+}
+else version(Windows) void getTimesWin(C)(in PathT!C name,
 	out SysTime fileCreationTime,
 	out SysTime fileAccessTime,
 	out SysTime fileModificationTime) if(isSomeChar!C)
@@ -954,8 +961,15 @@ version(Windows) void getTimesWin(C)(in PathT!C name,
 	getTimesWin(name.str.to!string(), fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
-/// Part of workaround for DMD Issue #12111
-version(Windows) void getTimesWin(in char[] name,
+version(ddoc_scriptlike_d)
+{
+	/// Windows-only. Part of workaround for DMD Issue #12111
+	void getTimesWin(in char[] name,
+		out SysTime fileCreationTime,
+		out SysTime fileAccessTime,
+		out SysTime fileModificationTime);
+}
+else version(Windows) void getTimesWin(in char[] name,
 	out SysTime fileCreationTime,
 	out SysTime fileAccessTime,
 	out SysTime fileModificationTime)
@@ -1166,54 +1180,73 @@ bool tryRmdir(T)(T name)
 	return false;
 }
 
-/// Posix-only. Just like std.file.symlink, but takes Path, and echoes if scriptlikeTraceCommands is true.
-version(Posix) void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
+version(ddoc_scriptlike_d)
 {
-	symlink(original.str.to!string(), link.str.to!string());
-}
+	/// Posix-only. Just like std.file.symlink, but takes Path, and echoes if scriptlikeTraceCommands is true.
+	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
 
-///ditto
-version(Posix) void symlink(C1, C2)(const(C1)[] original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
-{
-	symlink(original, link.str.to!string());
-}
+	///ditto
+	void symlink(C1, C2)(const(C1)[] original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
 
-///ditto
-version(Posix) void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2)
-{
-	symlink(original.str.to!string(), link);
-}
+	///ditto
+	void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2);
 
-/// Just like std.file.symlink, but echoes if scriptlikeTraceCommands is true.
-version(Posix) void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
-{
-	echoCommand("symlink: [original] "~original.escapeShellArg()~" : [symlink] "~link.escapeShellArg());
-	std.file.symlink(original, link);
-}
+	/// Posix-only. Just like std.file.symlink, but echoes if scriptlikeTraceCommands is true.
+	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link);
 
-/// If 'original' exists, then symlink. Otherwise do nothing.
-/// Returns: Success?
-version(Posix) bool trySymlink(T1, T2)(T1 original, T2 link)
+	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
+	/// Returns: Success?
+	bool trySymlink(T1, T2)(T1 original, T2 link);
+
+	/// Posix-only. Just like std.file.readLink, but operates on Path.
+	PathT!C readLink(C)(PathT!C link) if(isSomeChar!C);
+
+	/// Posix-only. Part of workaround for DMD Issue #12111
+	string readLink(C)(const(C)[] link);
+}
+else version(Posix)
 {
-	if(original.exists())
+	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
 	{
-		symlink(original, link);
-		return true;
+		symlink(original.str.to!string(), link.str.to!string());
 	}
-	
-	return false;
-}
 
-/// Posix-only. Just like std.file.readLink, but operates on Path.
-version(Posix) PathT!C readLink(C)(PathT!C link) if(isSomeChar!C)
-{
-	return PathT!C( readLink(link.str.to!string()) );
-}
+	void symlink(C1, C2)(const(C1)[] original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
+	{
+		symlink(original, link.str.to!string());
+	}
 
-/// Part of workaround for DMD Issue #12111
-version(Posix) string readLink(C)(const(C)[] link)
-{
-	return std.file.readLink(link);
+	void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2)
+	{
+		symlink(original.str.to!string(), link);
+	}
+
+	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
+	{
+		echoCommand("symlink: [original] "~original.escapeShellArg()~" : [symlink] "~link.escapeShellArg());
+		std.file.symlink(original, link);
+	}
+
+	bool trySymlink(T1, T2)(T1 original, T2 link)
+	{
+		if(original.exists())
+		{
+			symlink(original, link);
+			return true;
+		}
+		
+		return false;
+	}
+
+	PathT!C readLink(C)(PathT!C link) if(isSomeChar!C)
+	{
+		return PathT!C( readLink(link.str.to!string()) );
+	}
+
+	string readLink(C)(const(C)[] link)
+	{
+		return std.file.readLink(link);
+	}
 }
 
 /// Just like std.file.copy, but takes Path, and echoes if scriptlikeTraceCommands is true.
