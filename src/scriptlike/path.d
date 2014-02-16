@@ -20,6 +20,21 @@ import std.typetuple;
 /// If true, all commands will be echoed to stdout
 bool scriptlikeTraceCommands = false;
 
+/// Indicates a command returned a non-zero errorlevel.
+class ErrorLevelException : Exception
+{
+	int errorLevel;
+	string command;
+	
+	this(int errorLevel, string command, string file=__FILE__, size_t line=__LINE__)
+	{
+		this.errorLevel = errorLevel;
+		this.command = command;
+		auto msg = text("Command exited with error level ", errorLevel, ": ", command);
+		super(msg, file, line);
+	}
+}
+
 /// Represents a file extension.
 struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
 {
@@ -351,6 +366,48 @@ Optionally takes a working directory to run the command from.
 
 The command is echoed if scriptlikeTraceCommands is true.
 
+ErrorLevelException is thrown if the process returns a non-zero error level.
+If you want to handle the error level yourself, use tryRun instead of run.
+
+Example:
+---------------------
+Args cmd;
+cmd ~= path("some tool");
+cmd ~= "-o";
+cmd ~= path(`dir/out file.txt`);
+cmd ~= ["--abc", "--def", "-g"];
+path("some working dir").run(cmd.data);
+---------------------
++/
+void run()(string command)
+{
+	auto errorLevel = tryRun(command);
+	if(errorLevel != 0)
+		throw new ErrorLevelException(errorLevel, command);
+}
+
+///ditto
+void run(C)(PathT!C workingDirectory, string command)
+{
+	auto saveDir = getcwd();
+	workingDirectory.chdir();
+	scope(exit) saveDir.chdir();
+	
+	run(command);
+}
+
+/++
+Runs a command, through the system's command shell interpreter,
+in typical shell-script style: Synchronously, with the command's
+stdout/in/err automatically forwarded through your
+program's stdout/in/err.
+
+Optionally takes a working directory to run the command from.
+
+The command is echoed if scriptlikeTraceCommands is true.
+
+Returns: The error level the process exited with.
+
 Example:
 ---------------------
 Args cmd;
@@ -361,14 +418,14 @@ cmd ~= ["--abc", "--def", "-g"];
 auto errLevel = path("some working dir").run(cmd.data);
 ---------------------
 +/
-int run()(string command)
+int tryRun()(string command)
 {
 	echoCommand(command);
 	return system(command);
 }
 
 ///ditto
-int run(C)(PathT!C workingDirectory, string command)
+int tryRun(C)(PathT!C workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
@@ -379,7 +436,7 @@ int run(C)(PathT!C workingDirectory, string command)
 
 /// Backwards-compatibility alias. runShell may become depricated in the
 /// future, so you should use run insetad.
-alias runShell = run;
+alias runShell = tryRun;
 
 // -- Wrappers for std.path --------------------
 
@@ -1771,6 +1828,14 @@ unittest
 		assert(tempPath.exists());
 		assert(tempPath.isFile());
 		assert((cast(string)tempPath.read()).strip() == "TestScriptStuff");
+		tempPath.remove();
+		assert(!tempPath.exists());
+
+		auto errlevel = tryRun(`echo TestScriptStuff > `~tempPath.to!string());
+		assert(tempPath.exists());
+		assert(tempPath.isFile());
+		assert((cast(string)tempPath.read()).strip() == "TestScriptStuff");
+		assert(errlevel == 0);
 	}
 	
 	{
