@@ -431,7 +431,7 @@ int tryRun(C)(PathT!C workingDirectory, string command)
 	workingDirectory.chdir();
 	scope(exit) saveDir.chdir();
 	
-	return run(command);
+	return tryRun(command);
 }
 
 /// Backwards-compatibility alias. runShell may become depricated in the
@@ -1869,6 +1869,11 @@ unittest
 		assert(tempPath.isFile());
 		assert((cast(string)tempPath.read()).strip() == "TestScriptStuff");
 		assert(errlevel == 0);
+		tempPath.remove();
+		assert(!tempPath.exists());
+
+		Path(getcwd()).run(`echo TestScriptStuff > `~tempPath.to!string());
+		Path(getcwd()).tryRun(`echo TestScriptStuff > `~tempPath.to!string());
 	}
 	
 	{
