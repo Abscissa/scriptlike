@@ -435,7 +435,7 @@ int tryRun(C)(PathT!C workingDirectory, string command)
 }
 
 /// Backwards-compatibility alias. runShell may become depricated in the
-/// future, so you should use run insetad.
+/// future, so you should use tryRun or run insetad.
 alias runShell = tryRun;
 
 // -- Wrappers for std.path --------------------
