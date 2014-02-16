@@ -20,6 +20,40 @@ import std.typetuple;
 /// If true, all commands will be echoed to stdout
 bool scriptlikeTraceCommands = false;
 
+/++
+If true, then run, tryRun, file write, file append, and all the echoable
+commands that modify the filesystem will be echoed to stdout (regardless
+of scriptlikeTraceCommands) and NOT actually executed.
+
+Warning! This is NOT a "set it and forget it" switch. You must still take
+care to write your script in a way that's dryrun-safe. Two things to remember:
+
+1. ONLY Scriptlike's functions will obey this setting. Calling Phobos
+functions directly will BYPASS this setting.
+
+2. If part of your script relies on a command having ACTUALLY been run, then
+that command will fail. You must avoid that situation or work around it.
+For example:
+
+---------------------
+run(`date > tempfile`);
+
+// The following will FAIL or behave INCORRECTLY in dryrun mode:
+auto data = cast(string)read("tempfile");
+run("echo "~data);
+---------------------
+
+That may be an unrealistic example, but it demonstrates the problem: Normally,
+the code above should run fine (at least on posix). But in dryrun mode,
+"date" will not actually be run. Therefore, tempfile will neither be created
+nor overwritten. Result: Either an exception reading a non-existent file,
+or outdated information will be displayed.
+
+Scriptlike cannot anticipate or handle such situations. So it's up to you to
+make sure your script is dryrun-safe.
++/
+bool scriptlikeDryRun = false;
+
 /// Indicates a command returned a non-zero errorlevel.
 class ErrorLevelException : Exception
 {
@@ -352,7 +386,7 @@ string escapeShellArg(T)(T str) if(isSomeString!T)
 
 private void echoCommand(lazy string command)
 {
-	if(scriptlikeTraceCommands)
+	if(scriptlikeTraceCommands || scriptlikeDryRun)
 		writeln(command);
 }
 
@@ -421,7 +455,11 @@ auto errLevel = path("some working dir").run(cmd.data);
 int tryRun()(string command)
 {
 	echoCommand(command);
-	return system(command);
+
+	if(scriptlikeDryRun)
+		return 0;
+	else
+		return system(command);
 }
 
 ///ditto
@@ -829,31 +867,40 @@ S readText(S = string)(in char[] name)
 	return std.file.readText(name);
 }
 
-/// Just like std.file.write, but takes a Path.
+/// Just like std.file.write, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void write(C)(in PathT!C name, const void[] buffer) if(isSomeChar!C)
 {
 	write(name.str.to!string(), buffer);
 }
 
-/// Part of workaround for DMD Issue #12111
+///ditto
 void write(in char[] name, const void[] buffer)
 {
-	std.file.write(name, buffer);
+	echoCommand(text("Write ", name));
+	
+	if(!scriptlikeDryRun)
+		std.file.write(name, buffer);
 }
 
-/// Just like std.file.append, but takes a Path.
+/// Just like std.file.append, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void append(C)(in PathT!C name, in void[] buffer) if(isSomeChar!C)
 {
 	append(name.str.to!string(), buffer);
 }
 
-/// Part of workaround for DMD Issue #12111
+///ditto
 void append(in char[] name, in void[] buffer)
 {
-	std.file.append(name, buffer);
+	echoCommand(text("Append ", name));
+
+	if(!scriptlikeDryRun)
+		std.file.append(name, buffer);
 }
 
-/// Just like std.file.rename, but takes Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.rename, but optionally takes Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void rename(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
 {
 	rename(from.str.to!string(), to.str.to!string());
@@ -871,14 +918,17 @@ void rename(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
 	rename(from.str.to!string(), to);
 }
 
-/// Just like std.file.rename, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void rename(in char[] from, in char[] to)
 {
 	echoCommand("rename: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
-	std.file.rename(from, to);
+
+	if(!scriptlikeDryRun)
+		std.file.rename(from, to);
 }
 
 /// If 'from' exists, then rename. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRename(T1, T2)(T1 from, T2 to)
 {
@@ -891,20 +941,24 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 	return false;
 }
 
-/// Just like std.file.remove, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.remove, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void remove(C)(in PathT!C name) if(isSomeChar!C)
 {
 	remove(name.str.to!string());
 }
 
-/// Just like std.file.remove, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void remove(in char[] name)
 {
 	echoCommand("remove: "~name.escapeShellArg());
-	std.file.remove(name);
+
+	if(!scriptlikeDryRun)
+		std.file.remove(name);
 }
 
 /// If 'name' exists, then remove. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRemove(T)(T name)
 {
@@ -977,7 +1031,8 @@ else version(Windows) void getTimesWin(in char[] name,
 	std.file.getTimesWin(name, fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
-/// Just like std.file.setTimes, but takes a Path.
+/// Just like std.file.setTimes, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void setTimes(C)(in PathT!C name,
 	SysTime accessTime,
 	SysTime modificationTime) if(isSomeChar!C)
@@ -985,12 +1040,18 @@ void setTimes(C)(in PathT!C name,
 	setTimes(name.str.to!string(), accessTime, modificationTime);
 }
 
-/// Part of workaround for DMD Issue #12111
+///ditto
 void setTimes(in char[] name,
 	SysTime accessTime,
 	SysTime modificationTime)
 {
-	return std.file.setTimes(name, accessTime, modificationTime);
+	echoCommand(text(
+		"setTimes: ", name.escapeShellArg(),
+		" Accessed ", accessTime, "; Modified ", modificationTime
+	));
+
+	if(!scriptlikeDryRun)
+		std.file.setTimes(name, accessTime, modificationTime);
 }
 
 /// Just like std.file.timeLastModified, but takes a Path.
@@ -1102,20 +1163,24 @@ void chdir(in char[] pathname)
 	std.file.chdir(pathname);
 }
 
-/// Just like std.file.mkdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.mkdir, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void mkdir(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	mkdir(pathname.str.to!string());
 }
 
-/// Just like std.file.mkdir, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void mkdir(in char[] pathname)
 {
 	echoCommand("mkdir: "~pathname.escapeShellArg());
-	std.file.mkdir(pathname);
+
+	if(!scriptlikeDryRun)
+		std.file.mkdir(pathname);
 }
 
 /// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryMkdir(T)(T name)
 {
@@ -1128,20 +1193,24 @@ bool tryMkdir(T)(T name)
 	return false;
 }
 
-/// Just like std.file.mkdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.mkdirRecurse, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void mkdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	mkdirRecurse(pathname.str.to!string());
 }
 
-/// Just like std.file.mkdirRecurse, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void mkdirRecurse(in char[] pathname)
 {
 	echoCommand("mkdirRecurse: "~pathname.escapeShellArg());
-	std.file.mkdirRecurse(pathname);
+
+	if(!scriptlikeDryRun)
+		std.file.mkdirRecurse(pathname);
 }
 
 /// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryMkdirRecurse(T)(T name)
 {
@@ -1154,20 +1223,24 @@ bool tryMkdirRecurse(T)(T name)
 	return false;
 }
 
-/// Just like std.file.rmdir, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.rmdir, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void rmdir(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	rmdir(pathname.str.to!string());
 }
 
-/// Just like std.file.rmdir, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void rmdir(in char[] pathname)
 {
 	echoCommand("rmdir: "~pathname.escapeShellArg());
-	std.file.rmdir(pathname);
+
+	if(!scriptlikeDryRun)
+		std.file.rmdir(pathname);
 }
 
 /// If 'name' exists, then rmdir. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRmdir(T)(T name)
 {
@@ -1182,7 +1255,8 @@ bool tryRmdir(T)(T name)
 
 version(ddoc_scriptlike_d)
 {
-	/// Posix-only. Just like std.file.symlink, but takes Path, and echoes if scriptlikeTraceCommands is true.
+	/// Posix-only. Just like std.file.symlink, but optionally takes Path,
+	/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
 
 	///ditto
@@ -1191,10 +1265,11 @@ version(ddoc_scriptlike_d)
 	///ditto
 	void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2);
 
-	/// Posix-only. Just like std.file.symlink, but echoes if scriptlikeTraceCommands is true.
+	///ditto
 	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link);
 
 	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
+	/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 	/// Returns: Success?
 	bool trySymlink(T1, T2)(T1 original, T2 link);
 
@@ -1224,7 +1299,9 @@ else version(Posix)
 	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
 	{
 		echoCommand("symlink: [original] "~original.escapeShellArg()~" : [symlink] "~link.escapeShellArg());
-		std.file.symlink(original, link);
+
+		if(!scriptlikeDryRun)
+			std.file.symlink(original, link);
 	}
 
 	bool trySymlink(T1, T2)(T1 original, T2 link)
@@ -1249,7 +1326,8 @@ else version(Posix)
 	}
 }
 
-/// Just like std.file.copy, but takes Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.copy, but optionally takes Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void copy(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
 {
 	copy(from.str.to!string(), to.str.to!string());
@@ -1267,14 +1345,17 @@ void copy(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
 	copy(from.str.to!string(), to);
 }
 
-/// Just like std.file.copy, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void copy(in char[] from, in char[] to)
 {
 	echoCommand("copy: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
-	std.file.copy(from, to);
+
+	if(!scriptlikeDryRun)
+		std.file.copy(from, to);
 }
 
 /// If 'from' exists, then copy. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryCopy(T1, T2)(T1 from, T2 to)
 {
@@ -1287,20 +1368,24 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 	return false;
 }
 
-/// Just like std.file.rmdirRecurse, but takes a Path, and echoes if scriptlikeTraceCommands is true.
+/// Just like std.file.rmdirRecurse, but optionally takes a Path,
+/// and obeys scriptlikeTraceCommands and scriptlikeDryRun.
 void rmdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
 {
 	rmdirRecurse(pathname.str.to!string());
 }
 
-/// Just like std.file.rmdirRecurse, but echoes if scriptlikeTraceCommands is true.
+///ditto
 void rmdirRecurse(in char[] pathname)
 {
 	echoCommand("rmdirRecurse: "~pathname.escapeShellArg());
-	std.file.rmdirRecurse(pathname);
+
+	if(!scriptlikeDryRun)
+		std.file.rmdirRecurse(pathname);
 }
 
 /// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
+/// Obeys scriptlikeTraceCommands and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRmdirRecurse(T)(T name)
 {
@@ -1387,14 +1472,14 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 	private Appender!(immutable(C)[]) buf;
 	private size_t _length = 0;
 	
-    void reserve(size_t newCapacity) @safe pure nothrow
+	void reserve(size_t newCapacity) @safe pure nothrow
 	{
 		// "*2" to account for the spacers
 		buf.reserve(newCapacity * 2);
 	}
 
 
-    @property size_t capacity() const @safe pure nothrow
+	@property size_t capacity() const @safe pure nothrow
 	{
 		// "/2" to account for the spacers
 		return buf.capacity / 2;

@@ -13,6 +13,7 @@ v0.6.0 - TBD
 - **Enhancement:** [```fail()```](http://semitwist.com/scriptlike/fail.html) no longer requires any boilerplate in main(). [NG link](http://forum.dlang.org/thread/ldc6qt$22tv$1@digitalmars.com)
 - **Enhancement:** [#13](https://github.com/Abscissa/scriptlike/issues/13): Added [```ArgsT```](http://semitwist.com/scriptlike/path.html#ArgsT) (and ```Args``` helper alias) to safely build command strings from parts.
 - **Enhancement:** Added [```run```](http://semitwist.com/scriptlike/path.html#run) to run a shell command like tryRun, but automatically throw if the process returns a non-zero error level.
+- **Enhancement:** [#8](https://github.com/Abscissa/scriptlike/issues/): Dry run support via bool [```scriptlikeDryRun```](http://semitwist.com/scriptlike/path.html#scriptlikeDryRun).
 - **Enhancement:** Added this changelog.
 - **Fixed:** Path(null) and Ext(null) were automatically changed to empty string.
 - **Fixed:** [#10](https://github.com/Abscissa/scriptlike/issues/10): Docs should include all OS-specific functions.
