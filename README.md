@@ -7,7 +7,7 @@ This library has no external dependencies.
 
 Since this is intended for script-like programs, the focus is on making such scripts easier and more convenient to write. Optimal performance is secondary to that goal (most scripts are more IO-bound or process-bound anyway), so when necessary this library may accept minor internal inefficiencies for the sake of the primary goal. That said, this IS the D Programming Language, so things aren't exactly likely to be slow overall anyway.
 
-Tested with DMD 2.064.2.
+Tested with DMD 2.064.2 and 2.065.
 
 * [API Reference](http://semitwist.com/scriptlike)
 * [Changelog](https://github.com/Abscissa/scriptlike/blob/master/CHANGELOG.md)

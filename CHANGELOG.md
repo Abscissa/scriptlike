@@ -1,7 +1,9 @@
 Scriptlike - Changelog
 ======================
 
-v0.6.0 - TBD
+(Dates below are YYYY/MM/DD)
+
+v0.6.0 - 2014/02/16
 ------------
 - **Change:** [```Path```](http://semitwist.com/scriptlike/path.html#PathT) and [```Ext```](http://semitwist.com/scriptlike/path.html#ExtT) are now aliases for the UTF-8 instantiations, and the template structs are now named ```PathT``` and ```ExtT```.
 - **Change:** Removed ```path()``` and ```ext()``` helper functions to free up useful names from the namespace, since they are no longer needed. Use ```Path()``` and ```Ext()``` instead.
@@ -20,6 +22,6 @@ v0.6.0 - TBD
 - **Fixed:** Path(null) and Ext(null) were automatically changed to empty string.
 - **Fixed:** [#10](https://github.com/Abscissa/scriptlike/issues/10): Docs should include all OS-specific functions.
 
-v0.5.0 - 2014/2/11
+v0.5.0 - 2014/02/11
 ------------------
 - Initial release

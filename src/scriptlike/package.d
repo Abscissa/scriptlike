@@ -2,7 +2,7 @@
 Scriptlike: Utility to aid in script-like programs.
 
 Written in the D programming language.
-Tested with DMD 2.064.2
+Tested with DMD 2.064.2 and 2.065
 Licensed under The zlib/libpng License
 
 Homepage:
