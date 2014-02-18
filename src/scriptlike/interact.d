@@ -62,15 +62,15 @@ T userInput(T = string)(string question = "")
 	auto ans = readln();
 
 	static if(is(T == bool))
-    {
+	{
 		switch(ans.front)
-        {
+		{
 			case 'y', 'Y':
 				return true;
 			default:
 		}
 		switch(ans.strip())
-        {
+		{
 			case "continue":
 			case "ok":
 				return true;
@@ -78,12 +78,12 @@ T userInput(T = string)(string question = "")
 				return false;
 		}
 	} else
-    {
+	{
 		if(ans == "\x0a")
 			throw new NoInputException("Value required, "
 			                           "cannot continue operation.");
 		static if(isSomeChar!T)
-        {
+		{
 			return to!(T)(ans[0]);
 		} else
 			return to!(T)(ans.strip());
@@ -92,12 +92,12 @@ T userInput(T = string)(string question = "")
 
 unittest
 {
-    mixin(selfCom(["10PM"]));
-    mixin(selfCom());
-    auto s = userInput("What time is it?");
-    assert(s == "10PM", "Expected 10PM got" ~ s);
-    outfile.rewind;
-    assert(outfile.readln().strip == "What time is it?");
+	mixin(selfCom(["10PM"]));
+	mixin(selfCom());
+	auto s = userInput("What time is it?");
+	assert(s == "10PM", "Expected 10PM got" ~ s);
+	outfile.rewind;
+	assert(outfile.readln().strip == "What time is it?");
 }
 
 /**
@@ -116,7 +116,7 @@ string pathLocation(string action)
 	string ans;
 
 	do
-    {
+	{
 		if(ans !is null)
 			writeln("Could not locate that file.");
 		ans = userInput(action);
@@ -140,19 +140,19 @@ string pathLocation(string action)
  * Throws: NoInputException if the user wants to quit.
  */
 T menu(T = ElementType!(Range), Range) (string question, Range options)
-                     if((is(T==ElementType!(Range)) || is(T==int)) &&
-                       isForwardRange!(Range))
+					 if((is(T==ElementType!(Range)) || is(T==int)) &&
+					   isForwardRange!(Range))
 {
 	string ans;
 	int maxI;
 	int i;
 
 	while(true)
-    {
+	{
 		writeln(question);
 		i = 0;
 		foreach(str; options)
-        {
+		{
 			writefln("%8s. %s", i+1, str);
 			i++;
 		}
@@ -163,16 +163,16 @@ T menu(T = ElementType!(Range), Range) (string question, Range options)
 		int ians;
 
 		try
-        {
+		{
 			ians = to!(int)(ans);
 		} catch(ConvException ce)
-        {
+		{
 			bool found;
 			i = 0;
 			foreach(o; options)
-            {
+			{
 				if(ans.toLower() == to!string(o).toLower())
-                {
+				{
 					found = true;
 					ians = i+1;
 					break;
@@ -189,7 +189,7 @@ T menu(T = ElementType!(Range), Range) (string question, Range options)
 				static if(isRandomAccessRange!(Range))
 					return options[ians-1];
 				else
-                {
+				{
 					take!(ians-1)(options);
 					return options.front;
 				}
@@ -202,21 +202,21 @@ T menu(T = ElementType!(Range), Range) (string question, Range options)
 
 unittest
 {
-    mixin(selfCom(["1","Green", "green","2"]));
-    mixin(selfCom());
-    auto color = menu!string("What color?", ["Blue", "Green"]);
-    assert(color == "Blue", "Expected Blue got " ~ color);
+	mixin(selfCom(["1","Green", "green","2"]));
+	mixin(selfCom());
+	auto color = menu!string("What color?", ["Blue", "Green"]);
+	assert(color == "Blue", "Expected Blue got " ~ color);
 
-    auto ic = menu!int("What color?", ["Blue", "Green"]);
-    assert(ic == 2, "Expected 2 got " ~ ic.to!string);
+	auto ic = menu!int("What color?", ["Blue", "Green"]);
+	assert(ic == 2, "Expected 2 got " ~ ic.to!string);
 
-    color = menu!string("What color?", ["Blue", "Green"]);
-    assert(color == "Green", "Expected Green got " ~ color);
+	color = menu!string("What color?", ["Blue", "Green"]);
+	assert(color == "Green", "Expected Green got " ~ color);
 
-    color = menu!string("What color?", ["Blue", "Green"]);
-    assert(color == "Green", "Expected Green got " ~ color);
-    outfile.rewind;
-    assert(outfile.readln().strip == "What color?");
+	color = menu!string("What color?", ["Blue", "Green"]);
+	assert(color == "Green", "Expected Green got " ~ color);
+	outfile.rewind;
+	assert(outfile.readln().strip == "What color?");
 }
 
 
@@ -236,7 +236,7 @@ T require(T, alias cond)(in string question, in string failure = null)
 	alias unaryFun!(cond) call;
 	T ans;
 	while(1)
-    {
+	{
 		ans = userInput!T(question);
 		if(call(ans))
 			break;
@@ -249,14 +249,14 @@ T require(T, alias cond)(in string question, in string failure = null)
 
 unittest
 {
-    mixin(selfCom(["1","11","3"]));
-    mixin(selfCom());
-    auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
-    assert(num == 1, "Expected 1 got" ~ num.to!string);
-    num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
-    assert(num == 3, "Expected 1 got" ~ num.to!string);
-    outfile.rewind;
-    assert(outfile.readln().strip == "Enter a number from 1 to 10");
+	mixin(selfCom(["1","11","3"]));
+	mixin(selfCom());
+	auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
+	assert(num == 1, "Expected 1 got" ~ num.to!string);
+	num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
+	assert(num == 3, "Expected 1 got" ~ num.to!string);
+	outfile.rewind;
+	assert(outfile.readln().strip == "Enter a number from 1 to 10");
 }
 
 
@@ -266,7 +266,7 @@ unittest
 class NoInputException: Exception
 {
 	this(string msg)
-    {
+	{
 		super(msg);
 	}
 }
@@ -274,28 +274,28 @@ class NoInputException: Exception
 version(unittest)
 private string selfCom()
 {
-    string ans = q{
-        auto outfile = File.tmpfile();
-        auto origstdout = stdout;
-        scope(exit) stdout = origstdout;
-        stdout = outfile;};
+	string ans = q{
+		auto outfile = File.tmpfile();
+		auto origstdout = stdout;
+		scope(exit) stdout = origstdout;
+		stdout = outfile;};
 
-    return ans;
+	return ans;
 }
 
 version(unittest)
 private string selfCom(string[] input)
 {
-    string ans = q{
-        auto infile = File.tmpfile();
-        auto origstdin = stdin;
-        scope(exit) stdin = origstdin;
-        stdin = infile;};
+	string ans = q{
+		auto infile = File.tmpfile();
+		auto origstdin = stdin;
+		scope(exit) stdin = origstdin;
+		stdin = infile;};
 
-    foreach(i; input)
-        ans ~= "infile.writeln(`"~i~"`);";
-    ans ~= "infile.rewind;";
+	foreach(i; input)
+		ans ~= "infile.writeln(`"~i~"`);";
+	ans ~= "infile.rewind;";
 
-    return ans;
+	return ans;
 }
 
