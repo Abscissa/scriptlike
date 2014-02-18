@@ -3,8 +3,12 @@ Scriptlike - Changelog
 
 (Dates below are YYYY/MM/DD)
 
+v0.7.0 - TBD
+-------------------
+- **Enhancement:** [#14](https://github.com/Abscissa/scriptlike/issues/14): Added ```[interact](http://semitwist.com/scriptlike/interact.html)``` module for easy user-input prompts. (Thanks to [Jesse Phillips](https://github.com/JesseKPhillips))
+
 v0.6.0 - 2014/02/16
-------------
+-------------------
 - **Change:** [```Path```](http://semitwist.com/scriptlike/path.html#PathT) and [```Ext```](http://semitwist.com/scriptlike/path.html#ExtT) are now aliases for the UTF-8 instantiations, and the template structs are now named ```PathT``` and ```ExtT```.
 - **Change:** Removed ```path()``` and ```ext()``` helper functions to free up useful names from the namespace, since they are no longer needed. Use ```Path()``` and ```Ext()``` instead.
 - **Change:** Internally split into separate modules, but uses package.d to preserve ```import scriptlike;```.
@@ -23,5 +27,5 @@ v0.6.0 - 2014/02/16
 - **Fixed:** [#10](https://github.com/Abscissa/scriptlike/issues/10): Docs should include all OS-specific functions.
 
 v0.5.0 - 2014/02/11
-------------------
+-------------------
 - Initial release
