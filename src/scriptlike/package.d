@@ -27,4 +27,4 @@ module scriptlike;
 public import scriptlike.std;
 public import scriptlike.fail;
 public import scriptlike.path;
-public import scriptlike.cmdln;
+public import scriptlike.interact;

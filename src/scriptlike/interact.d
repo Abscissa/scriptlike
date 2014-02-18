@@ -11,7 +11,7 @@
  * Synopsis:
  *
  * --------
- * import cmdln.interact;
+ * import scriptlike.interact;
  *
  * auto age = userInput!int("Please Enter you age");
  * 
@@ -24,7 +24,7 @@
  * auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
  * --------
  */
-module scriptlike.cmdln;
+module scriptlike.interact;
 
 import std.conv;
 import std.file;

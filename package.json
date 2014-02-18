@@ -1,7 +1,7 @@
 {
 	"name": "scriptlike",
 	"description": "Utility to aid in script-like programs.",
-	"authors": ["Nick Sabalausky"],
+	"authors": ["Nick Sabalausky", "Jesse Phillips"],
 	"homepage": "https://github.com/abscissa/scriptlike",
 	"license": "zlib/libpng",
 
