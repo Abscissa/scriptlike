@@ -90,6 +90,7 @@ T userInput(T = string)(string question = "")
 	}
 }
 
+version(unittest_scriptlike_d)
 unittest
 {
 	mixin(selfCom(["10PM"]));
@@ -200,6 +201,7 @@ T menu(T = ElementType!(Range), Range) (string question, Range options)
 	}
 }
 
+version(unittest_scriptlike_d)
 unittest
 {
 	mixin(selfCom(["1","Green", "green","2"]));
@@ -247,6 +249,7 @@ T require(T, alias cond)(in string question, in string failure = null)
 	return ans;
 }
 
+version(unittest_scriptlike_d)
 unittest
 {
 	mixin(selfCom(["1","11","3"]));
@@ -271,7 +274,7 @@ class NoInputException: Exception
 	}
 }
 
-version(unittest)
+version(unittest_scriptlike_d)
 private string selfCom()
 {
 	string ans = q{
@@ -283,7 +286,7 @@ private string selfCom()
 	return ans;
 }
 
-version(unittest)
+version(unittest_scriptlike_d)
 private string selfCom(string[] input)
 {
 	string ans = q{
