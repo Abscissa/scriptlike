@@ -6,6 +6,7 @@ Scriptlike - Changelog
 v0.7.0 - TBD
 -------------------
 - **Enhancement:** [#14](https://github.com/Abscissa/scriptlike/issues/14): Added ```[interact](http://semitwist.com/scriptlike/interact.html)``` module for easy user-input prompts. (Thanks to [Jesse Phillips](https://github.com/JesseKPhillips))
+- **Fixed:** Compile failure on DMD v2.067.0.
 
 v0.6.0 - 2014/02/16
 -------------------

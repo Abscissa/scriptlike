@@ -1784,6 +1784,7 @@ unittest
 
 	import std.stdio : writeln;
 	import core.thread;
+	alias copy = scriptlike.path.copy;
 
 	writeln("Running Scriptlike unittests: std.file wrappers");
 	
