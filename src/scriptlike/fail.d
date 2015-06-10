@@ -3,6 +3,7 @@
 
 module scriptlike.fail;
 
+import std.conv;
 import std.file;
 import std.path;
 import std.traits;
