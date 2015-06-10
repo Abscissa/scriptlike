@@ -496,6 +496,52 @@ int tryRun(C)(PathT!C workingDirectory, string command)
 /// future, so you should use tryRun or run insetad.
 alias runShell = tryRun;
 
+/// Similar to run(), but (like std.process.executeShell) captures and returns
+/// the output instead of displaying it.
+string runCollect()(string command)
+{
+	auto result = tryRunCollect(command);
+	if(result.status != 0)
+		throw new ErrorLevelException(result.status, command);
+
+	return result.output;
+}
+
+///ditto
+string runCollect(C)(PathT!C workingDirectory, string command)
+{
+	auto saveDir = getcwd();
+	workingDirectory.chdir();
+	scope(exit) saveDir.chdir();
+	
+	return runCollect(command);
+}
+
+/// Similar to tryRun(), but (like std.process.executeShell) captures and returns the
+/// output instead of displaying it.
+/// 
+/// Returns same tuple as std.process.executeShell:
+/// std.typecons.Tuple!(int, "status", string, "output")
+auto tryRunCollect()(string command)
+{
+	echoCommand(command);
+
+	if(scriptlikeDryRun)
+		return std.typecons.Tuple!(int, "status", string, "output")(0, null);
+	else
+		return executeShell(command);
+}
+
+///ditto
+auto tryRunCollect(C)(PathT!C workingDirectory, string command)
+{
+	auto saveDir = getcwd();
+	workingDirectory.chdir();
+	scope(exit) saveDir.chdir();
+	
+	return tryRunCollect(command);
+}
+
 // -- Wrappers for std.path --------------------
 
 /// Part of workaround for DMD Issue #12111
