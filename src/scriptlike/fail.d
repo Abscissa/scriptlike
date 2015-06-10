@@ -66,25 +66,49 @@ on DMD 2.065 and up.
 
 Example:
 ----------------
-fail("You forgot to provide a destination!");
+auto id = 3;
+fail("You forgot to provide a destination for id #", id, "!");
 
 // Output on DMD 2.065 and up:
-// yourProgramName: ERROR: You forgot to provide a destination!
+// yourProgramName: ERROR: You forgot to provide a destination for id #3!
 
 // Output on DMD 2.064.2:
-// yourProgramName: ERROR: You forgot to provide a destination!
+// yourProgramName: ERROR: You forgot to provide a destination for id #3!
 // scriptlike.fail.Fail
 ----------------
 +/
-void fail(string msg)
+void fail(T...)(T args)
 {
 	static if(useFallback)
 	{
 		import std.stdio;
-		stderr.writeln(Fail.fullMessage(msg));
+		stderr.writeln(Fail.fullMessage( text(args) ));
 		stderr.flush();
 	}
 	
-	throw Fail(msg);
+	throw Fail( text(args) );
 }
 
+/++
+Calls fail() if the condition is false.
+
+This is much like std.exception.enforce(), but for for fail() instead of
+arbitrary exceptions.
+
+Example:
+----------------
+failEnforce(brokenSquareRoot(4)==2, "Reality broke! Expected 2, not ", brokenSquareRoot(4));
+
+// Output on DMD 2.065 and up:
+// yourProgramName: ERROR: Reality broke! Expected 2, not 555
+
+// Output on DMD 2.064.2:
+// yourProgramName: ERROR: Reality broke! Expected 2, not 555
+// scriptlike.fail.Fail
+----------------
++/
+void failEnforce(T...)(bool cond, T args)
+{
+	if(!cond)
+		fail(args);
+}
