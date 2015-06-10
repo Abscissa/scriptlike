@@ -6,7 +6,7 @@ Scriptlike - Changelog
 v0.7.1 - TBD
 -------------------
 - **Enhancement:** ```fail()``` now accepts an arbitrary list of args or any type, just like writeln,
-- **Enhancement:** Added [```enforceFail```](#), like std.exception.enforce, but for ```fail()```.
+- **Enhancement:** Added [```failEnforce```](#), like std.exception.enforce, but for ```fail()```.
 
 v0.7.0 - 2015/04/02
 -------------------
