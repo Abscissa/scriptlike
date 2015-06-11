@@ -1,0 +1,5 @@
+.dub/
+docs/
+dub.selections.json
+scriptlike_unittest
+scriptlike_unittest.exe
