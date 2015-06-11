@@ -1,5 +1,11 @@
 .dub/
-docs/
+docs/docs.json
+docs/public/file_hashes.json
+docs/public/*.html
+docs/public/sitemap.xml
+docs/public/symbols.js
+docs/public/scriptlike/
+
 dub.selections.json
 scriptlike_unittest
 scriptlike_unittest.exe
