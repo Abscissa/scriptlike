@@ -528,14 +528,26 @@ string runCollect(C)(PathT!C workingDirectory, string command)
 /// 
 /// Returns same tuple as std.process.executeShell:
 /// std.typecons.Tuple!(int, "status", string, "output")
+///
+/// Returns: The "status" fiels will be -1 upon failure to
+/// start the process.
 auto tryRunCollect()(string command)
 {
 	echoCommand(command);
+	auto result = std.typecons.Tuple!(int, "status", string, "output")(0, null);
 
 	if(scriptlikeDryRun)
-		return std.typecons.Tuple!(int, "status", string, "output")(0, null);
+		return result;
 	else
-		return executeShell(command);
+	{
+		try
+			return executeShell(command);
+		catch(Exception e)
+		{
+			result.status = -1;
+			return result;
+		}
+	}
 }
 
 ///ditto
