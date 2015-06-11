@@ -7,7 +7,7 @@ This library has no external dependencies.
 
 Since this is intended for script-like programs, the focus is on making such scripts easier and more convenient to write. Optimal performance is secondary to that goal (most scripts are more IO-bound or process-bound anyway), so when necessary this library may accept minor internal inefficiencies for the sake of the primary goal. That said, this IS the D Programming Language, so things aren't exactly likely to be slow overall anyway.
 
-Tested with DMD 2.064.2 through 2.067.0.
+Tested with DMD 2.066.0 through 2.067.1.
 
 * [API Reference](http://semitwist.com/scriptlike)
 * [Changelog](https://github.com/Abscissa/scriptlike/blob/master/CHANGELOG.md)
@@ -27,5 +27,6 @@ Features
 * Less-pedantic filesystem operations for when you don't care whether it exists or not: [existsAsFile](http://semitwist.com/scriptlike/path.html#existsAsFile), [existsAsDir](http://semitwist.com/scriptlike/path.html#existsAsDir), [existsAsSymlink](http://semitwist.com/scriptlike/path.html#existsAsSymlink), [tryRename](http://semitwist.com/scriptlike/path.html#tryRename), [trySymlink](http://semitwist.com/scriptlike/path.html#trySymlink), [tryCopy](http://semitwist.com/scriptlike/path.html#tryCopy), [tryMkdir](http://semitwist.com/scriptlike/path.html#tryMkdir), [tryMkdirRecurse](http://semitwist.com/scriptlike/path.html#tryMkdirRecurse), [tryRmdir](http://semitwist.com/scriptlike/path.html#tryRmdir), [tryRmdirRecurse](http://semitwist.com/scriptlike/path.html#tryRmdirRecurse), [tryRemove](http://semitwist.com/scriptlike/path.html#tryRemove): All check whether the source path exists and return WITHOUT throwing if there's nothing to do.
 * One simple call, [run](http://semitwist.com/scriptlike/path.html#run), to run a shell command script-style (ie, synchronously with forwarded stdout/in/err) from any working directory. (Also automatically works around DMD [#10863](https://d.puremagic.com/issues/show_bug.cgi?id=10863) without waiting for v2.066.)
 * [run](http://semitwist.com/scriptlike/path.html#run) automatically throws if a process exits with a non-zero exit code. Or use [tryRun](http://semitwist.com/scriptlike/path.html#tryRun) to ignore or handle the error level yourself.
-* One simple function, [fail(string msg)](http://semitwist.com/scriptlike/fail.html#fail), to help you exit with an error message in an exception-safe way. (No longer requires any boilerplate in your main()!)
+* [runCollect](http://semitwist.com/scriptlike/path.html#runCollect) and [tryRunCollect](http://semitwist.com/scriptlike/path.html#tryRunCollect) to capture the output instead of displaying it.
+* One simple function, [fail(...)](http://semitwist.com/scriptlike/fail.html#fail), to help you exit with an error message in an exception-safe way. Doesn't require *any* boilerplate in your main()!. Or use it std.exception.enforce-style with [failEnforce(cond, ...)](http://semitwist.com/scriptlike/fail.html#failEnforce).
 * [More to come!](https://github.com/Abscissa/scriptlike/issues)
