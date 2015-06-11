@@ -460,7 +460,8 @@ Optionally takes a working directory to run the command from.
 
 The command is echoed if scriptlikeEcho is true.
 
-Returns: The error level the process exited with.
+Returns: The error level the process exited with. Or -1 upon failure to
+start the process.
 
 Example:
 ---------------------
@@ -479,7 +480,12 @@ int tryRun()(string command)
 	if(scriptlikeDryRun)
 		return 0;
 	else
-		return system(command);
+	{
+		try
+			return spawnShell(command).wait();
+		catch(Exception e)
+			return -1;
+	}
 }
 
 ///ditto
