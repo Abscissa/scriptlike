@@ -6,7 +6,7 @@ Scriptlike - Changelog
 v0.8.0 - TBD
 -------------------
 - **Change:** Minimum officially supported DND increased from v2.064.2 to v2.066.0. Versions below v2.066.0 may still work, but there will now be certain problems when dealing with paths that contain spaces, particularly on Windows.
-- **Enhancement:** [```fail()```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
+- **Enhancement:** [```fail```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
 - **Enhancement:** Added [```failEnforce```](http://semitwist.com/scriptlike/fail.html#failEnforce), like std.exception.enforce, but for ```fail()```.
 - **Enhancement:** Added [```runCollect```](http://semitwist.com/scriptlike/path.html#runCollect) and [```tryRunCollect```](http://semitwist.com/scriptlike/path.html#tryRunCollect), to capture a command's output instead of displaying it.
 - **Fixed:** No longer uses the deprecated std.process.system().
