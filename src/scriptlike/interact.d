@@ -1,7 +1,7 @@
 /**
  * Handling of interaction with users via standard input.
  *
- * Provides functions for simple and common interacitons with users in
+ * Provides functions for simple and common interactions with users in
  * the form of question and answer.
  *
  * Copyright: Copyright Jesse Phillips 2010

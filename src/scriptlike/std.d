@@ -8,6 +8,10 @@ std.file and std.path are deliberately omitted here because they are wrapped
 by scriptlike.path.
 
 curl is omitted here because it involves an extra link dependency.
+
+Copyright: Copyright (C) 2014-2015 Nick Sabalausky
+License:   zlib/libpng
+Authors:   Nick Sabalausky
 +/
 
 module scriptlike.std;

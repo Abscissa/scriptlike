@@ -1,6 +1,10 @@
 // Scriptlike: Utility to aid in script-like programs.
 // Written in the D programming language.
 
+/// Copyright: Copyright (C) 2014-2015 Nick Sabalausky
+/// License:   zlib/libpng
+/// Authors:   Nick Sabalausky
+
 module scriptlike.path;
 
 import std.algorithm;
@@ -498,7 +502,7 @@ int tryRun(C)(PathT!C workingDirectory, string command)
 	return tryRun(command);
 }
 
-/// Backwards-compatibility alias. runShell may become depricated in the
+/// Backwards-compatibility alias. runShell may become deprecated in the
 /// future, so you should use tryRun or run insetad.
 alias runShell = tryRun;
 
@@ -529,7 +533,7 @@ string runCollect(C)(PathT!C workingDirectory, string command)
 /// Returns same tuple as std.process.executeShell:
 /// std.typecons.Tuple!(int, "status", string, "output")
 ///
-/// Returns: The "status" fiels will be -1 upon failure to
+/// Returns: The "status" field will be -1 upon failure to
 /// start the process.
 auto tryRunCollect()(string command)
 {

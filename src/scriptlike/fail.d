@@ -1,6 +1,10 @@
 // Scriptlike: Utility to aid in script-like programs.
 // Written in the D programming language.
 
+/// Copyright: Copyright (C) 2014-2015 Nick Sabalausky
+/// License:   zlib/libpng
+/// Authors:   Nick Sabalausky
+
 module scriptlike.fail;
 
 import std.conv;
@@ -12,9 +16,9 @@ import std.traits;
 // won't even call any Throwable.toString on DMD 2.064.2 anyway, so use
 // a fallback method if Throwable doesn't have toString(sink).
 static if( MemberFunctionsTuple!(Throwable, "toString").length > 1 )
-	enum useFallback = false;
+	private enum useFallback = false;
 else
-	enum useFallback = true;
+	private enum useFallback = true;
 
 /// This is the exception thrown by fail(). There's no need to create or throw
 /// this directly, but it's public in case you have reason to catch it.
