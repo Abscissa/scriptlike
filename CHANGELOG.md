@@ -6,6 +6,7 @@ Scriptlike - Changelog
 v0.8.0 - TBD
 -------------------
 - **Change:** Minimum officially supported DMD increased from v2.064.2 to v2.066.0. Versions below v2.066.0 may still work, but there will now be certain problems when dealing with paths that contain spaces, particularly on Windows.
+- **Change:** Removed unnecessary non-[```Path```](http://semitwist.com/scriptlike/path.html#PathT) wrappers around std.file/std.path. This should reduce issues with symbol conflicts.
 - **Change:** [API reference](http://semitwist.com/scriptlike/) now built using [ddox](https://github.com/rejectedsoftware/ddox) and uses much improved styling (actually uses a stylesheet now).
 - **Enhancement:** [```fail```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
 - **Enhancement:** Added [```failEnforce```](http://semitwist.com/scriptlike/fail.html#failEnforce), like std.exception.enforce, but for ```fail()```.
