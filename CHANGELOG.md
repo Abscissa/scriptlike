@@ -10,6 +10,7 @@ v0.8.0 - TBD
 - **Enhancement:** [```fail```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
 - **Enhancement:** Added [```failEnforce```](http://semitwist.com/scriptlike/fail.html#failEnforce), like std.exception.enforce, but for ```fail()```.
 - **Enhancement:** Added [```runCollect```](http://semitwist.com/scriptlike/path.html#runCollect) and [```tryRunCollect```](http://semitwist.com/scriptlike/path.html#tryRunCollect), to capture a command's output instead of displaying it.
+- **Enhancement:** Added [```pause```](http://semitwist.com/scriptlike/interact.html#pause) to pause and prompt the user to press Enter.
 - **Fixed:** No longer uses the deprecated std.process.system().
 
 v0.7.0 - 2015/04/02

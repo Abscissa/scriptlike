@@ -101,6 +101,38 @@ unittest
 	assert(outfile.readln().strip == "What time is it?");
 }
 
+
+/**
+ * Pauses and prompts the user to press Enter (or "Return" on OSX).
+ * 
+ * This is similar to the Windows command line's PAUSE command.
+ *
+ * --------
+ * pause();
+ * pause("Thanks. Please press Enter again...");
+ * --------
+ */
+void pause(string prompt = defaultPausePrompt)
+{
+	//TODO: This works, but needs a little work. Currently, it echoes all
+	//      input until Enter is pressed. Fixing that requires some low-level
+	//      os-specific work.
+	//
+	//      For reference:
+	//      http://stackoverflow.com/questions/6856635/hide-password-input-on-terminal
+	//      http://linux.die.net/man/3/termios
+	
+	write(prompt);
+	stdout.flush();
+	getchar();
+}
+
+version(OSX)
+	enum defaultPausePrompt = "Press Return to continue..."; ///
+else
+	enum defaultPausePrompt = "Press Enter to continue..."; ///
+
+
 /**
  * Gets a valid path folder from the user. The string will not contain
  * quotes, if you are using in a system call and the path contain spaces
@@ -301,4 +333,3 @@ private string selfCom(string[] input)
 
 	return ans;
 }
-
