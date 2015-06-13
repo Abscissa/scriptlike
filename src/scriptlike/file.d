@@ -10,13 +10,14 @@ module scriptlike.file;
 import std.algorithm;
 import std.conv;
 import std.datetime;
+import std.string;
+import std.traits;
+import std.typecons;
+
 static import std.file;
 public import std.file : FileException, SpanMode,
 	attrIsDir, attrIsFile, attrIsSymlink;
 static import std.path;
-import std.string;
-import std.traits;
-import std.typecons;
 
 import scriptlike.path;
 

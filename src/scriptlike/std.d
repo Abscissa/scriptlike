@@ -4,8 +4,8 @@ Written in the D programming language.
 
 Automatically pulls in anything from Phobos likely to be useful for scripts.
 
-std.file and std.path are deliberately omitted here because they are wrapped
-by scriptlike.path.
+std.file and std.path are static imports to avoid name conflicts with
+the Path-based wrappers in scriptlike.file and scriptlike.path.
 
 curl is omitted here because it involves an extra link dependency.
 
@@ -36,3 +36,6 @@ public import std.typecons;
 public import std.typetuple;
 public import std.uni;
 public import std.variant;
+
+public static import std.file;
+public static import std.path;

@@ -11,9 +11,6 @@ import std.algorithm;
 import std.conv;
 import std.datetime;
 import std.file;
-static import std.path;
-public import std.path : dirSeparator, pathSeparator, isDirSeparator,
-	CaseSensitive, osDefaultCaseSensitivity, buildPath, buildNormalizedPath;
 import std.process;
 import std.range;
 import std.stdio;
@@ -21,6 +18,10 @@ import std.string;
 import std.traits;
 import std.typecons;
 import std.typetuple;
+
+static import std.path;
+public import std.path : dirSeparator, pathSeparator, isDirSeparator,
+	CaseSensitive, osDefaultCaseSensitivity, buildPath, buildNormalizedPath;
 
 /// Represents a file extension.
 struct ExtT(C = char) if( is(C==char) || is(C==wchar) || is(C==dchar) )
