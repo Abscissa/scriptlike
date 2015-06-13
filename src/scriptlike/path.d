@@ -12,7 +12,8 @@ import std.conv;
 import std.datetime;
 import std.file;
 static import std.path;
-public import std.path : dirSeparator;
+public import std.path : dirSeparator, pathSeparator, isDirSeparator,
+	CaseSensitive, osDefaultCaseSensitivity, buildPath, buildNormalizedPath;
 import std.process;
 import std.range;
 import std.stdio;
@@ -296,8 +297,6 @@ string escapeShellArg(T)(T str) if(isSomeString!T)
 }
 
 // -- std.path wrappers to support Path type --------------------
-
-alias CaseSensitive  = std.path.CaseSensitive;
 
 /// Just like std.path.baseName, but operates on Path.
 PathT!C baseName(C)(PathT!C path)

@@ -11,7 +11,8 @@ import std.algorithm;
 import std.conv;
 import std.datetime;
 static import std.file;
-public import std.file : SpanMode;
+public import std.file : FileException, SpanMode,
+	attrIsDir, attrIsFile, attrIsSymlink;
 static import std.path;
 import std.string;
 import std.traits;
