@@ -32,9 +32,5 @@ Authors: Nick Sabalausky, Jesse Phillips
 
 module scriptlike;
 
-public import scriptlike.interact;
-public import scriptlike.fail;
-public import scriptlike.file;
-public import scriptlike.path;
-public import scriptlike.process;
+public import scriptlike.only;
 public import scriptlike.std;

@@ -93,12 +93,12 @@ void echoCommand(lazy string msg)
 ///
 /// This is like std.file.isDir, but returns false instead of throwing if the
 /// path doesn't exist.
-bool existsAsDir()(in char[] path) @trusted
+bool existsAsDir(in string path) @trusted
 {
 	return std.file.exists(path) && std.file.isDir(path);
 }
 ///ditto
-bool existsAsDir(C)(in PathT!C path) @trusted if(isSomeChar!C)
+bool existsAsDir(in Path path) @trusted
 {
 	return existsAsDir(path.toRawString().to!string());
 }
@@ -107,12 +107,12 @@ bool existsAsDir(C)(in PathT!C path) @trusted if(isSomeChar!C)
 ///
 /// This is like std.file.isFile, but returns false instead of throwing if the
 /// path doesn't exist.
-bool existsAsFile()(in char[] path) @trusted
+bool existsAsFile(in string path) @trusted
 {
 	return std.file.exists(path) && std.file.isFile(path);
 }
 ///ditto
-bool existsAsFile(C)(in PathT!C path) @trusted if(isSomeChar!C)
+bool existsAsFile(in Path path) @trusted
 {
 	return existsAsFile(path.toRawString().to!string());
 }
@@ -121,12 +121,12 @@ bool existsAsFile(C)(in PathT!C path) @trusted if(isSomeChar!C)
 ///
 /// This is like std.file.isSymlink, but returns false instead of throwing if the
 /// path doesn't exist.
-bool existsAsSymlink()(in char[] path) @trusted
+bool existsAsSymlink()(in string path) @trusted
 {
 	return std.file.exists(path) && std.file.isSymlink(path);
 }
 ///ditto
-bool existsAsSymlink(C)(in PathT!C path) @trusted if(isSomeChar!C)
+bool existsAsSymlink(in Path path) @trusted
 {
 	return existsAsSymlink(path.toRawString().to!string());
 }
@@ -134,29 +134,26 @@ bool existsAsSymlink(C)(in PathT!C path) @trusted if(isSomeChar!C)
 // -- std.path wrappers to support Path type, scriptlikeEcho and scriptlikeDryRun --
 
 /// Just like std.file.read, but takes a Path.
-void[] read(C)(in PathT!C name, size_t upTo = size_t.max) if(isSomeChar!C)
+void[] read(in Path name, size_t upTo = size_t.max)
 {
 	return std.file.read(name.toRawString().to!string(), upTo);
 }
 
 /// Just like std.file.readText, but takes a Path.
-template readText(S = string)
+S readText(S = string)(in Path name)
 {
-	S readText(C)(in PathT!C name) if(isSomeChar!C)
-	{
-		return std.file.readText(name.toRawString().to!string());
-	}
+	return std.file.readText(name.toRawString().to!string());
 }
 
 /// Just like std.file.write, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void write(C)(in PathT!C name, const void[] buffer) if(isSomeChar!C)
+void write(in Path name, const void[] buffer)
 {
 	write(name.toRawString().to!string(), buffer);
 }
 
 ///ditto
-void write(in char[] name, const void[] buffer)
+void write(in string name, const void[] buffer)
 {
 	echoCommand(text("Write ", name));
 	
@@ -166,13 +163,13 @@ void write(in char[] name, const void[] buffer)
 
 /// Just like std.file.append, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void append(C)(in PathT!C name, in void[] buffer) if(isSomeChar!C)
+void append(in Path name, in void[] buffer)
 {
 	append(name.toRawString().to!string(), buffer);
 }
 
 ///ditto
-void append(in char[] name, in void[] buffer)
+void append(in string name, in void[] buffer)
 {
 	echoCommand(text("Append ", name));
 
@@ -182,25 +179,25 @@ void append(in char[] name, in void[] buffer)
 
 /// Just like std.file.rename, but optionally takes Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void rename(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
+void rename(in Path from, in Path to)
 {
 	rename(from.toRawString().to!string(), to.toRawString().to!string());
 }
 
 ///ditto
-void rename(C)(in char[] from, in PathT!C to) if(isSomeChar!C)
+void rename(in string from, in Path to)
 {
 	rename(from, to.toRawString().to!string());
 }
 
 ///ditto
-void rename(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
+void rename(in Path from, in string to)
 {
 	rename(from.toRawString().to!string(), to);
 }
 
 ///ditto
-void rename(in char[] from, in char[] to)
+void rename(in string from, in string to)
 {
 	echoCommand("rename: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
 
@@ -212,6 +209,10 @@ void rename(in char[] from, in char[] to)
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryRename(T1, T2)(T1 from, T2 to)
+	if(
+		(is(T1==string) || is(T1==Path)) &&
+		(is(T2==string) || is(T2==Path))
+	)
 {
 	if(from.exists())
 	{
@@ -224,13 +225,13 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 
 /// Just like std.file.remove, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void remove(C)(in PathT!C name) if(isSomeChar!C)
+void remove(in Path name)
 {
 	remove(name.toRawString().to!string());
 }
 
 ///ditto
-void remove(in char[] name)
+void remove(in string name)
 {
 	echoCommand("remove: "~name.escapeShellArg());
 
@@ -241,7 +242,7 @@ void remove(in char[] name)
 /// If 'name' exists, then remove. Otherwise do nothing.
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
-bool tryRemove(T)(T name)
+bool tryRemove(T)(T name) if(is(T==string) || is(T==Path))
 {
 	if(name.exists())
 	{
@@ -253,15 +254,15 @@ bool tryRemove(T)(T name)
 }
 
 /// Just like std.file.getSize, but takes a Path.
-ulong getSize(C)(in PathT!C name) if(isSomeChar!C)
+ulong getSize(in Path name)
 {
 	return std.file.getSize(name.toRawString().to!string());
 }
 
 /// Just like std.file.getTimes, but takes a Path.
-void getTimes(C)(in PathT!C name,
+void getTimes(in Path name,
 	out SysTime accessTime,
-	out SysTime modificationTime) if(isSomeChar!C)
+	out SysTime modificationTime)
 {
 	std.file.getTimes(name.toRawString().to!string(), accessTime, modificationTime);
 }
@@ -269,30 +270,30 @@ void getTimes(C)(in PathT!C name,
 version(ddoc_scriptlike_d)
 {
 	/// Windows-only. Just like std.file.getTimesWin, but takes a Path.
-	void getTimesWin(C)(in PathT!C name,
+	void getTimesWin(in Path name,
 		out SysTime fileCreationTime,
 		out SysTime fileAccessTime,
-		out SysTime fileModificationTime) if(isSomeChar!C);
+		out SysTime fileModificationTime);
 }
-else version(Windows) void getTimesWin(C)(in PathT!C name,
+else version(Windows) void getTimesWin(in Path name,
 	out SysTime fileCreationTime,
 	out SysTime fileAccessTime,
-	out SysTime fileModificationTime) if(isSomeChar!C)
+	out SysTime fileModificationTime)
 {
 	std.file.getTimesWin(name.toRawString().to!string(), fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
 /// Just like std.file.setTimes, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void setTimes(C)(in PathT!C name,
+void setTimes(in Path name,
 	SysTime accessTime,
-	SysTime modificationTime) if(isSomeChar!C)
+	SysTime modificationTime)
 {
 	setTimes(name.toRawString().to!string(), accessTime, modificationTime);
 }
 
 ///ditto
-void setTimes(in char[] name,
+void setTimes(in string name,
 	SysTime accessTime,
 	SysTime modificationTime)
 {
@@ -306,67 +307,67 @@ void setTimes(in char[] name,
 }
 
 /// Just like std.file.timeLastModified, but takes a Path.
-SysTime timeLastModified(C)(in PathT!C name) if(isSomeChar!C)
+SysTime timeLastModified(in Path name)
 {
 	return std.file.timeLastModified(name.toRawString().to!string());
 }
 
 /// Just like std.file.timeLastModified, but takes a Path.
-SysTime timeLastModified(C)(in PathT!C name, SysTime returnIfMissing) if(isSomeChar!C)
+SysTime timeLastModified(in Path name, SysTime returnIfMissing)
 {
 	return std.file.timeLastModified(name.toRawString().to!string(), returnIfMissing);
 }
 
 /// Just like std.file.exists, but takes a Path.
-bool exists(C)(in PathT!C name) @trusted if(isSomeChar!C)
+bool exists(in Path name) @trusted
 {
 	return std.file.exists(name.toRawString().to!string());
 }
 
 /// Just like std.file.getAttributes, but takes a Path.
-uint getAttributes(C)(in PathT!C name) if(isSomeChar!C)
+uint getAttributes(in Path name)
 {
 	return std.file.getAttributes(name.toRawString().to!string());
 }
 
 /// Just like std.file.getLinkAttributes, but takes a Path.
-uint getLinkAttributes(C)(in PathT!C name) if(isSomeChar!C)
+uint getLinkAttributes(in Path name)
 {
 	return std.file.getLinkAttributes(name.toRawString().to!string());
 }
 
 /// Just like std.file.isDir, but takes a Path.
-@property bool isDir(C)(in PathT!C name) if(isSomeChar!C)
+@property bool isDir(in Path name)
 {
 	return std.file.isDir(name.toRawString().to!string());
 }
 
 /// Just like std.file.isFile, but takes a Path.
-@property bool isFile(C)(in PathT!C name) if(isSomeChar!C)
+@property bool isFile(in Path name)
 {
 	return std.file.isFile(name.toRawString().to!string());
 }
 
 /// Just like std.file.isSymlink, but takes a Path.
-@property bool isSymlink(C)(PathT!C name) if(isSomeChar!C)
+@property bool isSymlink(Path name)
 {
 	return std.file.isSymlink(name.toRawString().to!string());
 }
 
 /// Just like std.file.getcwd, but returns a Path.
-PathT!C getcwd(C=char)() if(isSomeChar!C)
+Path getcwd()
 {
-	return PathT!C( std.file.getcwd() );
+	return Path( std.file.getcwd() );
 }
 
 /// Just like std.file.chdir, but takes a Path, and echoes if scriptlikeEcho is true.
-void chdir(C)(in PathT!C pathname) if(isSomeChar!C)
+void chdir(in Path pathname)
 {
 	chdir(pathname.toRawString().to!string());
 }
 
 /// Just like std.file.chdir, but echoes if scriptlikeEcho is true.
-void chdir(in char[] pathname)
+void chdir(in string pathname)
 {
 	echoCommand("chdir: "~pathname.escapeShellArg());
 	std.file.chdir(pathname);
@@ -374,13 +375,13 @@ void chdir(in char[] pathname)
 
 /// Just like std.file.mkdir, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void mkdir(C)(in PathT!C pathname) if(isSomeChar!C)
+void mkdir(in Path pathname)
 {
 	mkdir(pathname.toRawString().to!string());
 }
 
 ///ditto
-void mkdir(in char[] pathname)
+void mkdir(in string pathname)
 {
 	echoCommand("mkdir: "~pathname.escapeShellArg());
 
@@ -391,7 +392,7 @@ void mkdir(in char[] pathname)
 /// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
-bool tryMkdir(T)(T name)
+bool tryMkdir(T)(T name) if(is(T==string) || is(T==Path))
 {
 	if(!name.exists())
 	{
@@ -404,13 +405,13 @@ bool tryMkdir(T)(T name)
 
 /// Just like std.file.mkdirRecurse, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void mkdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
+void mkdirRecurse(in Path pathname)
 {
 	mkdirRecurse(pathname.toRawString().to!string());
 }
 
 ///ditto
-void mkdirRecurse(in char[] pathname)
+void mkdirRecurse(in string pathname)
 {
 	echoCommand("mkdirRecurse: "~pathname.escapeShellArg());
 
@@ -421,7 +422,7 @@ void mkdirRecurse(in char[] pathname)
 /// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
-bool tryMkdirRecurse(T)(T name)
+bool tryMkdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 {
 	if(!name.exists())
 	{
@@ -434,13 +435,13 @@ bool tryMkdirRecurse(T)(T name)
 
 /// Just like std.file.rmdir, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void rmdir(C)(in PathT!C pathname) if(isSomeChar!C)
+void rmdir(in Path pathname)
 {
 	rmdir(pathname.toRawString().to!string());
 }
 
 ///ditto
-void rmdir(in char[] pathname)
+void rmdir(in string pathname)
 {
 	echoCommand("rmdir: "~pathname.escapeShellArg());
 
@@ -451,7 +452,7 @@ void rmdir(in char[] pathname)
 /// If 'name' exists, then rmdir. Otherwise do nothing.
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
-bool tryRmdir(T)(T name)
+bool tryRmdir(T)(T name) if(is(T==string) || is(T==Path))
 {
 	if(name.exists())
 	{
@@ -466,43 +467,47 @@ version(ddoc_scriptlike_d)
 {
 	/// Posix-only. Just like std.file.symlink, but optionally takes Path,
 	/// and obeys scriptlikeEcho and scriptlikeDryRun.
-	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
+	void symlink(Path original, Path link);
 
 	///ditto
-	void symlink(C1, C2)(const(C1)[] original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2);
+	void symlink(string original, Path link);
 
 	///ditto
-	void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2);
+	void symlink(Path original, string link);
 
 	///ditto
-	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link);
+	void symlink(string original, string link);
 
 	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
 	/// Obeys scriptlikeEcho and scriptlikeDryRun.
 	/// Returns: Success?
-	bool trySymlink(T1, T2)(T1 original, T2 link);
+	bool trySymlink(T1, T2)(T1 original, T2 link)
+		if(
+			(is(T1==string) || is(T1==Path)) &&
+			(is(T2==string) || is(T2==Path))
+		);
 
 	/// Posix-only. Just like std.file.readLink, but operates on Path.
-	PathT!C readLink(C)(PathT!C link) if(isSomeChar!C);
+	Path readLink(Path link);
 }
 else version(Posix)
 {
-	void symlink(C1, C2)(PathT!C1 original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
+	void symlink(Path original, Path link)
 	{
 		symlink(original.toRawString().to!string(), link.toRawString().to!string());
 	}
 
-	void symlink(C1, C2)(const(C1)[] original, PathT!C2 link) if(isSomeChar!C1 && isSomeChar!C2)
+	void symlink(string original, Path link)
 	{
 		symlink(original, link.toRawString().to!string());
 	}
 
-	void symlink(C1, C2)(PathT!C1 original, const(C2)[] link) if(isSomeChar!C1 && isSomeChar!C2)
+	void symlink(Path original, string link)
 	{
 		symlink(original.toRawString().to!string(), link);
 	}
 
-	void symlink(C1, C2)(const(C1)[] original, const(C2)[] link)
+	void symlink(string original, string link)
 	{
 		echoCommand("symlink: [original] "~original.escapeShellArg()~" : [symlink] "~link.escapeShellArg());
 
@@ -511,6 +516,10 @@ else version(Posix)
 	}
 
 	bool trySymlink(T1, T2)(T1 original, T2 link)
+		if(
+			(is(T1==string) || is(T1==Path)) &&
+			(is(T2==string) || is(T2==Path))
+		)
 	{
 		if(original.exists())
 		{
@@ -521,33 +530,33 @@ else version(Posix)
 		return false;
 	}
 
-	PathT!C readLink(C)(PathT!C link) if(isSomeChar!C)
+	Path readLink(Path link)
 	{
-		return PathT!C( std.file.readLink(link.toRawString().to!string()) );
+		return Path( std.file.readLink(link.toRawString().to!string()) );
 	}
 }
 
 /// Just like std.file.copy, but optionally takes Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void copy(C)(in PathT!C from, in PathT!C to) if(isSomeChar!C)
+void copy(in Path from, in Path to)
 {
 	copy(from.toRawString().to!string(), to.toRawString().to!string());
 }
 
 ///ditto
-void copy(C)(in char[] from, in PathT!C to) if(isSomeChar!C)
+void copy(in string from, in Path to)
 {
 	copy(from, to.toRawString().to!string());
 }
 
 ///ditto
-void copy(C)(in PathT!C from, in char[] to) if(isSomeChar!C)
+void copy(in Path from, in string to)
 {
 	copy(from.toRawString().to!string(), to);
 }
 
 ///ditto
-void copy(in char[] from, in char[] to)
+void copy(in string from, in string to)
 {
 	echoCommand("copy: "~from.escapeShellArg()~" -> "~to.escapeShellArg());
 
@@ -559,6 +568,10 @@ void copy(in char[] from, in char[] to)
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
 bool tryCopy(T1, T2)(T1 from, T2 to)
+	if(
+		(is(T1==string) || is(T1==Path)) &&
+		(is(T2==string) || is(T2==Path))
+	)
 {
 	if(from.exists())
 	{
@@ -571,13 +584,13 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 
 /// Just like std.file.rmdirRecurse, but optionally takes a Path,
 /// and obeys scriptlikeEcho and scriptlikeDryRun.
-void rmdirRecurse(C)(in PathT!C pathname) if(isSomeChar!C)
+void rmdirRecurse(in Path pathname)
 {
 	rmdirRecurse(pathname.toRawString().to!string());
 }
 
 ///ditto
-void rmdirRecurse(in char[] pathname)
+void rmdirRecurse(in string pathname)
 {
 	echoCommand("rmdirRecurse: "~pathname.escapeShellArg());
 
@@ -588,7 +601,7 @@ void rmdirRecurse(in char[] pathname)
 /// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
 /// Obeys scriptlikeEcho and scriptlikeDryRun.
 /// Returns: Success?
-bool tryRmdirRecurse(T)(T name)
+bool tryRmdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 {
 	if(name.exists())
 	{
@@ -600,14 +613,14 @@ bool tryRmdirRecurse(T)(T name)
 }
 
 /// Just like std.file.dirEntries, but takes a Path.
-auto dirEntries(C)(PathT!C path, SpanMode mode, bool followSymlink = true) if(isSomeChar!C)
+auto dirEntries(Path path, SpanMode mode, bool followSymlink = true)
 {
 	return std.file.dirEntries(path.toRawString().to!string(), mode, followSymlink);
 }
 
 /// Just like std.file.dirEntries, but takes a Path.
-auto dirEntries(C)(PathT!C path, string pattern, SpanMode mode,
-	bool followSymlink = true) if(isSomeChar!C)
+auto dirEntries(Path path, string pattern, SpanMode mode,
+	bool followSymlink = true)
 {
 	return std.file.dirEntries(path.toRawString().to!string(), pattern, mode, followSymlink);
 }
@@ -615,22 +628,22 @@ auto dirEntries(C)(PathT!C path, string pattern, SpanMode mode,
 /// Just like std.file.slurp, but takes a Path.
 template slurp(Types...)
 {
-	auto slurp(C)(PathT!C filename, in char[] format) if(isSomeChar!C)
+	auto slurp(Path filename, in string format)
 	{
 		return std.file.slurp!Types(filename.toRawString().to!string(), format);
 	}
 }
 
 /// Just like std.file.thisExePath, but returns a Path.
-@trusted PathT!C thisExePath(C=char)() if(isSomeChar!C)
+@trusted Path thisExePath()
 {
-	return PathT!C( std.file.thisExePath() );
+	return Path( std.file.thisExePath() );
 }
 
 /// Just like std.file.tempDir, but returns a Path.
-@trusted PathT!C tempDir(C=char)() if(isSomeChar!C)
+@trusted Path tempDir()
 {
-	return PathT!C( std.file.tempDir() );
+	return Path( std.file.tempDir() );
 }
 
 version(unittest_scriptlike_d)

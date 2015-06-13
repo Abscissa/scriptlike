@@ -53,7 +53,7 @@ cmd ~= ["--abc", "--def", "-g"];
 Path("some working dir").run(cmd.data);
 ---------------------
 +/
-void run()(string command)
+void run(string command)
 {
 	auto errorLevel = tryRun(command);
 	if(errorLevel != 0)
@@ -61,7 +61,7 @@ void run()(string command)
 }
 
 ///ditto
-void run(C)(PathT!C workingDirectory, string command)
+void run(Path workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
@@ -93,7 +93,7 @@ cmd ~= ["--abc", "--def", "-g"];
 auto errLevel = Path("some working dir").run(cmd.data);
 ---------------------
 +/
-int tryRun()(string command)
+int tryRun(string command)
 {
 	echoCommand(command);
 
@@ -109,7 +109,7 @@ int tryRun()(string command)
 }
 
 ///ditto
-int tryRun(C)(PathT!C workingDirectory, string command)
+int tryRun(Path workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
@@ -124,7 +124,7 @@ alias runShell = tryRun;
 
 /// Similar to run(), but (like std.process.executeShell) captures and returns
 /// the output instead of displaying it.
-string runCollect()(string command)
+string runCollect(string command)
 {
 	auto result = tryRunCollect(command);
 	if(result.status != 0)
@@ -134,7 +134,7 @@ string runCollect()(string command)
 }
 
 ///ditto
-string runCollect(C)(PathT!C workingDirectory, string command)
+string runCollect(Path workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
@@ -151,7 +151,7 @@ string runCollect(C)(PathT!C workingDirectory, string command)
 ///
 /// Returns: The "status" field will be -1 upon failure to
 /// start the process.
-auto tryRunCollect()(string command)
+auto tryRunCollect(string command)
 {
 	echoCommand(command);
 	auto result = std.typecons.Tuple!(int, "status", string, "output")(0, null);
@@ -171,7 +171,7 @@ auto tryRunCollect()(string command)
 }
 
 ///ditto
-auto tryRunCollect(C)(PathT!C workingDirectory, string command)
+auto tryRunCollect(Path workingDirectory, string command)
 {
 	auto saveDir = getcwd();
 	workingDirectory.chdir();
@@ -200,16 +200,14 @@ assert(args.data == `"some\big path\here\foobar" -A --bcd "Hello World" file.ext
 // On linux:
 assert(args.data == `'some/big path/here/foobar' -A --bcd 'Hello World' file.ext`);
 -------------------
-
-wchar and dchar versions not yet supported, blocked by DMD issue #12112
 +/
-struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
+struct Args
 {
 	// Internal note: For every element the user adds to ArgsT,
 	// *two* elements will be added to this internal buf: first a spacer
 	// (normally a space, or an empty string in the case of the very first
 	// element the user adds) and then the actual element the user added.
-	private Appender!(immutable(C)[]) buf;
+	private Appender!(string) buf;
 	private size_t _length = 0;
 	
 	void reserve(size_t newCapacity) @safe pure nothrow
@@ -225,7 +223,7 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 		return buf.capacity / 2;
 	}
 
-	@property immutable(C)[] data() inout @trusted pure nothrow
+	@property string data() inout @trusted pure nothrow
 	{
 		return buf.data;
 	}
@@ -240,14 +238,14 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 		buf.put(_length==0? "" : " ");
 	}
 	
-	void put(immutable(C)[] item)
+	void put(string item)
 	{
 		putSpacer();
 		buf.put(escapeShellArg(item));
 		_length += 2;
 	}
 
-	void put(PathT!C item)
+	void put(Path item)
 	{
 		put(item.toRawString());
 	}
@@ -255,19 +253,19 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 	void put(Range)(Range items)
 		if(
 			isInputRange!Range &&
-			(is(ElementType!Range == string) || is(ElementType!Range == PathT!C))
+			(is(ElementType!Range == string) || is(ElementType!Range == Path))
 		)
 	{
 		for(; !items.empty; items.popFront())
 			put(items.front);
 	}
 
-	void opOpAssign(string op)(immutable(C)[] item) if(op == "~")
+	void opOpAssign(string op)(string item) if(op == "~")
 	{
 		put(item);
 	}
 
-	void opOpAssign(string op)(PathT!C item) if(op == "~")
+	void opOpAssign(string op)(Path item) if(op == "~")
 	{
 		put(item);
 	}
@@ -276,19 +274,18 @@ struct ArgsT(C = char) if( is(C==char) /+|| is(C==wchar) || is(C==dchar)+/ )
 		if(
 			op == "~" &&
 			isInputRange!Range &&
-			(is(ElementType!Range == string) || is(ElementType!Range == PathT!C))
+			(is(ElementType!Range == string) || is(ElementType!Range == Path))
 		)
 	{
 		put(items);
 	}
 }
-alias Args = ArgsT!char; ///ditto
 
 version(unittest_scriptlike_d)
 unittest
 {
 	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: ArgsT");
+	writeln("Running Scriptlike unittests: Args");
 
 	Args args;
 	args ~= Path(`some/big path/here/foobar`);
