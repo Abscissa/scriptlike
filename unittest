@@ -1,2 +1,2 @@
 #!/bin/sh
-rdmd -unittest --force -g -debug -ofscriptlike_unittest -version=unittest_scriptlike_d -main -Isrc src/scriptlike/package.d
+rdmd -unittest --force -g -debug -ofbin/scriptlike_unittest -version=unittest_scriptlike_d -main -Isrc src/scriptlike/package.d

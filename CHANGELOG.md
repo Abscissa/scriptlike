@@ -9,6 +9,7 @@ v0.8.0 - TBD
 - **Change:** Removed unnecessary non-[```Path```](http://semitwist.com/scriptlike/path.html#Path) wrappers around std.file/std.path. Things not wrapped (like dirSeparator and SpanMode) are now selective public imports instead of aliases. These changes should reduce issues with symbol conflicts.
 - **Change:** [API reference](http://semitwist.com/scriptlike/) now built using [ddox](https://github.com/rejectedsoftware/ddox) and uses much improved styling (actually uses a stylesheet now).
 - **Change:** Eliminate remnants of the "planned but never enabled" wstring/dstring versions of Path/Ext/Args. There turned out not to be much need for them, and even std.file doesn't support wstring/dstring either.
+- **Change:** Put output binaries in "bin" subdirectory, instead of Scriptlike's root.
 - **Enhancement:** Add module scriptlike.only to import all of scriptlike, but omit the helper Phobos imports in scriptlike.std.
 - **Enhancement:** [```fail```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
 - **Enhancement:** Added [```failEnforce```](http://semitwist.com/scriptlike/fail.html#failEnforce), like std.exception.enforce, but for ```fail()```.

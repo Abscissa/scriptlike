@@ -5,6 +5,7 @@
 	"homepage": "https://github.com/abscissa/scriptlike",
 	"license": "zlib/libpng",
 
+	"targetPath": "bin",
 	"importPaths": ["src"],
 	"targetType":  "library"
 }
