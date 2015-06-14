@@ -4,7 +4,7 @@ Scriptlike: Utility to aid in script-like programs.
 Written in the D programming language.
 
 Import this "scriptlike.only" module instead of "scriptlike" if you want to
-import all of Scriptlike, but NOT automatically import any of Phobos.
+import all of Scriptlike, but DON'T want to automatically import any of Phobos.
 
 Copyright: Copyright (C) 2014-2015 Nick Sabalausky
 License:   zlib/libpng

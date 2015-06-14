@@ -74,7 +74,7 @@ set either scriptlikeEcho or scriptlikeDryRun to true.
 +/
 void delegate(string) scriptlikeCustomEcho;
 
-/// Output a string through scriptlike's echo logger.
+/// Output a (lazy) string through scriptlike's echo logger.
 /// Does nothing if scriptlikeEcho and scriptlikeDryRun are both false.
 void echoCommand(lazy string msg)
 {

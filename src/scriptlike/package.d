@@ -1,6 +1,8 @@
 /++
 Scriptlike: Utility to aid in script-like programs.
 
+Version v0.8.0
+
 Written in the D programming language.
 Tested with DMD 2.066.0 through 2.067.0.
 Licensed under The zlib/libpng License.
