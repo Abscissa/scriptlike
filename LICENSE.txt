@@ -1,5 +1,5 @@
 ---------------------------------------------------
-scriptlike is licensed under The zlib/libpng License:
+Scriptlike is licensed under The zlib/libpng License:
 ---------------------------------------------------
 
 Copyright (c) 2014 Nick Sabalausky
