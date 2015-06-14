@@ -3,21 +3,21 @@ Scriptlike - Changelog
 
 (Dates below are YYYY/MM/DD)
 
-v0.8.0 - TBD
+v0.8.0 - 2015/06/13
 -------------------
 - **Change:** Minimum officially supported DMD increased from v2.064.2 to v2.066.0. Versions below v2.066.0 may still work, but there will now be certain problems when dealing with paths that contain spaces, particularly on Windows.
-- **Change:** Removed unnecessary non-[```Path```](http://semitwist.com/scriptlike/path.html#Path) wrappers around std.file/std.path. Things not wrapped (like dirSeparator and SpanMode) are now selective public imports instead of aliases. These changes should reduce issues with symbol conflicts.
+- **Change:** Removed unnecessary non-[```Path```](http://semitwist.com/scriptlike/path.html#Path) wrappers around [```std.file```](http://dlang.org/phobos/std_file.html)/[```std.path```](http://dlang.org/phobos/std_path.html). Things not wrapped (like [```dirSeparator```](http://dlang.org/phobos/std_path.html#dirSeparator) and [```SpanMode```](http://dlang.org/phobos/std_file.html#SpanMode)) are now selective public imports instead of aliases. These changes should reduce issues with symbol conflicts.
 - **Change:** [API reference](http://semitwist.com/scriptlike/) now built using [ddox](https://github.com/rejectedsoftware/ddox) and uses much improved styling (actually uses a stylesheet now).
-- **Change:** Eliminate remnants of the "planned but never enabled" wstring/dstring versions of Path/Ext/Args. There turned out not to be much need for them, and even std.file doesn't support wstring/dstring either.
+- **Change:** Eliminate remnants of the "planned but never enabled" wstring/dstring versions of [```Path```](http://semitwist.com/scriptlike/path.html#Path)/[```Ext```](http://semitwist.com/scriptlike/path.html#Ext)/[```Args```](http://semitwist.com/scriptlike/process.html#Args). There turned out not to be much need for them, and even [```std.file```](http://dlang.org/phobos/std_file.html) doesn't support wstring/dstring either.
 - **Change:** Put output binaries in "bin" subdirectory, instead of Scriptlike's root.
-- **Enhancement:** Add module scriptlike.only to import all of scriptlike, but omit the helper Phobos imports in scriptlike.std.
+- **Enhancement:** Add module [```scriptlike.only```](http://semitwist.com/scriptlike/only.html) to import all of scriptlike, but omit the helper Phobos imports in [```scriptlike.std```](http://semitwist.com/scriptlike/std.html).
 - **Enhancement:** [```fail```](http://semitwist.com/scriptlike/fail.html#fail) now accepts an arbitrary list of args or any type, just like writeln,
 - **Enhancement:** Added [```failEnforce```](http://semitwist.com/scriptlike/fail.html#failEnforce), like std.exception.enforce, but for ```fail()```.
 - **Enhancement:** Added [```runCollect```](http://semitwist.com/scriptlike/process.html#runCollect) and [```tryRunCollect```](http://semitwist.com/scriptlike/process.html#tryRunCollect), to capture a command's output instead of displaying it.
 - **Enhancement:** Added [```pause```](http://semitwist.com/scriptlike/interact.html#pause) to pause and prompt the user to press Enter.
 - **Enhancement:** [```echoCommand```](http://semitwist.com/scriptlike/file.html#echoCommand) is no longer private.
-- Added Path-based wrappers for std.file's getcwd, thisExePath and tempDir.
-- **Fixed:** No longer uses the deprecated std.process.system().
+- **Enhancement:** Added [```Path```](http://semitwist.com/scriptlike/path.html#Path)-based wrappers for [```std.file```](http://dlang.org/phobos/std_file.html)'s [```getcwd```](http://semitwist.com/scriptlike/file.html#getcwd), [```thisExePath```](http://semitwist.com/scriptlike/file.html#thisExePath) and [```tempDir```](http://semitwist.com/scriptlike/file.html#tempDir).
+- **Fixed:** No longer uses the deprecated [```std.process.system()```](http://dlang.org/phobos/std_process.html#system).
 
 v0.7.0 - 2015/04/02
 -------------------
