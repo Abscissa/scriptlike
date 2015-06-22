@@ -3,6 +3,10 @@ Scriptlike - Changelog
 
 (Dates below are YYYY/MM/DD)
 
+v0.8.1 - 2015/06/22
+-------------------
+- **Enhancement:** New overload for [```userInput```](http://semitwist.com/scriptlike/scriptlike/path.html#Path) to allow type inference: ```void userInput(T=string)(string question, ref T result);``` (suggestion from [Per Nordlöw](http://forum.dlang.org/post/povoxkcogcmbvhwlxqbc@forum.dlang.org)).
+
 v0.8.0 - 2015/06/13
 -------------------
 - **Change:** Minimum officially supported DMD increased from v2.064.2 to v2.066.0. Versions below v2.066.0 may still work, but there will now be certain problems when dealing with paths that contain spaces, particularly on Windows.

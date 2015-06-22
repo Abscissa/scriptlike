@@ -42,6 +42,9 @@ import std.traits;
  *
  * --------
  * auto name = userInput("What is your name");
+ * //or
+ * string name;
+ * userInput("What is your name", name);
  * --------
  *
  * Returns: User response as type T.
@@ -90,17 +93,28 @@ T userInput(T = string)(string question = "")
 	}
 }
 
+///ditto
+void userInput(T = string)(string question, ref T result)
+{
+	result = userInput!T(question);
+}
+
 version(unittest_scriptlike_d)
 unittest
 {
-	mixin(selfCom(["10PM"]));
+	mixin(selfCom(["10PM", "9PM"]));
 	mixin(selfCom());
 	auto s = userInput("What time is it?");
 	assert(s == "10PM", "Expected 10PM got" ~ s);
 	outfile.rewind;
 	assert(outfile.readln().strip == "What time is it?");
+	
+	outfile.rewind;
+	userInput("What time?", s);
+	assert(s == "9PM", "Expected 9PM got" ~ s);
+	outfile.rewind;
+	assert(outfile.readln().strip == "What time?");
 }
-
 
 /**
  * Pauses and prompts the user to press Enter (or "Return" on OSX).
