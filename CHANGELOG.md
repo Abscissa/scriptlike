@@ -5,6 +5,8 @@ Scriptlike - Changelog
 
 v0.8.2 - TBD
 -------------------
+- **Enhancement:** Add (opt-in) command echoing to most functions in [```scriptlike.file```](http://semitwist.com/scriptlike/scriptlike/file.html).
+- **Enhancement:** Add [```yap```](http://semitwist.com/scriptlike/scriptlike/file.html#yap) and [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/file.html#yapFunc) as improved versions of to-be-deprecated [```echoCommand```](http://semitwist.com/scriptlike/scriptlike/file.html#echoCommand).
 - **Fixed:** Make [```escapeShellArg```](http://semitwist.com/scriptlike/scriptlike/path.html#escapeShellArg) const-correct.
 
 v0.8.1 - 2015/06/22
