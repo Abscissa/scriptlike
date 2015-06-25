@@ -130,7 +130,7 @@ bool existsAsDir(in string path) @trusted
 ///ditto
 bool existsAsDir(in Path path) @trusted
 {
-	return existsAsDir(path.toRawString().to!string());
+	return existsAsDir(path.toRawString());
 }
 
 /// Checks if the path exists as a file.
@@ -145,7 +145,7 @@ bool existsAsFile(in string path) @trusted
 ///ditto
 bool existsAsFile(in Path path) @trusted
 {
-	return existsAsFile(path.toRawString().to!string());
+	return existsAsFile(path.toRawString());
 }
 
 /// Checks if the path exists as a symlink.
@@ -160,7 +160,7 @@ bool existsAsSymlink()(in string path) @trusted
 ///ditto
 bool existsAsSymlink(in Path path) @trusted
 {
-	return existsAsSymlink(path.toRawString().to!string());
+	return existsAsSymlink(path.toRawString());
 }
 
 // -- std.path wrappers to support Path, scriptlikeEcho and scriptlikeDryRun --
@@ -169,20 +169,20 @@ bool existsAsSymlink(in Path path) @trusted
 void[] read(in Path name, size_t upTo = size_t.max)
 {
 	yapFunc(name);
-	return std.file.read(name.toRawString().to!string(), upTo);
+	return std.file.read(name.toRawString(), upTo);
 }
 
 /// Like std.file.readText, but supports Path and command echoing.
 S readText(S = string)(in Path name)
 {
 	yapFunc(name);
-	return std.file.readText(name.toRawString().to!string());
+	return std.file.readText(name.toRawString());
 }
 
 /// Like std.file.write, but supports Path, command echoing and dryrun.
 void write(in Path name, const void[] buffer)
 {
-	write(name.toRawString().to!string(), buffer);
+	write(name.toRawString(), buffer);
 }
 
 ///ditto
@@ -197,7 +197,7 @@ void write(in string name, const void[] buffer)
 /// Like std.file.append, but supports Path, command echoing and dryrun.
 void append(in Path name, in void[] buffer)
 {
-	append(name.toRawString().to!string(), buffer);
+	append(name.toRawString(), buffer);
 }
 
 ///ditto
@@ -212,19 +212,19 @@ void append(in string name, in void[] buffer)
 /// Like std.file.rename, but supports Path, command echoing and dryrun.
 void rename(in Path from, in Path to)
 {
-	rename(from.toRawString().to!string(), to.toRawString().to!string());
+	rename(from.toRawString(), to.toRawString());
 }
 
 ///ditto
 void rename(in string from, in Path to)
 {
-	rename(from, to.toRawString().to!string());
+	rename(from, to.toRawString());
 }
 
 ///ditto
 void rename(in Path from, in string to)
 {
-	rename(from.toRawString().to!string(), to);
+	rename(from.toRawString(), to);
 }
 
 ///ditto
@@ -258,7 +258,7 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 /// Like std.file.remove, but supports Path, command echoing and dryrun.
 void remove(in Path name)
 {
-	remove(name.toRawString().to!string());
+	remove(name.toRawString());
 }
 
 ///ditto
@@ -289,7 +289,7 @@ bool tryRemove(T)(T name) if(is(T==string) || is(T==Path))
 ulong getSize(in Path name)
 {
 	yapFunc(name);
-	return std.file.getSize(name.toRawString().to!string());
+	return std.file.getSize(name.toRawString());
 }
 
 /// Like std.file.getTimes, but supports Path and command echoing.
@@ -298,7 +298,7 @@ void getTimes(in Path name,
 	out SysTime modificationTime)
 {
 	yapFunc(name);
-	std.file.getTimes(name.toRawString().to!string(), accessTime, modificationTime);
+	std.file.getTimes(name.toRawString(), accessTime, modificationTime);
 }
 
 version(ddoc_scriptlike_d)
@@ -315,7 +315,7 @@ else version(Windows) void getTimesWin(in Path name,
 	out SysTime fileModificationTime)
 {
 	yapFunc(name);
-	std.file.getTimesWin(name.toRawString().to!string(), fileCreationTime, fileAccessTime, fileModificationTime);
+	std.file.getTimesWin(name.toRawString(), fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
 /// Like std.file.setTimes, but supports Path, command echoing and dryrun.
@@ -323,7 +323,7 @@ void setTimes(in Path name,
 	SysTime accessTime,
 	SysTime modificationTime)
 {
-	setTimes(name.toRawString().to!string(), accessTime, modificationTime);
+	setTimes(name.toRawString(), accessTime, modificationTime);
 }
 
 ///ditto
@@ -342,56 +342,56 @@ void setTimes(in string name,
 SysTime timeLastModified(in Path name)
 {
 	yapFunc(name);
-	return std.file.timeLastModified(name.toRawString().to!string());
+	return std.file.timeLastModified(name.toRawString());
 }
 
 /// Like std.file.timeLastModified, but supports Path and command echoing.
 SysTime timeLastModified(in Path name, SysTime returnIfMissing)
 {
 	yapFunc(name);
-	return std.file.timeLastModified(name.toRawString().to!string(), returnIfMissing);
+	return std.file.timeLastModified(name.toRawString(), returnIfMissing);
 }
 
 /// Like std.file.exists, but supports Path and command echoing.
 bool exists(in Path name) @trusted
 {
 	yapFunc(name);
-	return std.file.exists(name.toRawString().to!string());
+	return std.file.exists(name.toRawString());
 }
 
 /// Like std.file.getAttributes, but supports Path and command echoing.
 uint getAttributes(in Path name)
 {
 	yapFunc(name);
-	return std.file.getAttributes(name.toRawString().to!string());
+	return std.file.getAttributes(name.toRawString());
 }
 
 /// Like std.file.getLinkAttributes, but supports Path and command echoing.
 uint getLinkAttributes(in Path name)
 {
 	yapFunc(name);
-	return std.file.getLinkAttributes(name.toRawString().to!string());
+	return std.file.getLinkAttributes(name.toRawString());
 }
 
 /// Like std.file.isDir, but supports Path and command echoing.
 @property bool isDir(in Path name)
 {
 	yapFunc(name);
-	return std.file.isDir(name.toRawString().to!string());
+	return std.file.isDir(name.toRawString());
 }
 
 /// Like std.file.isFile, but supports Path and command echoing.
 @property bool isFile(in Path name)
 {
 	yapFunc(name);
-	return std.file.isFile(name.toRawString().to!string());
+	return std.file.isFile(name.toRawString());
 }
 
 /// Like std.file.isSymlink, but supports Path and command echoing.
 @property bool isSymlink(Path name)
 {
 	yapFunc(name);
-	return std.file.isSymlink(name.toRawString().to!string());
+	return std.file.isSymlink(name.toRawString());
 }
 
 /// Like std.file.getcwd, but returns a Path.
@@ -403,7 +403,7 @@ Path getcwd()
 /// Like std.file.chdir, but supports Path and command echoing.
 void chdir(in Path pathname)
 {
-	chdir(pathname.toRawString().to!string());
+	chdir(pathname.toRawString());
 }
 
 /// Like std.file.chdir, but supports Path and command echoing.
@@ -416,7 +416,7 @@ void chdir(in string pathname)
 /// Like std.file.mkdir, but supports Path, command echoing and dryrun.
 void mkdir(in Path pathname)
 {
-	mkdir(pathname.toRawString().to!string());
+	mkdir(pathname.toRawString());
 }
 
 ///ditto
@@ -445,7 +445,7 @@ bool tryMkdir(T)(T name) if(is(T==string) || is(T==Path))
 /// Like std.file.mkdirRecurse, but supports Path, command echoing and dryrun.
 void mkdirRecurse(in Path pathname)
 {
-	mkdirRecurse(pathname.toRawString().to!string());
+	mkdirRecurse(pathname.toRawString());
 }
 
 ///ditto
@@ -474,7 +474,7 @@ bool tryMkdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 /// Like std.file.rmdir, but supports Path, command echoing and dryrun.
 void rmdir(in Path pathname)
 {
-	rmdir(pathname.toRawString().to!string());
+	rmdir(pathname.toRawString());
 }
 
 ///ditto
@@ -530,17 +530,17 @@ else version(Posix)
 {
 	void symlink(Path original, Path link)
 	{
-		symlink(original.toRawString().to!string(), link.toRawString().to!string());
+		symlink(original.toRawString(), link.toRawString());
 	}
 
 	void symlink(string original, Path link)
 	{
-		symlink(original, link.toRawString().to!string());
+		symlink(original, link.toRawString());
 	}
 
 	void symlink(Path original, string link)
 	{
-		symlink(original.toRawString().to!string(), link);
+		symlink(original.toRawString(), link);
 	}
 
 	void symlink(string original, string link)
@@ -569,26 +569,26 @@ else version(Posix)
 	Path readLink(Path link)
 	{
 		yapFunc(link);
-		return Path( std.file.readLink(link.toRawString().to!string()) );
+		return Path( std.file.readLink(link.toRawString()) );
 	}
 }
 
 /// Like std.file.copy, but supports Path, command echoing and dryrun.
 void copy(in Path from, in Path to)
 {
-	copy(from.toRawString().to!string(), to.toRawString().to!string());
+	copy(from.toRawString(), to.toRawString());
 }
 
 ///ditto
 void copy(in string from, in Path to)
 {
-	copy(from, to.toRawString().to!string());
+	copy(from, to.toRawString());
 }
 
 ///ditto
 void copy(in Path from, in string to)
 {
-	copy(from.toRawString().to!string(), to);
+	copy(from.toRawString(), to);
 }
 
 ///ditto
@@ -621,7 +621,7 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 /// Like std.file.rmdirRecurse, but supports Path, command echoing and dryrun.
 void rmdirRecurse(in Path pathname)
 {
-	rmdirRecurse(pathname.toRawString().to!string());
+	rmdirRecurse(pathname.toRawString());
 }
 
 ///ditto
@@ -651,7 +651,7 @@ bool tryRmdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 auto dirEntries(Path path, SpanMode mode, bool followSymlink = true)
 {
 	yapFunc(path);
-	return std.file.dirEntries(path.toRawString().to!string(), mode, followSymlink);
+	return std.file.dirEntries(path.toRawString(), mode, followSymlink);
 }
 
 /// Like std.file.dirEntries, but supports Path and command echoing.
@@ -659,7 +659,7 @@ auto dirEntries(Path path, string pattern, SpanMode mode,
 	bool followSymlink = true)
 {
 	yapFunc(path);
-	return std.file.dirEntries(path.toRawString().to!string(), pattern, mode, followSymlink);
+	return std.file.dirEntries(path.toRawString(), pattern, mode, followSymlink);
 }
 
 /// Like std.file.slurp, but supports Path and command echoing.
@@ -668,7 +668,7 @@ template slurp(Types...)
 	auto slurp(Path filename, in string format)
 	{
 		yapFunc(filename);
-		return std.file.slurp!Types(filename.toRawString().to!string(), format);
+		return std.file.slurp!Types(filename.toRawString(), format);
 	}
 }
 
