@@ -255,7 +255,7 @@ string buildNormalizedPathFixed(string[] paths...)
 }
 
 /// Properly escape arguments containing spaces for the command shell, if necessary.
-string escapeShellArg(string str)
+const(string) escapeShellArg(in string str)
 {
 	if(str.canFind(' '))
 	{

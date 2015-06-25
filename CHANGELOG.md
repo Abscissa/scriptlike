@@ -3,6 +3,10 @@ Scriptlike - Changelog
 
 (Dates below are YYYY/MM/DD)
 
+v0.8.2 - TBD
+-------------------
+- **Fixed:** Make [```escapeShellArg```](http://semitwist.com/scriptlike/scriptlike/path.html#escapeShellArg) const-correct.
+
 v0.8.1 - 2015/06/22
 -------------------
 - **Enhancement:** New overload for [```userInput```](http://semitwist.com/scriptlike-docs/v0.8.1/scriptlike/interact/userInput.html) to allow type inference: ```void userInput(T=string)(string question, ref T result);``` (suggestion from [Per Nordlöw](http://forum.dlang.org/post/povoxkcogcmbvhwlxqbc@forum.dlang.org)).
