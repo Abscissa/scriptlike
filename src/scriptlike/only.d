@@ -1,7 +1,8 @@
 /++
-Scriptlike: Utility to aid in script-like programs.
+$(H2 Scriptlike $(SCRIPTLIKE_VERSION))
+Utility to aid in script-like programs.
 
-Written in the D programming language.
+Written in the $(LINK2 http://dlang.org, D programming language).
 
 Import this "scriptlike.only" module instead of "scriptlike" if you want to
 import all of Scriptlike, but DON'T want to automatically import any of Phobos.
@@ -18,4 +19,5 @@ public import scriptlike.interact;
 public import scriptlike.fail;
 public import scriptlike.file;
 public import scriptlike.path;
+public import scriptlike.packageVersion;
 public import scriptlike.process;

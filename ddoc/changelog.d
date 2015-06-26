@@ -1,6 +1,9 @@
 /++
 Scriptlike_Changelog:
 
+The latest version of this changelog is always available at:$(BR)
+$(LINK http://semitwist.com/scriptlike/scriptlike/changelog.html )
+
 (Dates below are YYYY/MM/DD)
 
 $(H2 v0.8.2 - TBD)

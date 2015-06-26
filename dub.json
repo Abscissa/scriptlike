@@ -7,5 +7,7 @@
 
 	"targetPath": "bin",
 	"importPaths": ["src"],
-	"targetType":  "library"
+	"targetType":  "library",
+	
+	"excludedSourceFiles": ["src/scriptlike/packageVersion.d"]
 }

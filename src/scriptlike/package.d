@@ -1,28 +1,25 @@
 /++
-Scriptlike: Utility to aid in script-like programs.
+$(H2 Scriptlike $(SCRIPTLIKE_VERSION))
+Utility to aid in script-like programs.
 
-Version v0.8.0
+Written in the $(LINK2 http://dlang.org, D programming language) and
+licensed under The zlib/libpng License.
 
-Written in the D programming language.
-Tested with DMD 2.066.0 through 2.067.0.
-Licensed under The zlib/libpng License.
+The latest version of this API reference is always available at:$(BR)
+$(LINK http://semitwist.com/scriptlike/ )
 
-Import all:
+Import all (including anything from Phobos likely to be useful for scripts):
 ------------
 import scriptlike;
 ------------
 
+Import all of Scriptlike only, but no Phobos:
+------------
+import scriptlike.only;
+------------
+
 Homepage:
 $(LINK https://github.com/abscissa/scriptlike)
-
-This API Reference:
-$(LINK http://semitwist.com/scriptlike)
-
-Modules:
-$(LINK2 std.html,scriptlike.std)$(BR)
-$(LINK2 path.html,scriptlike.path)$(BR)
-$(LINK2 fail.html,scriptlike.fail)$(BR)
-$(LINK2 interact.html,scriptlike.interact)$(BR)
 
 Copyright:
 Copyright (C) 2014-2015 Nick Sabalausky.
@@ -37,4 +34,8 @@ module scriptlike;
 public import scriptlike.only;
 public import scriptlike.std;
 
-version(D_Ddoc) import changelog;
+version(D_Ddoc)
+{
+	import scriptlike.packageVersion;
+	import changelog;
+}

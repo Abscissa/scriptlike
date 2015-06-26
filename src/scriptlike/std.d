@@ -1,6 +1,8 @@
 /++
-Scriptlike: Utility to aid in script-like programs.
-Written in the D programming language.
+$(H2 Scriptlike $(SCRIPTLIKE_VERSION))
+Utility to aid in script-like programs.
+
+Written in the $(LINK2 http://dlang.org, D programming language).
 
 Automatically pulls in anything from Phobos likely to be useful for scripts.
 
