@@ -95,7 +95,7 @@ auto errLevel = Path("some working dir").run(cmd.data);
 +/
 int tryRun(string command)
 {
-	echoCommand(command);
+	yapFunc(command);
 
 	if(scriptlikeDryRun)
 		return 0;
@@ -153,7 +153,7 @@ string runCollect(Path workingDirectory, string command)
 /// start the process.
 auto tryRunCollect(string command)
 {
-	echoCommand(command);
+	yapFunc(command);
 	auto result = std.typecons.Tuple!(int, "status", string, "output")(0, null);
 
 	if(scriptlikeDryRun)
