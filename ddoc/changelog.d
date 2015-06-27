@@ -9,6 +9,16 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 $(H2 v0.8.2 - TBD)
 
 $(UL
+	$(CHANGE Split $(MODULE_FILE) and $(MODULE_PATH) into the following:$(BR)
+		$(UL
+			$(LI $(MODULE_CORE) )
+			$(LI $(MODULE_FILE_EXTR) )
+			$(LI $(MODULE_FILE_WRAP) )
+			$(LI $(MODULE_PATH_EXTR) )
+			$(LI $(MODULE_PATH_WRAP) )
+		)
+		Utilizes `package.d` to retain ability to import $(MODULE_FILE) and $(MODULE_PATH).
+	)
 	$(CHANGE Convert changelog from markdown to $(DDOX) so links are more readable. )
 	$(ENHANCE Add (opt-in) command echoing to most functions in scriptlike.file. )
 	$(ENHANCE

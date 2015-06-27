@@ -15,6 +15,7 @@ Authors:   Nick Sabalausky
 
 module scriptlike.only;
 
+public import scriptlike.core;
 public import scriptlike.interact;
 public import scriptlike.fail;
 public import scriptlike.file;

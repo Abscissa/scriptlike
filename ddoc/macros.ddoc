@@ -11,6 +11,7 @@ Macros:
 	
 	API_BASE = http://semitwist.com/scriptlike/scriptlike/
 	
+	API_CORE      = $(D_INLINECODE $(LINK2 $(API_BASE)core/$0.html, $0))
 	API_FAIL      = $(D_INLINECODE $(LINK2 $(API_BASE)fail/$0.html, $0))
 	API_FILE_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)file/extras/$0.html, $0))
 	API_FILE_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)file/wrappers/$0.html, $0))
@@ -22,6 +23,17 @@ Macros:
 	API_PATH_EXT  = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Ext/$0.html, $0))
 	API_PATH_PATH = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Path/$0.html, $0))
 
+	MODULE_CORE      = $(D_INLINECODE $(LINK2 $(API_BASE)core.html, scriptlike.core))
+	MODULE_FAIL      = $(D_INLINECODE $(LINK2 $(API_BASE)fail.html, scriptlike.fail))
+	MODULE_FILE      = $(D_INLINECODE $(LINK2 $(API_BASE)file.html, scriptlike.file))
+	MODULE_FILE_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)file/extras.html, scriptlike.file.extras))
+	MODULE_FILE_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)file/wrappers.html, scriptlike.file.wrappers))
+	MODULE_INTERACT  = $(D_INLINECODE $(LINK2 $(API_BASE)interact.html, scriptlike.interact))
+	MODULE_PATH      = $(D_INLINECODE $(LINK2 $(API_BASE)path.html, scriptlike.path))
+	MODULE_PATH_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras.html, scriptlike.path.extras))
+	MODULE_PATH_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)path/wrappers.html, scriptlike.path.wrap))
+	MODULE_PROCESS   = $(D_INLINECODE $(LINK2 $(API_BASE)process.html, scriptlike.process))
+	
 	STD_EXCEPTION = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_exception.html#$0, $0))
 	STD_FILE      = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_file.html#$0, $0))
 	STD_PATH      = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_path.html#$0, $0))

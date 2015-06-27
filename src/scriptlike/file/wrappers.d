@@ -22,7 +22,7 @@ public import std.file : FileException, SpanMode,
 	attrIsDir, attrIsFile, attrIsSymlink;
 static import std.path;
 
-import scriptlike.file.extras;
+import scriptlike.core;
 import scriptlike.path.extras;
 
 /// Like $(FULL_STD_FILE read), but supports Path and command echoing.

@@ -12,6 +12,7 @@ import std.conv;
 import std.process;
 import std.range;
 
+import scriptlike.core;
 import scriptlike.path;
 import scriptlike.file;
 
