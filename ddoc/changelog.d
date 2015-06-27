@@ -90,7 +90,6 @@ $(UL
 		$(STD_FILE getcwd), $(STD_FILE thisExePath) and $(STD_FILE tempDir).
 	)
 	$(FIXED No longer uses the Phobos's deprecated $(STD_PROCESS system).)
-	)
 )
 
 $(H2 v0.7.0 - 2015/04/02)

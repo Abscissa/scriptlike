@@ -63,6 +63,10 @@ td {
 	vertical-align: top;
 }
 
+li {
+	padding-bottom: 0.33em;
+}
+
 col.caption {
 	width: 150pt;
 }
