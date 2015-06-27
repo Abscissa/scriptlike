@@ -34,8 +34,4 @@ module scriptlike;
 public import scriptlike.only;
 public import scriptlike.std;
 
-version(D_Ddoc)
-{
-	import scriptlike.packageVersion;
-	import changelog;
-}
+version(D_Ddoc) import changelog;
