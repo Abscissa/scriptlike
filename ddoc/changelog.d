@@ -2,7 +2,7 @@
 Scriptlike_Changelog:
 
 The latest version of this changelog is always available at:$(BR)
-$(LINK http://semitwist.com/scriptlike/scriptlike/changelog.html )
+$(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
@@ -68,7 +68,7 @@ $(UL
 		but for $(API_FAIL fail).
 	)
 	$(ENHANCE
-		Added $(API_PROCESS runCollect and $(API_PROCESS tryRunCollect), to
+		Added $(API_PROCESS runCollect) and $(API_PROCESS tryRunCollect), to
 		capture a command's output instead of displaying it.
 	)
 	$(ENHANCE Added $(API_INTERACT pause) to pause and prompt the user to press Enter. )
