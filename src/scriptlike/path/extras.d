@@ -39,13 +39,13 @@ struct Ext
 	}
 	
 	/// Convert to string.
-	string toString() @safe pure nothrow
+	string toString() pure @safe nothrow
 	{
 		return str;
 	}
 	
 	/// No longer needed. Use Ext.toString() instead.
-	string toRawString() @safe pure nothrow
+	string toRawString() pure @safe nothrow
 	{
 		return str;
 	}
@@ -102,12 +102,12 @@ struct Path
 	private string str = ".";
 	
 	/// Main constructor.
-	this(string path = ".") @safe pure nothrow
+	this(string path = ".") pure @safe nothrow
 	{
 		this.str = buildNormalizedPathFixed(path);
 	}
 	
-	@trusted pure nothrow invariant()
+	pure @trusted nothrow invariant()
 	{
 		assert(str == buildNormalizedPathFixed(str));
 	}
@@ -119,7 +119,7 @@ struct Path
 	}
 	
 	/// Returns the underlying string. Does NOT do any escaping, even if path contains spaces.
-	string toRawString() const @safe pure nothrow
+	string toRawString() const pure @safe nothrow
 	{
 		return str;
 	}

@@ -17,8 +17,6 @@ import std.traits;
 import std.typecons;
 
 static import std.file;
-//import std.file : FileException, SpanMode,
-//	attrIsDir, attrIsFile, attrIsSymlink;
 static import std.path;
 
 import scriptlike.path;
