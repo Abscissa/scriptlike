@@ -62,7 +62,7 @@ set to non-zero.
 
 This is exception-safe, all cleanup code gets run.
 
-Your program's name is automatically detected from std.file.thisExePath.
+Your program's name is automatically detected from $(STD_FILE thisExePath).
 
 Note, on DMD 2.064.2, the error message is displayed BEFORE the exception is
 thrown. So if you catch the Fail exception, the message will have already been
@@ -97,7 +97,7 @@ void fail(T...)(T args)
 /++
 Calls fail() if the condition is false.
 
-This is much like std.exception.enforce(), but for for fail() instead of
+This is much like $(FULL_STD_EXCEPTION enforce), but for for fail() instead of
 arbitrary exceptions.
 
 Example:

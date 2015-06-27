@@ -120,8 +120,8 @@ void echoCommand(lazy string msg)
 
 /// Checks if the path exists as a directory.
 ///
-/// This is like std.file.isDir, but returns false instead of throwing if the
-/// path doesn't exist.
+/// This is like $(FULL_STD_FILE isDir), but returns false instead of
+/// throwing if the path doesn't exist.
 bool existsAsDir(in string path) @trusted
 {
 	yapFunc(path.escapeShellArg());
@@ -135,8 +135,8 @@ bool existsAsDir(in Path path) @trusted
 
 /// Checks if the path exists as a file.
 ///
-/// This is like std.file.isFile, but returns false instead of throwing if the
-/// path doesn't exist.
+/// This is like $(FULL_STD_FILE isFile), but returns false instead of
+/// throwing if the path doesn't exist.
 bool existsAsFile(in string path) @trusted
 {
 	yapFunc(path.escapeShellArg());
@@ -150,8 +150,8 @@ bool existsAsFile(in Path path) @trusted
 
 /// Checks if the path exists as a symlink.
 ///
-/// This is like std.file.isSymlink, but returns false instead of throwing if the
-/// path doesn't exist.
+/// This is like $(FULL_STD_FILE isSymlink), but returns false instead of
+/// throwing if the path doesn't exist.
 bool existsAsSymlink()(in string path) @trusted
 {
 	yapFunc(path.escapeShellArg());
@@ -163,23 +163,23 @@ bool existsAsSymlink(in Path path) @trusted
 	return existsAsSymlink(path.toRawString());
 }
 
-// -- std.path wrappers to support Path, scriptlikeEcho and scriptlikeDryRun --
+// -- std.file wrappers to support Path, scriptlikeEcho and scriptlikeDryRun --
 
-/// Like std.file.read, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE read), but supports Path and command echoing.
 void[] read(in Path name, size_t upTo = size_t.max)
 {
 	yapFunc(name);
 	return std.file.read(name.toRawString(), upTo);
 }
 
-/// Like std.file.readText, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE readText), but supports Path and command echoing.
 S readText(S = string)(in Path name)
 {
 	yapFunc(name);
 	return std.file.readText(name.toRawString());
 }
 
-/// Like std.file.write, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE write), but supports Path, command echoing and dryrun.
 void write(in Path name, const void[] buffer)
 {
 	write(name.toRawString(), buffer);
@@ -194,7 +194,7 @@ void write(in string name, const void[] buffer)
 		std.file.write(name, buffer);
 }
 
-/// Like std.file.append, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE append), but supports Path, command echoing and dryrun.
 void append(in Path name, in void[] buffer)
 {
 	append(name.toRawString(), buffer);
@@ -209,7 +209,7 @@ void append(in string name, in void[] buffer)
 		std.file.append(name, buffer);
 }
 
-/// Like std.file.rename, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE rename), but supports Path, command echoing and dryrun.
 void rename(in Path from, in Path to)
 {
 	rename(from.toRawString(), to.toRawString());
@@ -255,7 +255,7 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 	return false;
 }
 
-/// Like std.file.remove, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE remove), but supports Path, command echoing and dryrun.
 void remove(in Path name)
 {
 	remove(name.toRawString());
@@ -285,14 +285,14 @@ bool tryRemove(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
-/// Like std.file.getSize, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE getSize), but supports Path and command echoing.
 ulong getSize(in Path name)
 {
 	yapFunc(name);
 	return std.file.getSize(name.toRawString());
 }
 
-/// Like std.file.getTimes, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE getTimes), but supports Path and command echoing.
 void getTimes(in Path name,
 	out SysTime accessTime,
 	out SysTime modificationTime)
@@ -303,7 +303,7 @@ void getTimes(in Path name,
 
 version(ddoc_scriptlike_d)
 {
-	/// Windows-only. Like std.file.getTimesWin, but supports Path and command echoing.
+	/// Windows-only. Like $(FULL_STD_FILE getTimesWin), but supports Path and command echoing.
 	void getTimesWin(in Path name,
 		out SysTime fileCreationTime,
 		out SysTime fileAccessTime,
@@ -318,7 +318,7 @@ else version(Windows) void getTimesWin(in Path name,
 	std.file.getTimesWin(name.toRawString(), fileCreationTime, fileAccessTime, fileModificationTime);
 }
 
-/// Like std.file.setTimes, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE setTimes), but supports Path, command echoing and dryrun.
 void setTimes(in Path name,
 	SysTime accessTime,
 	SysTime modificationTime)
@@ -338,82 +338,82 @@ void setTimes(in string name,
 		std.file.setTimes(name, accessTime, modificationTime);
 }
 
-/// Like std.file.timeLastModified, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE timeLastModified), but supports Path and command echoing.
 SysTime timeLastModified(in Path name)
 {
 	yapFunc(name);
 	return std.file.timeLastModified(name.toRawString());
 }
 
-/// Like std.file.timeLastModified, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE timeLastModified), but supports Path and command echoing.
 SysTime timeLastModified(in Path name, SysTime returnIfMissing)
 {
 	yapFunc(name);
 	return std.file.timeLastModified(name.toRawString(), returnIfMissing);
 }
 
-/// Like std.file.exists, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE exists), but supports Path and command echoing.
 bool exists(in Path name) @trusted
 {
 	yapFunc(name);
 	return std.file.exists(name.toRawString());
 }
 
-/// Like std.file.getAttributes, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE getAttributes), but supports Path and command echoing.
 uint getAttributes(in Path name)
 {
 	yapFunc(name);
 	return std.file.getAttributes(name.toRawString());
 }
 
-/// Like std.file.getLinkAttributes, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE getLinkAttributes), but supports Path and command echoing.
 uint getLinkAttributes(in Path name)
 {
 	yapFunc(name);
 	return std.file.getLinkAttributes(name.toRawString());
 }
 
-/// Like std.file.isDir, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE isDir), but supports Path and command echoing.
 @property bool isDir(in Path name)
 {
 	yapFunc(name);
 	return std.file.isDir(name.toRawString());
 }
 
-/// Like std.file.isFile, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE isFile), but supports Path and command echoing.
 @property bool isFile(in Path name)
 {
 	yapFunc(name);
 	return std.file.isFile(name.toRawString());
 }
 
-/// Like std.file.isSymlink, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE isSymlink), but supports Path and command echoing.
 @property bool isSymlink(Path name)
 {
 	yapFunc(name);
 	return std.file.isSymlink(name.toRawString());
 }
 
-/// Like std.file.getcwd, but returns a Path.
+/// Like $(FULL_STD_FILE getcwd), but returns a Path.
 Path getcwd()
 {
 	return Path( std.file.getcwd() );
 }
 
-/// Like std.file.chdir, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE chdir), but supports Path and command echoing.
 void chdir(in Path pathname)
 {
 	chdir(pathname.toRawString());
 }
 
-/// Like std.file.chdir, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE chdir), but supports Path and command echoing.
 void chdir(in string pathname)
 {
 	yapFunc(pathname.escapeShellArg());
 	std.file.chdir(pathname);
 }
 
-/// Like std.file.mkdir, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE mkdir), but supports Path, command echoing and dryrun.
 void mkdir(in Path pathname)
 {
 	mkdir(pathname.toRawString());
@@ -442,7 +442,7 @@ bool tryMkdir(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
-/// Like std.file.mkdirRecurse, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE mkdirRecurse), but supports Path, command echoing and dryrun.
 void mkdirRecurse(in Path pathname)
 {
 	mkdirRecurse(pathname.toRawString());
@@ -471,7 +471,7 @@ bool tryMkdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
-/// Like std.file.rmdir, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE rmdir), but supports Path, command echoing and dryrun.
 void rmdir(in Path pathname)
 {
 	rmdir(pathname.toRawString());
@@ -502,7 +502,7 @@ bool tryRmdir(T)(T name) if(is(T==string) || is(T==Path))
 
 version(ddoc_scriptlike_d)
 {
-	/// Posix-only. Like std.file.symlink, but supports Path and command echoing.
+	/// Posix-only. Like $(FULL_STD_FILE symlink), but supports Path and command echoing.
 	void symlink(Path original, Path link);
 
 	///ditto
@@ -523,7 +523,7 @@ version(ddoc_scriptlike_d)
 			(is(T2==string) || is(T2==Path))
 		);
 
-	/// Posix-only. Like std.file.readLink, but supports Path and command echoing.
+	/// Posix-only. Like $(FULL_STD_FILE readLink), but supports Path and command echoing.
 	Path readLink(Path link);
 }
 else version(Posix)
@@ -573,7 +573,7 @@ else version(Posix)
 	}
 }
 
-/// Like std.file.copy, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE copy), but supports Path, command echoing and dryrun.
 void copy(in Path from, in Path to)
 {
 	copy(from.toRawString(), to.toRawString());
@@ -618,7 +618,7 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 	return false;
 }
 
-/// Like std.file.rmdirRecurse, but supports Path, command echoing and dryrun.
+/// Like $(FULL_STD_FILE rmdirRecurse), but supports Path, command echoing and dryrun.
 void rmdirRecurse(in Path pathname)
 {
 	rmdirRecurse(pathname.toRawString());
@@ -647,14 +647,14 @@ bool tryRmdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
-/// Like std.file.dirEntries, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE dirEntries), but supports Path and command echoing.
 auto dirEntries(Path path, SpanMode mode, bool followSymlink = true)
 {
 	yapFunc(path);
 	return std.file.dirEntries(path.toRawString(), mode, followSymlink);
 }
 
-/// Like std.file.dirEntries, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE dirEntries), but supports Path and command echoing.
 auto dirEntries(Path path, string pattern, SpanMode mode,
 	bool followSymlink = true)
 {
@@ -662,7 +662,7 @@ auto dirEntries(Path path, string pattern, SpanMode mode,
 	return std.file.dirEntries(path.toRawString(), pattern, mode, followSymlink);
 }
 
-/// Like std.file.slurp, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE slurp), but supports Path and command echoing.
 template slurp(Types...)
 {
 	auto slurp(Path filename, in string format)
@@ -672,7 +672,7 @@ template slurp(Types...)
 	}
 }
 
-/// Like std.file.thisExePath, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE thisExePath), but supports Path and command echoing.
 @trusted Path thisExePath()
 {
 	auto path = Path( std.file.thisExePath() );
@@ -680,7 +680,7 @@ template slurp(Types...)
 	return path;
 }
 
-/// Like std.file.tempDir, but supports Path and command echoing.
+/// Like $(FULL_STD_FILE tempDir), but supports Path and command echoing.
 @trusted Path tempDir()
 {
 	auto path = Path( std.file.tempDir() );

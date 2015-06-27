@@ -219,7 +219,7 @@ struct Path
 		return !!str;
 	}
 	
-	/// Returns the parent path, according to std.path.dirName.
+	/// Returns the parent path, according to $(FULL_STD_PATH dirName).
 	@property Path up()
 	{
 		return this.dirName();
@@ -272,7 +272,7 @@ const(string) escapeShellArg(in string str)
 
 // -- std.path wrappers to support Path type --------------------
 
-/// Just like std.path.baseName, but operates on Path.
+/// Like $(FULL_STD_PATH baseName), but operates on Path.
 Path baseName(Path path)
 	@trusted pure
 {
@@ -286,43 +286,43 @@ Path baseName(CaseSensitive cs = CaseSensitive.osDefault)
 {
 	return Path( std.path.baseName!cs(path.str, suffix) );
 }
-/// Just like std.path.dirName, but operates on Path.
+/// Like $(FULL_STD_PATH dirName), but operates on Path.
 Path dirName(Path path)
 {
 	return Path( std.path.dirName(path.str) );
 }
 
-/// Just like std.path.rootName, but operates on Path.
+/// Like $(FULL_STD_PATH rootName), but operates on Path.
 Path rootName(Path path) @safe pure nothrow
 {
 	return Path( std.path.rootName(path.str) );
 }
 
-/// Just like std.path.driveName, but operates on Path.
+/// Like $(FULL_STD_PATH driveName), but operates on Path.
 Path driveName(Path path) @safe pure nothrow
 {
 	return Path( std.path.driveName(path.str) );
 }
 
-/// Just like std.path.stripDrive, but operates on Path.
+/// Like $(FULL_STD_PATH stripDrive), but operates on Path.
 Path stripDrive(Path path) @safe pure nothrow
 {
 	return Path( std.path.stripDrive(path.str) );
 }
 
-/// Just like std.path.extension, but takes a Path and returns an Ext.
+/// Like $(FULL_STD_PATH extension), but takes a Path and returns an Ext.
 Ext extension(in Path path) @safe pure nothrow
 {
 	return Ext( std.path.extension(path.str) );
 }
 
-/// Just like std.path.stripExtension, but operates on Path.
+/// Like $(FULL_STD_PATH stripExtension), but operates on Path.
 Path stripExtension(Path path) @safe pure nothrow
 {
 	return Path( std.path.stripExtension(path.str) );
 }
 
-/// Just like std.path.setExtension, but operates on Path.
+/// Like $(FULL_STD_PATH setExtension), but operates on Path.
 Path setExtension(Path path, string ext)
 	@trusted pure nothrow
 {
@@ -336,7 +336,7 @@ Path setExtension(Path path, Ext ext)
 	return path.setExtension(ext.toString());
 }
 
-/// Just like std.path.defaultExtension, but operates on Path and optionally Ext.
+/// Like $(FULL_STD_PATH defaultExtension), but operates on Path and optionally Ext.
 Path defaultExtension(Path path, in string ext)
 	@trusted pure
 {
@@ -350,26 +350,26 @@ Path defaultExtension(Path path, Ext ext)
 	return path.defaultExtension(ext.toString());
 }
 
-/// Just like std.path.pathSplitter. Note this returns a range of strings,
+/// Like $(FULL_STD_PATH pathSplitter). Note this returns a range of strings,
 /// not a range of Path.
 auto pathSplitter(Path path) @safe pure nothrow
 {
 	return std.path.pathSplitter(path.str);
 }
 
-/// Just like std.path.isRooted, but operates on Path.
+/// Like $(FULL_STD_PATH isRooted), but operates on Path.
 bool isRooted(in Path path) @safe pure nothrow
 {
 	return std.path.isRooted(path.str);
 }
 
-/// Just like std.path.isAbsolute, but operates on Path.
+/// Like $(FULL_STD_PATH isAbsolute), but operates on Path.
 bool isAbsolute(in Path path) @safe pure nothrow
 {
 	return std.path.isAbsolute(path.str);
 }
 
-/// Just like std.path.absolutePath, but operates on Path.
+/// Like $(FULL_STD_PATH absolutePath), but operates on Path.
 Path absolutePath(Path path, lazy string base = getcwd())
 	@safe pure
 {
@@ -383,7 +383,7 @@ Path absolutePath(Path path, Path base)
 	return Path( std.path.absolutePath(path.str, base.str.to!string()) );
 }
 
-/// Just like std.path.relativePath, but operates on Path.
+/// Like $(FULL_STD_PATH relativePath), but operates on Path.
 Path relativePath(CaseSensitive cs = CaseSensitive.osDefault)
 	(Path path, lazy string base = getcwd())
 {
@@ -397,7 +397,7 @@ Path relativePath(CaseSensitive cs = CaseSensitive.osDefault)
 	return Path( std.path.relativePath!cs(path.str, base.str.to!string()) );
 }
 
-/// Just like std.path.filenameCmp, but operates on Path.
+/// Like $(FULL_STD_PATH filenameCmp), but operates on Path.
 int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault)
 	(Path path, Path filename2)
 	@safe pure
@@ -421,7 +421,7 @@ int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault)
 	return std.path.filenameCmp(path, filename2.str);
 }
 
-/// Just like std.path.globMatch, but operates on Path.
+/// Like $(FULL_STD_PATH globMatch), but operates on Path.
 bool globMatch(CaseSensitive cs = CaseSensitive.osDefault)
 	(Path path, string pattern)
 	@safe pure nothrow
@@ -429,19 +429,19 @@ bool globMatch(CaseSensitive cs = CaseSensitive.osDefault)
 	return std.path.globMatch!cs(path.str, pattern);
 }
 
-/// Just like std.path.isValidFilename, but operates on Path.
+/// Like $(FULL_STD_PATH isValidFilename), but operates on Path.
 bool isValidFilename(in Path path) @safe pure nothrow
 {
 	return std.path.isValidFilename(path.str);
 }
 
-/// Just like std.path.isValidPath, but operates on Path.
+/// Like $(FULL_STD_PATH isValidPath), but operates on Path.
 bool isValidPath(in Path path) @safe pure nothrow
 {
 	return std.path.isValidPath(path.str);
 }
 
-/// Just like std.path.expandTilde, but operates on Path.
+/// Like $(FULL_STD_PATH expandTilde), but operates on Path.
 Path expandTilde(Path path)
 {
 	return Path( std.path.expandTilde(path.str) );
