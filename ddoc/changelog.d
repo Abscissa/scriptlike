@@ -12,10 +12,10 @@ $(UL
 	$(CHANGE Convert changelog from markdown to $(DDOX) so links are more readable. )
 	$(ENHANCE Add (opt-in) command echoing to most functions in scriptlike.file. )
 	$(ENHANCE
-		Add $(API_FILE yap) and $(API_FILE yapFunc) as improved versions
-		of to-be-deprecated $(API_FILE echoCommand).
+		Add $(API_FILE_EXTR yap) and $(API_FILE_EXTR yapFunc) as improved versions
+		of to-be-deprecated $(API_FILE_EXTR echoCommand).
 	)
-	$(FIXED Make $(API_PATH escapeShellArg) const-correct. )
+	$(FIXED Make $(API_PATH_EXTR escapeShellArg) const-correct. )
 )
 
 $(H2 v0.8.1 - 2015/06/22)
@@ -39,7 +39,7 @@ $(UL
 		on Windows.
 	)
 	$(CHANGE
-		Removed unnecessary non-$(API_PATH Path) wrappers around $(MODULE_STD_FILE)/$(MODULE_STD_PATH).
+		Removed unnecessary non-$(API_PATH_EXTR Path) wrappers around $(MODULE_STD_FILE)/$(MODULE_STD_PATH).
 		Things not wrapped (like $(STD_PATH dirSeparator) and $(STD_FILE SpanMode))
 		are now selective public imports instead of aliases. These changes should
 		reduce issues with symbol conflicts.
@@ -50,7 +50,7 @@ $(UL
 	)
 	$(CHANGE
 		Eliminate remnants of the "planned but never enabled" wstring/dstring
-		versions of $(API_PATH Path)/$(API_PATH Ext)/$(API_PROCESS Args). There
+		versions of $(API_PATH_EXTR Path)/$(API_PATH_EXTR Ext)/$(API_PROCESS Args). There
 		turned out not to be much need for them, and even $(MODULE_STD_FILE)
 		doesn't support wstring/dstring either.
 	)
@@ -72,9 +72,9 @@ $(UL
 		capture a command's output instead of displaying it.
 	)
 	$(ENHANCE Added $(API_INTERACT pause) to pause and prompt the user to press Enter. )
-	$(ENHANCE $(API_FILE echoCommand) is no longer private. )
+	$(ENHANCE $(API_FILE_EXTR echoCommand) is no longer private. )
 	$(ENHANCE
-		Added $(API_PATH Path)-based wrappers for $(MODULE_STD_FILE)'s 
+		Added $(API_PATH_EXTR Path)-based wrappers for $(MODULE_STD_FILE)'s 
 		$(STD_FILE getcwd), $(STD_FILE thisExePath) and $(STD_FILE tempDir).
 	)
 	$(FIXED No longer uses the Phobos's deprecated $(STD_PROCESS system).)
@@ -95,7 +95,7 @@ $(H2 v0.6.0 - 2014/02/16)
 
 $(UL
 	$(CHANGE
-		$(API_PATH Path) and $(API_PATH Ext) are now aliases for the UTF-8
+		$(API_PATH_EXTR Path) and $(API_PATH_EXTR Ext) are now aliases for the UTF-8
 		instantiations, and the template structs are now named `PathT` and `ExtT`.
 	)
 	$(CHANGE
@@ -107,14 +107,14 @@ $(UL
 		Internally split into separate modules, but uses `package.d` to
 		preserve `import scriptlike;`.
 	)
-	$(CHANGE Rename `escapeShellPath` -> $(API_PATH escapeShellArg). )
+	$(CHANGE Rename `escapeShellPath` -> $(API_PATH_EXTR escapeShellArg). )
 	$(CHANGE
-		Rename $(API_PATH runShell) -> $(API_PROCESS tryRun). Temporarily keep
-		$(API_PATH runShell) as an alias.
+		Rename $(API_PROCESS runShell) -> $(API_PROCESS tryRun). Temporarily keep
+		$(API_PROCESS runShell) as an alias.
 	)
 	$(CHANGE
-		Rename $(API_PATH scriptlikeTraceCommands) -> $(API_FILE scriptlikeEcho).
-		Temporarily keep $(API_PATH scriptlikeTraceCommands) as an alias.
+		Rename $(API_FILE_EXTR scriptlikeTraceCommands) -> $(API_FILE_EXTR scriptlikeEcho).
+		Temporarily keep $(API_FILE_EXTR scriptlikeTraceCommands) as an alias.
 	)
 	$(ENHANCE Added scripts to run unittests and build API docs. )
 	$(ENHANCE
@@ -129,15 +129,15 @@ $(UL
 		Added $(API_PROCESS run) to run a shell command like $(API_PROCESS tryRun),
 		but automatically throw if the process returns a non-zero error level.
 	)
-	$(ENHANCE $(ISSUE 2): Optional callback sink for command echoing: $(API_FILE scriptlikeCustomEcho). )
-	$(ENHANCE $(ISSUE 8): Dry run support via bool $(API_FILE scriptlikeDryRun). )
+	$(ENHANCE $(ISSUE 2): Optional callback sink for command echoing: $(API_FILE_EXTR scriptlikeCustomEcho). )
+	$(ENHANCE $(ISSUE 8): Dry run support via bool $(API_FILE_EXTR scriptlikeDryRun). )
 	$(ENHANCE
 		$(ISSUE 13): Added `ArgsT` (and $(API_PROCESS Args) helper alias)
 		to safely build command strings from parts.
 	)
 	$(ENHANCE Added this changelog. )
 	$(FIXED
-		$(API_PATH Path)(null) and $(API_PATH Ext)(null) were automatically
+		$(API_PATH_EXTR Path)(null) and $(API_PATH_EXTR Ext)(null) were automatically
 		changed to empty string.
 	)
 	$(FIXED $(ISSUE 10): Docs should include all OS-specific functions. )

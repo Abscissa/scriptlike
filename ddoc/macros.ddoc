@@ -11,14 +11,16 @@ Macros:
 	
 	API_BASE = http://semitwist.com/scriptlike/scriptlike/
 	
-	API_FAIL     = $(D_INLINECODE $(LINK2 $(API_BASE)fail/$0.html, $0))
-	API_FILE     = $(D_INLINECODE $(LINK2 $(API_BASE)file/$0.html, $0))
-	API_INTERACT = $(D_INLINECODE $(LINK2 $(API_BASE)interact/$0.html, $0))
-	API_PATH     = $(D_INLINECODE $(LINK2 $(API_BASE)path/$0.html, $0))
-	API_PROCESS  = $(D_INLINECODE $(LINK2 $(API_BASE)process/$0.html, $0))
+	API_FAIL      = $(D_INLINECODE $(LINK2 $(API_BASE)fail/$0.html, $0))
+	API_FILE_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)file/extras/$0.html, $0))
+	API_FILE_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)file/wrappers/$0.html, $0))
+	API_INTERACT  = $(D_INLINECODE $(LINK2 $(API_BASE)interact/$0.html, $0))
+	API_PATH_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/$0.html, $0))
+	API_PATH_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)path/wrappers/$0.html, $0))
+	API_PROCESS   = $(D_INLINECODE $(LINK2 $(API_BASE)process/$0.html, $0))
 
-	API_PATH_EXT  = $(D_INLINECODE $(LINK2 $(API_BASE)path/Ext/$0.html, $0))
-	API_PATH_PATH = $(D_INLINECODE $(LINK2 $(API_BASE)path/Path/$0.html, $0))
+	API_PATH_EXT  = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Ext/$0.html, $0))
+	API_PATH_PATH = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Path/$0.html, $0))
 
 	STD_EXCEPTION = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_exception.html#$0, $0))
 	STD_FILE      = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_file.html#$0, $0))
