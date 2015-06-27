@@ -16,6 +16,8 @@ $(UL
 		of to-be-deprecated $(API_FILE_EXTR echoCommand).
 	)
 	$(FIXED Make $(API_PATH_EXTR escapeShellArg) const-correct. )
+	$(FIXED Make $(API_PATH_EXTR Path.toRawString) and $(API_PATH_EXTR Ext.toRawString)
+		both be `pure @safe nothrow`. )
 )
 
 $(H2 v0.8.1 - 2015/06/22)
