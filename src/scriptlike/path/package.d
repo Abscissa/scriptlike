@@ -5,6 +5,12 @@ Extra Scriptlike-only functionality to complement and wrap $(MODULE_STD_PATH),
 providing extra functionality, such as no-fail "try*" alternatives, and support
 for Scriptlike's $(API_PATH_EXTR Path), command echoing and dry-run features.
 
+Modules:
+$(UL
+	$(LI $(MODULE_PATH_EXTR) )
+	$(LI $(MODULE_PATH_WRAP) )
+)
+
 Copyright: Copyright (C) 2014-2015 Nick Sabalausky
 License:   zlib/libpng
 Authors:   Nick Sabalausky

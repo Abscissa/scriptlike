@@ -2,7 +2,7 @@
 // Written in the D programming language.
 
 /// Copyright: Copyright (C) 2014-2015 Nick Sabalausky
-/// License:   zlib/libpng
+/// License:   $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)
 /// Authors:   Nick Sabalausky
 
 module scriptlike.fail;

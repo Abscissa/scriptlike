@@ -6,13 +6,14 @@ Written in the $(LINK2 http://dlang.org, D programming language).
 
 Automatically pulls in anything from Phobos likely to be useful for scripts.
 
-std.file and std.path are static imports to avoid name conflicts with
-the Path-based wrappers in scriptlike.file and scriptlike.path.
+The public `std.file` and `std.path` imports here are static imports to
+avoid name conflicts with the $(API_PATH_EXTR Path)-based wrappers in
+`scriptlike.file` and `scriptlike.path`.
 
 curl is omitted here because it involves an extra link dependency.
 
 Copyright: Copyright (C) 2014-2015 Nick Sabalausky
-License:   zlib/libpng
+License:   $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)
 Authors:   Nick Sabalausky
 +/
 

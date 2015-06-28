@@ -5,7 +5,7 @@
  * the form of question and answer.
  *
  * Copyright: Copyright Jesse Phillips 2010
- * License:   zlib/libpng
+ * License:   $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)
  * Authors:   Jesse Phillips
  *
  * Synopsis:

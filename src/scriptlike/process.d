@@ -2,7 +2,7 @@
 // Written in the D programming language.
 
 /// Copyright: Copyright (C) 2014-2015 Nick Sabalausky
-/// License:   zlib/libpng
+/// License:   $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)
 /// Authors:   Nick Sabalausky
 
 module scriptlike.process;
@@ -144,13 +144,13 @@ string runCollect(Path workingDirectory, string command)
 	return runCollect(command);
 }
 
-/// Similar to tryRun(), but (like std.process.executeShell) captures and returns the
-/// output instead of displaying it.
+/// Similar to tryRun(), but (like $(FULL_STD_PROCESS executeShell)) captures
+/// and returns the output instead of displaying it.
 /// 
-/// Returns same tuple as std.process.executeShell:
-/// std.typecons.Tuple!(int, "status", string, "output")
+/// Returns the same tuple as $(FULL_STD_PROCESS executeShell):
+/// `std.typecons.Tuple!(int, "status", string, "output")`
 ///
-/// Returns: The "status" field will be -1 upon failure to
+/// Returns: The `status` field will be -1 upon failure to
 /// start the process.
 auto tryRunCollect(string command)
 {

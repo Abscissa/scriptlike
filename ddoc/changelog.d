@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.8.2 - TBD)
+$(H2 v0.9.0 - 2015/06/27)
 
 $(UL
 	$(CHANGE Split $(MODULE_FILE) and $(MODULE_PATH) into the following:$(BR)
@@ -20,14 +20,16 @@ $(UL
 		Utilizes `package.d` to retain ability to import $(MODULE_FILE) and $(MODULE_PATH).
 	)
 	$(CHANGE Convert changelog from markdown to $(DDOX) so links are more readable. )
-	$(ENHANCE Add (opt-in) command echoing to most functions in scriptlike.file. )
+	$(ENHANCE Add (opt-in) command echoing to most functions in $(MODULE_FILE). )
 	$(ENHANCE
-		Add $(API_FILE_EXTR yap) and $(API_FILE_EXTR yapFunc) as improved versions
-		of to-be-deprecated $(API_FILE_EXTR echoCommand).
+		Add $(API_CORE yap) and $(API_CORE yapFunc) as improved versions
+		of to-be-deprecated $(API_CORE echoCommand).
 	)
 	$(FIXED Make $(API_PATH_EXTR escapeShellArg) const-correct. )
-	$(FIXED Make $(API_PATH_EXTR Path.toRawString) and $(API_PATH_EXTR Ext.toRawString)
-		both be `pure @safe nothrow`. )
+	$(FIXED
+		Make $(API_PATH_EXTR Path.toRawString) and $(API_PATH_EXTR Ext.toRawString)
+		both be `pure @safe nothrow`.
+	)
 )
 
 $(H2 v0.8.1 - 2015/06/22)
@@ -84,12 +86,12 @@ $(UL
 		capture a command's output instead of displaying it.
 	)
 	$(ENHANCE Added $(API_INTERACT pause) to pause and prompt the user to press Enter. )
-	$(ENHANCE $(API_FILE_EXTR echoCommand) is no longer private. )
+	$(ENHANCE $(API_CORE echoCommand) is no longer private. )
 	$(ENHANCE
 		Added $(API_PATH_EXTR Path)-based wrappers for $(MODULE_STD_FILE)'s 
 		$(STD_FILE getcwd), $(STD_FILE thisExePath) and $(STD_FILE tempDir).
 	)
-	$(FIXED No longer uses the Phobos's deprecated $(STD_PROCESS system).)
+	$(FIXED No longer uses Phobos's deprecated $(STD_PROCESS system) function.)
 )
 
 $(H2 v0.7.0 - 2015/04/02)
@@ -124,24 +126,24 @@ $(UL
 		$(API_PROCESS runShell) as an alias.
 	)
 	$(CHANGE
-		Rename $(API_FILE_EXTR scriptlikeTraceCommands) -> $(API_FILE_EXTR scriptlikeEcho).
-		Temporarily keep $(API_FILE_EXTR scriptlikeTraceCommands) as an alias.
+		Rename $(API_CORE scriptlikeTraceCommands) -> $(API_CORE scriptlikeEcho).
+		Temporarily keep $(API_CORE scriptlikeTraceCommands) as an alias.
 	)
 	$(ENHANCE Added scripts to run unittests and build API docs. )
 	$(ENHANCE
-		Added $(API_PATH_PATH Path.opCast) and $(API_PATH_EXT Ext.opCast) for
+		Added $(API_PATH_EXTR Path.opCast) and $(API_PATH_EXTR Ext.opCast) for
 		converting to bool.
 	)
 	$(ENHANCE
 		$(API_FAIL fail) no longer requires any boilerplate in `main()`.
-		($(LINK2 http://forum.dlang.org/thread/ldc6qt$22tv$1@digitalmars.com, Newsgroup link))
+		($(LINK2 http://forum.dlang.org/thread/ldc6qt$(DOLLAR)22tv$(DOLLAR)1@digitalmars.com, Newsgroup link))
 	)
 	$(ENHANCE
 		Added $(API_PROCESS run) to run a shell command like $(API_PROCESS tryRun),
 		but automatically throw if the process returns a non-zero error level.
 	)
-	$(ENHANCE $(ISSUE 2): Optional callback sink for command echoing: $(API_FILE_EXTR scriptlikeCustomEcho). )
-	$(ENHANCE $(ISSUE 8): Dry run support via bool $(API_FILE_EXTR scriptlikeDryRun). )
+	$(ENHANCE $(ISSUE 2): Optional callback sink for command echoing: $(API_CORE scriptlikeCustomEcho). )
+	$(ENHANCE $(ISSUE 8): Dry run support via bool $(API_CORE scriptlikeDryRun). )
 	$(ENHANCE
 		$(ISSUE 13): Added `ArgsT` (and $(API_PROCESS Args) helper alias)
 		to safely build command strings from parts.

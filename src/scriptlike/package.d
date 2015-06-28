@@ -2,8 +2,8 @@
 $(H2 Scriptlike $(SCRIPTLIKE_VERSION))
 Utility to aid in script-like programs.
 
-Written in the $(LINK2 http://dlang.org, D programming language) and
-licensed under The zlib/libpng License.
+Written in the $(LINK2 http://dlang.org, D programming language) and licensed
+under The $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng) License.
 
 The latest version of this API reference is always available at:$(BR)
 $(LINK http://semitwist.com/scriptlike/ )
@@ -25,7 +25,7 @@ Copyright:
 Copyright (C) 2014-2015 Nick Sabalausky.
 Portions Copyright (C) 2010 Jesse Phillips.
 
-License: zlib/libpng
+License: $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)
 Authors: Nick Sabalausky, Jesse Phillips
 +/
 

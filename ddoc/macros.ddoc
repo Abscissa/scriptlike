@@ -3,6 +3,7 @@ Ddoc
 Macros:
 	H2 = <h2>$0</h2>
 	BR = <br />
+	DOLLAR = $
 
 	ISSUE    = $(LINK2 https://github.com/Abscissa/scriptlike/issues/$0, #$0)
 	ENHANCE  = $(LI $(B Enhancement:) $0)
@@ -20,9 +21,6 @@ Macros:
 	API_PATH_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)path/wrappers/$0.html, $0))
 	API_PROCESS   = $(D_INLINECODE $(LINK2 $(API_BASE)process/$0.html, $0))
 
-	API_PATH_EXT  = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Ext/$0.html, $0))
-	API_PATH_PATH = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras/Path/$0.html, $0))
-
 	MODULE_CORE      = $(D_INLINECODE $(LINK2 $(API_BASE)core.html, scriptlike.core))
 	MODULE_FAIL      = $(D_INLINECODE $(LINK2 $(API_BASE)fail.html, scriptlike.fail))
 	MODULE_FILE      = $(D_INLINECODE $(LINK2 $(API_BASE)file.html, scriptlike.file))
@@ -31,7 +29,7 @@ Macros:
 	MODULE_INTERACT  = $(D_INLINECODE $(LINK2 $(API_BASE)interact.html, scriptlike.interact))
 	MODULE_PATH      = $(D_INLINECODE $(LINK2 $(API_BASE)path.html, scriptlike.path))
 	MODULE_PATH_EXTR = $(D_INLINECODE $(LINK2 $(API_BASE)path/extras.html, scriptlike.path.extras))
-	MODULE_PATH_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)path/wrappers.html, scriptlike.path.wrap))
+	MODULE_PATH_WRAP = $(D_INLINECODE $(LINK2 $(API_BASE)path/wrappers.html, scriptlike.path.wrappers))
 	MODULE_PROCESS   = $(D_INLINECODE $(LINK2 $(API_BASE)process.html, scriptlike.process))
 	
 	STD_EXCEPTION = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_exception.html#$0, $0))
@@ -50,3 +48,5 @@ Macros:
 	DDOX            = $(LINK2 https://github.com/rejectedsoftware/ddox, ddox)
 	MODULE_STD_FILE = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_file.html, std.file))
 	MODULE_STD_PATH = $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_path.html, std.path))
+
+	LICENSE = $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt, zlib/libpng)

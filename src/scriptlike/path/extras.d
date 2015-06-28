@@ -51,7 +51,7 @@ struct Ext
 	}
 	
 	/// Compare using OS-specific case-sensitivity rules. If you want to force
-	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	/// case-sensitive or case-insensitive, then call filenameCmp instead.
 	int opCmp(ref const Ext other) const
 	{
 		return std.path.filenameCmp(this.str, other.str);
@@ -70,7 +70,7 @@ struct Ext
 	}
 
 	/// Compare using OS-specific case-sensitivity rules. If you want to force
-	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	/// case-sensitive or case-insensitive, then call filenameCmp instead.
 	int opEquals(ref const Ext other) const
 	{
 		return opCmp(other) == 0;
@@ -180,7 +180,7 @@ struct Path
 	}
 	
 	/// Compare using OS-specific case-sensitivity rules. If you want to force
-	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	/// case-sensitive or case-insensitive, then call filenameCmp instead.
 	int opCmp(ref const Path other) const
 	{
 		return std.path.filenameCmp(this.str, other.str);
@@ -199,7 +199,7 @@ struct Path
 	}
 
 	/// Compare using OS-specific case-sensitivity rules. If you want to force
-	/// case-sensitive or case-insensistive, then call filenameCmp instead.
+	/// case-sensitive or case-insensitive, then call filenameCmp instead.
 	int opEquals(ref const Path other) const
 	{
 		return opCmp(other) == 0;
