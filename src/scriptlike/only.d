@@ -21,5 +21,3 @@ public import scriptlike.fail;
 public import scriptlike.file;
 public import scriptlike.path;
 public import scriptlike.process;
-
-public static import scriptlike.packageVersion;

@@ -6,6 +6,12 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.9.1 - 2015/06/28)
+
+$(UL
+	$(FIXED Fails to compile unless the `makedocs` script has been run.)
+)
+
 $(H2 v0.9.0 - 2015/06/27)
 
 $(UL
