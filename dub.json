@@ -5,9 +5,22 @@
 	"homepage": "https://github.com/abscissa/scriptlike",
 	"license": "zlib/libpng",
 
-	"targetPath": "bin",
-	"importPaths": ["src"],
-	"targetType":  "library",
+	"excludedSourceFiles": ["src/scriptlike/packageVersion.d"],
 	
-	"excludedSourceFiles": ["src/scriptlike/packageVersion.d"]
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library",
+			"targetPath": "bin",
+			"importPaths": ["src"]
+		},
+		{
+			"name": "no-build",
+			"targetType": "library",
+			"targetPath": "deleteme",
+			"importPaths": ["dummy"],
+			"sourcePaths": ["dummy"],
+			"excludedSourceFiles": ["src/*"]
+		}
+	]
 }

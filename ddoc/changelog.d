@@ -6,6 +6,15 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.9.2 - 2015/07/01)
+
+$(UL
+	$(ENHANCE
+		Add a "no-build" configuration for projects that need to import/depend
+		on Scriptlike through DUB, but use their own buildsystem.
+	)
+)
+
 $(H2 v0.9.1 - 2015/06/28)
 
 $(UL

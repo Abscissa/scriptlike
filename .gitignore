@@ -1,5 +1,6 @@
 .dub/
 bin/
+deleteme/
 docs/docs.json
 docs/public/file_hashes.json
 docs/public/*.html
