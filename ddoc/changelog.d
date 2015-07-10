@@ -6,9 +6,13 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.9.2 - 2015/07/01)
+$(H2 v0.9.2 - 2015/07/10)
 
 $(UL
+	$(FIXED
+		Properly flush all command echoing output
+		(ie, in $(API_CORE yap) and $(API_CORE yapFunc)).
+	)
 	$(ENHANCE
 		Add a "no-build" configuration for projects that need to import/depend
 		on Scriptlike through DUB, but use their own buildsystem.

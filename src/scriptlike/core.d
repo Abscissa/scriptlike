@@ -55,8 +55,9 @@ bool scriptlikeDryRun = false;
 /++
 By default, scriptlikeEcho and scriptlikeDryRun echo to stdout.
 You can override this behavior by setting scriptlikeCustomEcho to your own
-sink delegate. Set this to null to go back to Scriptlike's default
-of "echo to stdout" again.
+sink delegate. Since this is used for logging, don't forget to flush your output.
+
+Reset this to null to go back to Scriptlike's default of "echo to stdout" again.
 
 Note, setting this does not automatically enable echoing. You still need to
 set either scriptlikeEcho or scriptlikeDryRun to true.
@@ -87,7 +88,10 @@ void yap(T...)(lazy T args)
 		if(scriptlikeCustomEcho)
 			scriptlikeCustomEcho(text(args));
 		else
+		{
 			writeln(args);
+			stdout.flush();
+		}
 	}
 }
 
