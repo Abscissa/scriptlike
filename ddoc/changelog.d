@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.9.3 - TBD)
+$(H2 v0.9.3 - 2015/08/19)
 
 $(UL
 	$(FIXED
