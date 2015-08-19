@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.9.3 - )
+$(H2 v0.9.3 - TBD)
 
 $(UL
 	$(FIXED
@@ -14,6 +14,9 @@ $(UL
 	)
 	$(ENHANCE
 		Support running unittests through DUB: `dub test`
+	)
+	$(ENHANCE
+		Uses $(LINK2 https://travis-ci.org, travis-ci.org) for continuous integration testing.
 	)
 )
 

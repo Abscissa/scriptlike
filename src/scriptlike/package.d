@@ -8,6 +8,10 @@ under The $(LINK2 https://github.com/Abscissa/scriptlike/blob/master/LICENSE.txt
 The latest version of this API reference is always available at:$(BR)
 $(LINK http://semitwist.com/scriptlike/ )
 
+For the list of officially supported compiler versions, see the
+$(LINK2 https://github.com/Abscissa/scriptlike/blob/master/.travis.yml, .travis.yml)
+file included with your version of Scriptlike.
+
 Import all (including anything from Phobos likely to be useful for scripts):
 ------------
 import scriptlike;

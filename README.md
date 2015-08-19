@@ -1,11 +1,11 @@
-Scriptlike
+Scriptlike [![Build Status](https://travis-ci.org/Abscissa/scriptlike.svg)](https://travis-ci.org/Abscissa/scriptlike)
 ==========
 
 Utility to aid in writing script-like programs in the [D Programming Language](http://dlang.org).
 
 This library has no external dependencies.
 
-Tested with DMD 2.066.0 through 2.068.0.
+Officially supported compiler versions are shown in [.travis.yml](https://github.com/Abscissa/scriptlike/blob/master/.travis.yml).
 
 * [API Reference](http://semitwist.com/scriptlike)
 * [Changelog](http://semitwist.com/scriptlike/changelog.html)
