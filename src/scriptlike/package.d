@@ -35,3 +35,4 @@ public import scriptlike.only;
 public import scriptlike.std;
 
 version(D_Ddoc) import changelog;
+version(unittest_scriptlike_d) void main() {}

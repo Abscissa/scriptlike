@@ -15,6 +15,13 @@
 			"importPaths": ["src"]
 		},
 		{
+			"name": "unittest",
+			"targetType": "executable",
+			"targetPath": "bin",
+			"targetName": "scriptlike_unittest",
+			"versions": ["unittest_scriptlike_d"]
+		},
+		{
 			"name": "no-build",
 			"targetType": "library",
 			"targetPath": "deleteme",

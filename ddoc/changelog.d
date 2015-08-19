@@ -12,6 +12,9 @@ $(UL
 	$(FIXED
 		$(ISSUE 16): Access to standard Phobos function hampered.
 	)
+	$(ENHANCE
+		Support running unittests through DUB: `dub test`
+	)
 )
 
 $(H2 v0.9.2 - 2015/07/10)
