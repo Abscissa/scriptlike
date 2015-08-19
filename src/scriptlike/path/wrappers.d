@@ -28,6 +28,27 @@ public import std.path : dirSeparator, pathSeparator, isDirSeparator,
 
 import scriptlike.path.extras;
 
+/// Alias of same-named function from $(MODULE_STD_PATH)
+alias baseName()         = std.path.baseName;
+alias dirName()          = std.path.dirName;          ///ditto
+alias rootName()         = std.path.rootName;         ///ditto
+alias driveName()        = std.path.driveName;        ///ditto
+alias stripDrive()       = std.path.stripDrive;       ///ditto
+alias extension()        = std.path.extension;        ///ditto
+alias stripExtension()   = std.path.stripExtension;   ///ditto
+alias setExtension()     = std.path.setExtension;     ///ditto
+alias defaultExtension() = std.path.defaultExtension; ///ditto
+alias pathSplitter()     = std.path.pathSplitter;     ///ditto
+alias isRooted()         = std.path.isRooted;         ///ditto
+alias isAbsolute()       = std.path.isAbsolute;       ///ditto
+alias absolutePath       = std.path.absolutePath;     ///ditto
+alias relativePath()     = std.path.relativePath;     ///ditto
+alias filenameCmp()      = std.path.filenameCmp;      ///ditto
+alias globMatch()        = std.path.globMatch;        ///ditto
+alias isValidFilename()  = std.path.isValidFilename;  ///ditto
+alias isValidPath()      = std.path.isValidPath;      ///ditto
+alias expandTilde        = std.path.expandTilde;      ///ditto
+
 /// Like $(FULL_STD_PATH baseName), but operates on Path.
 Path baseName(Path path)
 	@trusted pure
@@ -114,7 +135,7 @@ auto pathSplitter(Path path) @safe pure nothrow
 }
 
 /// Like $(FULL_STD_PATH isRooted), but operates on Path.
-bool isRooted(in Path path) @safe pure nothrow
+bool isRooted()(in Path path) @safe pure nothrow
 {
 	return std.path.isRooted(path.toRawString());
 }

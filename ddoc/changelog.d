@@ -6,6 +6,14 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.9.3 - )
+
+$(UL
+	$(FIXED
+		$(ISSUE 16): Access to standard Phobos function hampered.
+	)
+)
+
 $(H2 v0.9.2 - 2015/07/10)
 
 $(UL

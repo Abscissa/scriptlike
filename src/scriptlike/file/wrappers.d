@@ -25,6 +25,43 @@ static import std.path;
 import scriptlike.core;
 import scriptlike.path.extras;
 
+/// Alias of same-named function from $(MODULE_STD_FILE)
+alias read       = std.file.read;
+alias readText() = std.file.readText; ///ditto
+alias write      = std.file.write;    ///ditto
+alias append     = std.file.append;   ///ditto
+alias rename     = std.file.rename;   ///ditto
+alias remove     = std.file.remove;   ///ditto
+alias getSize    = std.file.getSize;  ///ditto
+alias getTimes   = std.file.getTimes; ///ditto
+
+version(ddoc_scriptlike_d) alias getTimesWin = std.file.getTimesWin; ///ditto
+else version(Windows)      alias getTimesWin = std.file.getTimesWin; ///ditto
+
+alias setTimes          = std.file.setTimes;          ///ditto
+alias timeLastModified  = std.file.timeLastModified;  ///ditto
+alias exists            = std.file.exists;            ///ditto
+alias getAttributes     = std.file.getAttributes;     ///ditto
+alias getLinkAttributes = std.file.getLinkAttributes; ///ditto
+alias isDir             = std.file.isDir;             ///ditto
+alias isFile            = std.file.isFile;            ///ditto
+alias isSymlink         = std.file.isSymlink;         ///ditto
+alias chdir             = std.file.chdir;             ///ditto
+alias mkdir             = std.file.mkdir;             ///ditto
+alias mkdirRecurse      = std.file.mkdirRecurse;      ///ditto
+alias rmdir             = std.file.rmdir;             ///ditto
+
+version(ddoc_scriptlike_d) alias symlink() = std.file.symlink; ///ditto
+else version(Posix)        alias symlink() = std.file.symlink; ///ditto
+
+version(ddoc_scriptlike_d) alias readLink() = std.file.readLink; ///ditto
+else version(Posix)        alias readLink() = std.file.readLink; ///ditto
+
+alias copy         = std.file.copy;         ///ditto
+alias rmdirRecurse = std.file.rmdirRecurse; ///ditto
+alias dirEntries   = std.file.dirEntries;   ///ditto
+alias slurp        = std.file.slurp;        ///ditto
+
 /// Like $(FULL_STD_FILE read), but supports Path and command echoing.
 void[] read(in Path name, size_t upTo = size_t.max)
 {
@@ -32,7 +69,7 @@ void[] read(in Path name, size_t upTo = size_t.max)
 	return std.file.read(name.toRawString(), upTo);
 }
 
-/// Like $(FULL_STD_FILE readText), but supports Path and command echoing.
+/// Like $(FULL_STD_FILE readTXXXXXXXext), but supports Path and command echoing.
 S readText(S = string)(in Path name)
 {
 	yapFunc(name);
