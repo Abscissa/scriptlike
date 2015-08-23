@@ -5,7 +5,7 @@ echo ^<http://code.dlang.org/download^> be available on your PATH.
 echo.
 echo You must also have ddox and gen-package-version available through dub:
 echo ^> dub fetch ddox --version=0.10.8
-echo ^> dub fetch gen-package-version --version=1.0.2
+echo ^> dub fetch gen-package-version --version=1.0.3
 echo or:
 echo ^> dub add-local [path/to/ddox]
 echo ^> dub add-local [path/to/gen-package-version]
