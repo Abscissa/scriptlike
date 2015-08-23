@@ -6,6 +6,18 @@ $(LINK http://semitwist.com/scriptlike/changelog.html )
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.9.4 - TBD)
+
+$(UL
+	$(FIXED
+		Previous release broke the `unittest` script when `dub test` support was added.
+	)
+	$(ENHANCE
+		Add $(API_CORE interp) for interpolated strings:
+		`string s = mixin(interp!"Value is ${/+any D expression here+/}")`
+	)
+)
+
 $(H2 v0.9.3 - 2015/08/19)
 
 $(UL
