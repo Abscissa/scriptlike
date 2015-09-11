@@ -5,13 +5,14 @@ Utility to aid in writing script-like programs in the [D Programming Language](h
 
 Officially supported compiler versions are shown in [.travis.yml](https://github.com/Abscissa/scriptlike/blob/master/.travis.yml).
 
+* [How to Use](#how-to-use)
+* [Features](#features)
+
+Links:
 * [API Reference](http://semitwist.com/scriptlike)
 * [Changelog](http://semitwist.com/scriptlike/changelog.html)
 * [DUB](http://code.dlang.org/about) [Package](http://code.dlang.org/packages/scriptlike)
 * [Small article explaining the original motivations behind scriptlike](http://semitwist.com/articles/article/view/scriptlike-shell-scripting-in-d-annoyances-and-a-library-solution)
-
-* [How to Use](#how-to-use)
-* [Features](#features)
 
 How to Use
 ----------
