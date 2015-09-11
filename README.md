@@ -47,7 +47,7 @@ import scriptlike.only;
 
 ### In a standalone script
 
-Assuming you have [DMD](http://dlang.org/download.html#dmd) and [DUB](http://code.dlang.org/getting_started) installed:
+Assuming you have [DMD](http://dlang.org/download.html#dmd) and [DUB](http://code.dlang.org/download) installed:
 
 myscript.d:
 ```d
