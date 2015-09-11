@@ -26,13 +26,13 @@ Features
 --------
 
 * [Filepaths](#filepaths)
-* [User input prompts](#user-input-prompts)
-* [Command echoing](#command-echoing)
-* [Automatic Phobos import](#automatic-phobos-import)
-* [Try/As filesystem operations](#tryas-filesystem-operations)
-* [Script-style shell commands](#script-style-shell-commands)
+* [User Input Prompts](#user-input-prompts)
+* [Command Echoing](#command-echoing)
+* [Automatic Phobos Import](#automatic-phobos-import)
+* [Try/As Filesystem Operations](#tryas-filesystem-operations)
+* [Script-style Shell Commands](#script-style-shell-commands)
 * [Fail](#fail)
-* [String interpolation](#string-interpolation)
+* [String Interpolation](#string-interpolation)
 
 ### Filepaths
 
@@ -51,7 +51,7 @@ assert(dir == Path("foo\\bar\\subdir"));
 // No worries about spaces!
 auto file = dir.up ~ "different subdir\\Filename with spaces.txt";
 assert(dir == Path("foo/bar/different subdir/Filename with spaces.txt"));
-writeln(dir.toString()); // Always properly escaped for current platform
+writeln(dir.toString()); // Always properly escaped for current platform!
 writeln(dir.toRawString()); // Don't escape!
 
 // Even file extentions are type-safe!
@@ -64,9 +64,9 @@ assert(dirName(anotherFile) == Path("/path/to"));
 copy(anotherFile, Path("target/path/new file.txt"));
 ```
 
-See: [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toString.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [Path.up](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.up.html), [```Ext```](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html), [```dirName```](http://semitwist.com/scriptlike/scriptlike/path/wrappers/dirName.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html), [```buildNormalizedPath```](http://dlang.org/phobos/std_path.html#buildNormalizedPath)
+See: [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toString.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```Path.up```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.up.html), [```Ext```](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html), [```dirName```](http://semitwist.com/scriptlike/scriptlike/path/wrappers/dirName.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html), [```buildNormalizedPath```](http://dlang.org/phobos/std_path.html#buildNormalizedPath)
 
-### User input prompts
+### User Input Prompts
 
 Easy prompting for and verifying command-line user input with the [```interact```](http://semitwist.com/scriptlike/scriptlike/interact.html) module:
 
@@ -86,13 +86,24 @@ pause(); // Prompt "Press Enter to continue...";
 pause("Hit Enter again, dood!!");
 ```
 
-See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userInput.html), [pathLocation](http://semitwist.com/scriptlike/scriptlike/interact/pathLocation.html), [```menu```](http://semitwist.com/scriptlike/scriptlike/interact/menu.html), [```require```](http://semitwist.com/scriptlike/scriptlike/interact/require.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html)
+See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userInput.html), [```pathLocation```](http://semitwist.com/scriptlike/scriptlike/interact/pathLocation.html), [```menu```](http://semitwist.com/scriptlike/scriptlike/interact/menu.html), [```require```](http://semitwist.com/scriptlike/scriptlike/interact/require.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html)
 
-### Command echoing
+### Command Echoing
 
 Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [```bool scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
 
 ```d
+/++
+Output:
+--------
+tryRun: echo Hello > file.txt
+mkdirRecurse: 'some/new/dir'
+copy: 'file.txt' -> 'some/new/dir/target name.txt'
+Gonna run foo() now...
+foo: i = 42
+--------
++/
+
 scriptlikeEcho = true; // Enable automatic echoing
 
 run("echo Hello > file.txt");
@@ -108,21 +119,11 @@ void foo(int i = 42) {
 // yap and yapFunc ONLY output when echoing is enabled
 yap("Gonna run foo() now...");
 foo();
-
-/++
-Output:
-
-tryRun: echo Hello > file.txt
-mkdirRecurse: 'some/new/dir'
-copy: 'file.txt' -> 'some/new/dir/target name.txt'
-Gonna run foo() now...
-foo: i = 42
-+/
 ```
 
 See: [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html), [```yap```](http://semitwist.com/scriptlike/scriptlike/core/yap.html), [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/core/yapFunc.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```mkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdirRecurse.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html)
 
-### Automatic Phobos import
+### Automatic Phobos Import
 
 For most typical Phobos modules. Unless you [don't want to](http://semitwist.com/scriptlike/scriptlike/only.html). Who needs rows and rows of standard lib imports for a mere script?
 
@@ -134,9 +135,9 @@ void main() {
 }
 ```
 
-See: [```module scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), [```module scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), [```module scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
+See: Module [```scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), Module [```scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), Module [```scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
 
-### Try/As filesystem operations
+### Try/As Filesystem Operations
 
 Less pedantic, when you don't care if there's nothing to do:
 
@@ -165,7 +166,7 @@ if(existsAsDir("foo/bar"))
 
 See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
 
-### Script-style shell commands
+### Script-style Shell Commands
 
 Invoke a command synchronously with forwarded stdout/in/err from any working directory, or capture the output instead. Automatically throw on non-zero status code if you want:
 
@@ -185,11 +186,11 @@ pause(); // Wait for user to hit Enter
 int statusCode = tryRun("dmd --bad-flag");
 
 // Collect output instead of showing it
-string dmdHelp = [runCollect](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html)("dmd --help");
+string dmdHelp = runCollect("dmd --help");
 auto isDMD_2_068_1 = dmdHelp.canFind("D Compiler v2.068.1");
 
 // Don't bail on error
-auto result = [tryRunCollect](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html)("dmd --help");
+auto result = tryRunCollect("dmd --help");
 if(result.status == 0 && result.output.canFind("D Compiler v2.068.1"))
 	writeln("Found DMD v2.068.1!");
 
@@ -241,7 +242,7 @@ test: ERROR: First arg must be 'foobar', not 'abc'!
 
 See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html), [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
 
-### String interpolation
+### String Interpolation
 
 Variable expansion inside strings:
 
