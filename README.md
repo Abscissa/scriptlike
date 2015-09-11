@@ -3,8 +3,6 @@ Scriptlike [![Build Status](https://travis-ci.org/Abscissa/scriptlike.svg)](http
 
 Utility to aid in writing script-like programs in the [D Programming Language](http://dlang.org).
 
-This library has no external dependencies.
-
 Officially supported compiler versions are shown in [.travis.yml](https://github.com/Abscissa/scriptlike/blob/master/.travis.yml).
 
 * [API Reference](http://semitwist.com/scriptlike)
@@ -135,7 +133,7 @@ void main() {
 }
 ```
 
-See: Module [```scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), Module [```scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), Module [```scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
+See: [```scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), [```scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), [```scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
 
 ### Try/As Filesystem Operations
 
@@ -166,9 +164,9 @@ if(existsAsDir("foo/bar"))
 
 See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
 
-### Script-style Shell Commands
+### Scripting Shell Commands
 
-Invoke a command synchronously with forwarded stdout/in/err from any working directory, or capture the output instead. Automatically throw on non-zero status code if you want:
+Invoke a command script-style: synchronously with forwarded stdout/in/err from any working directory. Or capture the output instead. Automatically throw on non-zero status code if you want.
 
 One simple call, [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), to run a shell command script-style (ie, synchronously with forwarded stdout/in/err) from any working directory, and automatically throw if it fails. Or [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html) to capture the output instead of displaying it. Or [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html)/[```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html) if you want to receive the status code instead of automatically throwing on non-zero.
 
@@ -213,7 +211,6 @@ See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [
 
 Single function to bail out with an error message, exception-safe.
 
-<!-- test comment -->
 ```d
 import scriptlike;
 
