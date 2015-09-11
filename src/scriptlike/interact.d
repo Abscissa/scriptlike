@@ -13,7 +13,7 @@
  * --------
  * import scriptlike.interact;
  *
- * auto age = userInput!int("Please Enter you age");
+ * auto age = userInput!int("Please Enter your age");
  * 
  * if(userInput!bool("Do you want to continue?"))
  * {
