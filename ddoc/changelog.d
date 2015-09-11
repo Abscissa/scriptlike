@@ -16,6 +16,9 @@ $(UL
 		Add $(API_CORE interp) for interpolated strings:
 		`string s = mixin(interp!"Value is ${/+any D expression here+/}")`
 	)
+	$(ENHANCE
+		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
+	)
 )
 
 $(H2 v0.9.3 - 2015/08/19)

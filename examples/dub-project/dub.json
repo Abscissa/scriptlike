@@ -1,0 +1,6 @@
+{
+	"name": "myscript",
+	"dependencies": {
+		"scriptlike": "~>0.9.3"
+	}
+}
