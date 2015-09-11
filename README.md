@@ -25,22 +25,22 @@ Or, if you don't want any of Phobos imported automatically, you can import only 
 Features
 --------
 
-* [Filepaths](#Filepaths)
-* [User input prompts](#User-input-prompts)
-* [Command echoing](#Command-echoing)
-* [Automatic Phobos import](#Automatic-Phobos-import)
-* [Try/As filesystem operations](#Try-As-filesystem-operations)
-* [Script-style shell commands](#Script-style-shell-commands)
-* [Fail](#Fail)
-* [String interpolation](#String-interpolation)
+* [Filepaths](#filepaths)
+* [User input prompts](#user-input-prompts)
+* [Command echoing](#command-echoing)
+* [Automatic Phobos import](#automatic-phobos-import)
+* [Try/As filesystem operations](#tryas-filesystem-operations)
+* [Script-style shell commands](#script-style-shell-commands)
+* [Fail](#fail)
+* [String interpolation](#string-interpolation)
 
 ### Filepaths
 
 Simple, reliable, cross-platform. No more worrying about slashes, paths-with-spaces, [buildPath](http://dlang.org/phobos/std_path.html#buildPath), [normalizing](http://dlang.org/phobos/std_path.html#buildNormalizedPath), or getting paths mixed up with ordinary strings:
 
 ```d
-// This is AUTOMATICALLY kept [normalized](http://dlang.org/phobos/std_path.html#buildNormalizedPath)
-auto dir = [Path](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html)("foo/bar");
+// This is AUTOMATICALLY kept normalized (via std.path.buildNormalizedPath)
+auto dir = Path("foo/bar");
 dir ~= "subdir"; // Append a subdirectory
 //dir ~= "subdir/"; // IDENTICAL to previous line, no worries!
 
@@ -51,22 +51,24 @@ assert(dir == Path("foo\\bar\\subdir"));
 // No worries about spaces!
 auto file = dir.up ~ "different subdir\\Filename with spaces.txt";
 assert(dir == Path("foo/bar/different subdir/Filename with spaces.txt"));
-writeln(dir.[toString](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toString.html)()); // Always properly escaped for current platform
-writeln(dir.[toRawString](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html)()); // Don't escape!
+writeln(dir.toString()); // Always properly escaped for current platform
+writeln(dir.toRawString()); // Don't escape!
 
 // Even file extentions are type-safe!
-[Ext](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html) ext = file.extension;
+Ext ext = file.extension;
 auto anotherFile = Path("/path/to/file") ~ ext;
 assert(anotherFile.baseName == Path("file.txt"));
 
-// [std.path](http://dlang.org/phobos/std_path.html) and [std.file](http://dlang.org/phobos/std_file.html) are wrapped to offer [Path](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html)/[Ext](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html) support
-assert([dirName](http://semitwist.com/scriptlike/scriptlike/path/wrappers/dirName.html)(anotherFile) == Path("/path/to"));
+// std.path and std.file are wrapped to offer Path/Ext support
+assert(dirName(anotherFile) == Path("/path/to"));
 copy(anotherFile, Path("target/path/new file.txt"));
 ```
 
+See: [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toString.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [Path.up](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.up.html), [```Ext```](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html), [```dirName```](http://semitwist.com/scriptlike/scriptlike/path/wrappers/dirName.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html), [```buildNormalizedPath```](http://dlang.org/phobos/std_path.html#buildNormalizedPath)
+
 ### User input prompts
 
-With the [interact](http://semitwist.com/scriptlike/scriptlike/interact.html) module:
+Easy prompting for and verifying command-line user input with the [```interact```](http://semitwist.com/scriptlike/scriptlike/interact.html) module:
 
 ```d
 auto name = userInput!string("Please enter your name");
@@ -81,12 +83,14 @@ if(userInput!bool("Do you want to continue?"))
 auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
 
 pause(); // Prompt "Press Enter to continue...";
-pause("Heya, plz hit Enter again, dood...");
+pause("Hit Enter again, dood!!");
 ```
+
+See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userInput.html), [pathLocation](http://semitwist.com/scriptlike/scriptlike/interact/pathLocation.html), [```menu```](http://semitwist.com/scriptlike/scriptlike/interact/menu.html), [```require```](http://semitwist.com/scriptlike/scriptlike/interact/require.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html)
 
 ### Command echoing
 
-Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [bool scriptlikeEcho](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
+Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [```bool scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
 
 ```d
 scriptlikeEcho = true; // Enable automatic echoing
@@ -94,7 +98,7 @@ scriptlikeEcho = true; // Enable automatic echoing
 run("echo Hello > file.txt");
 
 auto newDir = Path("some/new/dir");
-mkdirRecurse(newDir.toRawString()); // Even works with non-[Path](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html) overloads
+mkdirRecurse(newDir.toRawString()); // Even works with non-Path overloads
 copy("file.txt", newDir ~ "target name.txt");
 
 void foo(int i = 42) {
@@ -116,50 +120,56 @@ foo: i = 42
 +/
 ```
 
+See: [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html), [```yap```](http://semitwist.com/scriptlike/scriptlike/core/yap.html), [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/core/yapFunc.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```mkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdirRecurse.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html)
+
 ### Automatic Phobos import
 
 For most typical Phobos modules. Unless you [don't want to](http://semitwist.com/scriptlike/scriptlike/only.html). Who needs rows and rows of standard lib imports for a mere script?
 
 ```d
 import scriptlike;
-//import [scriptlike.only](http://semitwist.com/scriptlike/scriptlike/only.html); // In case you don't want Phobos automatically
+//import scriptlike.only; // In case you don't want Phobos auto-imported
 void main() {
 	writeln("Works!");
 }
 ```
+
+See: [```module scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), [```module scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), [```module scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
 
 ### Try/As filesystem operations
 
 Less pedantic, when you don't care if there's nothing to do:
 
 ```d
-// Just MAKE SURFailE this exists! If it's already there, then GREAT!
-[tryMkdir](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html)("somedir");
-//[mkdir](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html)("somedir"); // Exception: Already exists!
-[tryMkdir](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html)("somedir"); // No error, works fine!
+// Just MAKE SURE this exists! If it's already there, then GREAT!
+tryMkdir("somedir");
+//mkdir("somedir"); // Exception: Already exists!
+tryMkdir("somedir"); // No error, works fine!
 
 // Just MAKE SURE this is gone! If it's already gone, then GREAT!
-[tryRmdir](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html)("somedir");
-//[mkdir](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html)("somedir"); // Exception: Already gone!
-[tryRmdir](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html)("somedir"); // No error, works fine!
+tryRmdir("somedir");
+//rmdir("somedir"); // Exception: Already gone!
+tryRmdir("somedir"); // No error, works fine!
 
 // Just MAKE SURE it doesn't exist. Don't bother me if it doesn't!
-[tryRemove](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html)("file");
+tryRemove("file");
 
 // Copy if it exists, otherwise don't worry about it.
-[tryCopy](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html)("file", "file-copy");
+tryCopy("file", "file-copy");
 
 // Is this a directory? If it doesn't even
 // exist, then obviously it's NOT a directory.
-if([existsAsDir](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html)("foo/bar"))
+if(existsAsDir("foo/bar"))
 	{/+ ...do stuff... +/}
 ```
+
+See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
 
 ### Script-style shell commands
 
 Invoke a command synchronously with forwarded stdout/in/err from any working directory, or capture the output instead. Automatically throw on non-zero status code if you want:
 
-One simple call, [run](http://semitwist.com/scriptlike/scriptlike/process/run.html), to run a shell command script-style (ie, synchronously with forwarded stdout/in/err) from any working directory. Or [runCollect](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html) to capture the output instead of displaying it.
+One simple call, [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), to run a shell command script-style (ie, synchronously with forwarded stdout/in/err) from any working directory, and automatically throw if it fails. Or [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html) to capture the output instead of displaying it. Or [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html)/[```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html) if you want to receive the status code instead of automatically throwing on non-zero.
 
 ```d
 run("dmd --help"); // Display DMD help screen
@@ -195,14 +205,15 @@ else static assert(0);
 auto expectedDir = getcwd() ~ myProjectDir;
 assert( Path(myProjectDir.runCollect(pwd)) == expectedDir);
 ```
-* One simple function, [fail(...)](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), to help you exit with an error message in an exception-safe way. Doesn't require *any* boilerplate in your main()!. Or use it std.exception.enforce-style with [failEnforce(cond, ...)](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html).
+
+See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html), [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html), [```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```getcwd```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/getcwd.html), [```canFind```](http://dlang.org/phobos/std_algorithm_searching.html#.canFind), [```text```](http://dlang.org/phobos/std_conv.html#text)
 
 ### Fail
 
 Single function to bail out with an error message, exception-safe.
 
-```d
 <!-- test comment -->
+```d
 import scriptlike;
 
 // Throws a Fail exception on bad args:
@@ -228,6 +239,8 @@ test: ERROR: First arg must be 'foobar', not 'abc'!
 +/
 ```
 
+See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html), [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
+
 ### String interpolation
 
 Variable expansion inside strings:
@@ -244,3 +257,6 @@ writeln( mixin(interp!"Empty ${}braces ${}output nothing.") );
 auto first = "John", last = "Doe";
 writeln( mixin(interp!`Multiple params: ${first, " ", last}.`) );
 ```
+
+See: [```interp```](http://semitwist.com/scriptlike\/scriptlike/core/interp.html)
+ 
