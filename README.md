@@ -23,21 +23,77 @@ Or, if you don't want any of Phobos imported automatically, you can import only 
 Features
 --------
 
-* [Filepaths](#filepaths)
-* [User Input Prompts](#user-input-prompts)
-* [Command Echoing](#command-echoing)
 * [Automatic Phobos Import](#automatic-phobos-import)
-* [Try/As Filesystem Operations](#tryas-filesystem-operations)
-* [Script-style Shell Commands](#script-style-shell-commands)
-* [Fail](#fail)
+* [User Input Prompts](#user-input-prompts)
 * [String Interpolation](#string-interpolation)
+* [Filepaths](#filepaths)
+* [Try/As Filesystem Operations](#tryas-filesystem-operations)
+* [Script-Style Shell Commands](#script-style-shell-commands)
+* [Command Echoing](#command-echoing)
+* [Fail](#fail)
+
+### Automatic Phobos Import
+
+For most typical Phobos modules. Unless you [don't want to](http://semitwist.com/scriptlike/scriptlike/only.html). Who needs rows and rows of standard lib imports for a mere script?
+
+```d
+import scriptlike;
+//import scriptlike.only; // In case you don't want Phobos auto-imported
+void main() {
+	writeln("Works!");
+}
+```
+
+See: [```scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), [```scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), [```scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
+
+### User Input Prompts
+
+Easy prompting for and verifying command-line user input with the [```interact```](http://semitwist.com/scriptlike/scriptlike/interact.html) module:
+
+```d
+auto name = userInput!string("Please enter your name");
+auto age = userInput!int("And your age");
+
+if(userInput!bool("Do you want to continue?"))
+{
+	auto outputFolder = pathLocation("Where you do want to place the output?");
+	auto color = menu!string("What color would you like to use?", ["Blue", "Green"]);
+}
+
+auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
+
+pause(); // Prompt "Press Enter to continue...";
+pause("Hit Enter again, dood!!");
+```
+
+See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userInput.html), [```pathLocation```](http://semitwist.com/scriptlike/scriptlike/interact/pathLocation.html), [```menu```](http://semitwist.com/scriptlike/scriptlike/interact/menu.html), [```require```](http://semitwist.com/scriptlike/scriptlike/interact/require.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html)
+
+### String Interpolation
+
+Variable expansion inside strings:
+
+```d
+// Output: The number 21 doubled is 42!
+int num = 21;
+writeln( mixin(interp!"The number ${num} doubled is ${num * 2}!") );
+
+// Output: Empty braces output nothing.
+writeln( mixin(interp!"Empty ${}braces ${}output nothing.") );
+
+// Output: Multiple params: John Doe.
+auto first = "John", last = "Doe";
+writeln( mixin(interp!`Multiple params: ${first, " ", last}.`) );
+```
+
+See: [```interp```](http://semitwist.com/scriptlike\/scriptlike/core/interp.html)
 
 ### Filepaths
 
 Simple, reliable, cross-platform. No more worrying about slashes, paths-with-spaces, [buildPath](http://dlang.org/phobos/std_path.html#buildPath), [normalizing](http://dlang.org/phobos/std_path.html#buildNormalizedPath), or getting paths mixed up with ordinary strings:
 
 ```d
-// This is AUTOMATICALLY kept normalized (via std.path.buildNormalizedPath)
+// This is AUTOMATICALLY kept norma* [String Interpolation](#string-interpolation)
+lized (via std.path.buildNormalizedPath)
 auto dir = Path("foo/bar");
 dir ~= "subdir"; // Append a subdirectory
 //dir ~= "subdir/"; // IDENTICAL to previous line, no worries!
@@ -63,77 +119,6 @@ copy(anotherFile, Path("target/path/new file.txt"));
 ```
 
 See: [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toString.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```Path.up```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.up.html), [```Ext```](http://semitwist.com/scriptlike/scriptlike/path/extras/Ext.html), [```dirName```](http://semitwist.com/scriptlike/scriptlike/path/wrappers/dirName.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html), [```buildNormalizedPath```](http://dlang.org/phobos/std_path.html#buildNormalizedPath)
-
-### User Input Prompts
-
-Easy prompting for and verifying command-line user input with the [```interact```](http://semitwist.com/scriptlike/scriptlike/interact.html) module:
-
-```d
-auto name = userInput!string("Please enter your name");
-auto age = userInput!int("And your age");
-
-if(userInput!bool("Do you want to continue?"))
-{
-	auto outputFolder = pathLocation("Where you do want to place the output?");
-	auto color = menu!string("What color would you like to use?", ["Blue", "Green"]);
-}
-
-auto num = require!(int, "a > 0 && a <= 10")("Enter a number from 1 to 10");
-
-pause(); // Prompt "Press Enter to continue...";
-pause("Hit Enter again, dood!!");
-```
-
-See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userInput.html), [```pathLocation```](http://semitwist.com/scriptlike/scriptlike/interact/pathLocation.html), [```menu```](http://semitwist.com/scriptlike/scriptlike/interact/menu.html), [```require```](http://semitwist.com/scriptlike/scriptlike/interact/require.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html)
-
-### Command Echoing
-
-Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [```bool scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
-
-```d
-/++
-Output:
---------
-tryRun: echo Hello > file.txt
-mkdirRecurse: 'some/new/dir'
-copy: 'file.txt' -> 'some/new/dir/target name.txt'
-Gonna run foo() now...
-foo: i = 42
---------
-+/
-
-scriptlikeEcho = true; // Enable automatic echoing
-
-run("echo Hello > file.txt");
-
-auto newDir = Path("some/new/dir");
-mkdirRecurse(newDir.toRawString()); // Even works with non-Path overloads
-copy("file.txt", newDir ~ "target name.txt");
-
-void foo(int i = 42) {
-	yapFunc("i = ", i); // Evaluated lazily
-}
-
-// yap and yapFunc ONLY output when echoing is enabled
-yap("Gonna run foo() now...");
-foo();
-```
-
-See: [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html), [```yap```](http://semitwist.com/scriptlike/scriptlike/core/yap.html), [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/core/yapFunc.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```mkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdirRecurse.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html)
-
-### Automatic Phobos Import
-
-For most typical Phobos modules. Unless you [don't want to](http://semitwist.com/scriptlike/scriptlike/only.html). Who needs rows and rows of standard lib imports for a mere script?
-
-```d
-import scriptlike;
-//import scriptlike.only; // In case you don't want Phobos auto-imported
-void main() {
-	writeln("Works!");
-}
-```
-
-See: [```scriptlike```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/package.d), [```scriptlike.only```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/only.d), [```scriptlike.std```](https://github.com/Abscissa/scriptlike/blob/examples/src/scriptlike/std.d)
 
 ### Try/As Filesystem Operations
 
@@ -164,7 +149,7 @@ if(existsAsDir("foo/bar"))
 
 See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
 
-### Scripting Shell Commands
+### Script-Style Shell Commands
 
 Invoke a command script-style: synchronously with forwarded stdout/in/err from any working directory. Or capture the output instead. Automatically throw on non-zero status code if you want.
 
@@ -207,6 +192,41 @@ assert( Path(myProjectDir.runCollect(pwd)) == expectedDir);
 
 See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html), [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html), [```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```getcwd```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/getcwd.html), [```canFind```](http://dlang.org/phobos/std_algorithm_searching.html#.canFind), [```text```](http://dlang.org/phobos/std_conv.html#text)
 
+### Command Echoing
+
+Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [```bool scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
+
+```d
+/++
+Output:
+--------
+tryRun: echo Hello > file.txt
+mkdirRecurse: 'some/new/dir'
+copy: 'file.txt' -> 'some/new/dir/target name.txt'
+Gonna run foo() now...
+foo: i = 42
+--------
++/
+
+scriptlikeEcho = true; // Enable automatic echoing
+
+run("echo Hello > file.txt");
+
+auto newDir = Path("some/new/dir");
+mkdirRecurse(newDir.toRawString()); // Even works with non-Path overloads
+copy("file.txt", newDir ~ "target name.txt");
+
+void foo(int i = 42) {
+	yapFunc("i = ", i); // Evaluated lazily
+}
+
+// yap and yapFunc ONLY output when echoing is enabled
+yap("Gonna run foo() now...");
+foo();
+```
+
+See: [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html), [```yap```](http://semitwist.com/scriptlike/scriptlike/core/yap.html), [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/core/yapFunc.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```mkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdirRecurse.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html)
+
 ### Fail
 
 Single function to bail out with an error message, exception-safe.
@@ -238,23 +258,3 @@ test: ERROR: First arg must be 'foobar', not 'abc'!
 ```
 
 See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html), [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
-
-### String Interpolation
-
-Variable expansion inside strings:
-
-```d
-// Output: The number 21 doubled is 42!
-int num = 21;
-writeln( mixin(interp!"The number ${num} doubled is ${num * 2}!") );
-
-// Output: Empty braces output nothing.
-writeln( mixin(interp!"Empty ${}braces ${}output nothing.") );
-
-// Output: Multiple params: John Doe.
-auto first = "John", last = "Doe";
-writeln( mixin(interp!`Multiple params: ${first, " ", last}.`) );
-```
-
-See: [```interp```](http://semitwist.com/scriptlike\/scriptlike/core/interp.html)
- 
