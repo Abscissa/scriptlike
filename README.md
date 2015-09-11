@@ -30,6 +30,7 @@ Features
 * [Try/As Filesystem Operations](#tryas-filesystem-operations)
 * [Script-Style Shell Commands](#script-style-shell-commands)
 * [Command Echoing](#command-echoing)
+* [Dry Run Assistance](#dry-run-assistance)
 * [Fail](#fail)
 
 ### Automatic Phobos Import
@@ -92,8 +93,7 @@ See: [```interp```](http://semitwist.com/scriptlike\/scriptlike/core/interp.html
 Simple, reliable, cross-platform. No more worrying about slashes, paths-with-spaces, [buildPath](http://dlang.org/phobos/std_path.html#buildPath), [normalizing](http://dlang.org/phobos/std_path.html#buildNormalizedPath), or getting paths mixed up with ordinary strings:
 
 ```d
-// This is AUTOMATICALLY kept norma* [String Interpolation](#string-interpolation)
-lized (via std.path.buildNormalizedPath)
+// This is AUTOMATICALLY kept normalized (via std.path.buildNormalizedPath)
 auto dir = Path("foo/bar");
 dir ~= "subdir"; // Append a subdirectory
 //dir ~= "subdir/"; // IDENTICAL to previous line, no worries!
@@ -196,6 +196,8 @@ See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [
 
 Optionally enable automatic command echoing (including shell commands, changing/creating directories and deleting/copying/moving/linking/renaming both directories and files) by setting one simple flag: [```bool scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html)
 
+Echoing can be customized via [```scriptlikeCustomEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeCustomEcho.html).
+
 ```d
 /++
 Output:
@@ -226,6 +228,32 @@ foo();
 ```
 
 See: [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html), [```yap```](http://semitwist.com/scriptlike/scriptlike/core/yap.html), [```yapFunc```](http://semitwist.com/scriptlike/scriptlike/core/yapFunc.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```Path.toRawString```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.toRawString.html), [```mkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdirRecurse.html), [```copy```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html)
+
+### Dry Run Assistance
+
+Scriptlike can help you create a dry-run mode, by automatically echoing (even if [```scriptlikeEcho```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeEcho.html) is disabled) and disabling all functions that [launch external commands](http://semitwist.com/scriptlike/scriptlike/process.html) or [modify the filesystem](http://semitwist.com/scriptlike/scriptlike/file.html). Just enable the [```scriptlikeDryRun```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeDryRun.html) flag.
+
+Note, if you choose to use this, you still must ensure your program logic behaves sanely in dry-run mode.
+
+```d
+scriptlikeDryRun = true;
+
+// When dry-run is enabled, this echoes but doesn't actually copy or invoke DMD.
+copy("original.d", "app.d");
+run("dmd app.d -ofbin/app")
+
+// Works fine in dry-run, since it doesn't modify the filesystem.
+bool isItThere = exists("another-file"))
+
+if(!scriptlikeDryRun)
+{
+	// This won't work right if we're running in dry-run mode,
+	// since it'll be out-of-date, if it even exists at all.
+	auto source = read("app.d");
+}
+```
+
+See: [```scriptlikeDryRun```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeDryRun.html)
 
 ### Fail
 
