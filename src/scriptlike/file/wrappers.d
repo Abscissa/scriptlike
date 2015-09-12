@@ -478,7 +478,8 @@ version(unittest_scriptlike_d)
 	//
 	// Automatically ensures the test echoes in the echo and dryrun modes,
 	// and doesn't echo otherwise.
-	void testFileOperation(string funcName, string module_ = __MODULE__)(void delegate() test)
+	void testFileOperation(string funcName, string msg = null, string module_ = __MODULE__)
+		(void delegate() test)
 	{
 		import std.stdio : writeln;
 		
@@ -490,7 +491,7 @@ version(unittest_scriptlike_d)
 		}
 
 		// Test normally
-		writeln("Testing: ", module_, ": ", funcName);
+		writeln("Testing: ", module_, ".", funcName, (msg? ": " : ""), msg);
 		scriptlikeEcho = false;
 		scriptlikeDryRun = false;
 		capturedEcho = null;
@@ -498,7 +499,7 @@ version(unittest_scriptlike_d)
 		test();
 		assert(
 			capturedEcho == "",
-			"Expected test not to echo, but it echoed this:\n------------\n"~capturedEcho~"------------"
+			"Expected the test not to echo, but it echoed this:\n------------\n"~capturedEcho~"------------"
 		);
 		
 		// Test in echo mode
@@ -508,7 +509,7 @@ version(unittest_scriptlike_d)
 		capturedEcho = null;
 		scriptlikeCustomEcho = &captureEcho;
 		test();
-		assert(capturedEcho != "", "Expected test to echo, but it didn't.");
+		assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 		assert(
 			capturedEcho.canFind(funcName~": "),
 			"Couldn't find '"~funcName~": ' in test's echo output:\n------------\n"~capturedEcho~"------------"
@@ -521,10 +522,74 @@ version(unittest_scriptlike_d)
 		capturedEcho = null;
 		scriptlikeCustomEcho = &captureEcho;
 		test();
-		assert(capturedEcho != "", "Expected test to echo, but it didn't.");
+		assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 		assert(
 			capturedEcho.canFind(funcName~": "),
-			"Couldn't find '"~funcName~": ' in test's echo output:\n------------"~capturedEcho~"------------"
+			"Couldn't find '"~funcName~": ' in the test's echo output:\n------------"~capturedEcho~"------------"
+		);
+	}
+
+	unittest
+	{
+		mixin(initTest!"testFileOperation");
+		
+		testFileOperation!("test", "Echo works 1")(() {
+			void test()
+			{
+				yapFunc();
+			}
+			test();
+		});
+		
+		testFileOperation!("test", "Echo works 2")(() {
+			if(scriptlikeEcho)        scriptlikeCustomEcho("test: ");
+			else if(scriptlikeDryRun) scriptlikeCustomEcho("test: ");
+			else                      {}
+		});
+		
+		{
+			auto countNormal = 0;
+			auto countEcho   = 0;
+			auto countDryRun = 0;
+			testFileOperation!("test", "Gets run in each mode")(() {
+				if(scriptlikeEcho)
+				{
+					countEcho++;
+					scriptlikeCustomEcho("test: ");
+				}
+				else if(scriptlikeDryRun)
+				{
+					countDryRun++;
+					scriptlikeCustomEcho("test: ");
+				}
+				else
+					countNormal++; 
+			});
+			assert(countNormal == 1);
+			assert(countEcho   == 1);
+			assert(countDryRun == 1);
+		}
+		
+		assertThrown!AssertError(
+			testFileOperation!("test", "Echoing even with both echo and dryrun disabled")(() {
+				scriptlikeCustomEcho("test: ");
+			})
+		);
+		
+		assertThrown!AssertError(
+			testFileOperation!("test", "No echo in echo mode")(() {
+				if(scriptlikeEcho)        {}
+				else if(scriptlikeDryRun) scriptlikeCustomEcho("test: ");
+				else                      {}
+				})
+		);
+		
+		assertThrown!AssertError(
+			testFileOperation!("test", "No echo in dryrun mode")(() {
+				if(scriptlikeEcho)        scriptlikeCustomEcho("test: ");
+				else if(scriptlikeDryRun) {}
+				else                      {}
+				})
 		);
 	}
 }

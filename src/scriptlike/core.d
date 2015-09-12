@@ -245,6 +245,8 @@ version(unittest_scriptlike_d)
 {
 	immutable initTest(string testName, string module_ = __MODULE__) = `
 		import std.stdio: writeln;
+		import std.exception;
+		import core.exception;
 		import scriptlike.core;
 
 		writeln("Testing: `~module_~`: `~testName~`");
