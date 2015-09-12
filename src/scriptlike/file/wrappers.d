@@ -29,7 +29,7 @@ import scriptlike.path.extras;
 alias read       = std.file.read;
 alias readText() = std.file.readText; ///ditto
 //alias write      = std.file.write;    ///ditto
-alias append     = std.file.append;   ///ditto
+//alias append     = std.file.append;   ///ditto
 alias rename     = std.file.rename;   ///ditto
 alias remove     = std.file.remove;   ///ditto
 alias getSize    = std.file.getSize;  ///ditto
@@ -40,7 +40,7 @@ else version(Windows)      alias getTimesWin = std.file.getTimesWin; ///ditto
 
 alias setTimes          = std.file.setTimes;          ///ditto
 alias timeLastModified  = std.file.timeLastModified;  ///ditto
-alias exists            = std.file.exists;            ///ditto
+//alias exists            = std.file.exists;            ///ditto
 alias getAttributes     = std.file.getAttributes;     ///ditto
 alias getLinkAttributes = std.file.getLinkAttributes; ///ditto
 alias isDir             = std.file.isDir;             ///ditto
@@ -94,28 +94,53 @@ void write(in string name, const void[] buffer)
 version(unittest_scriptlike_d)
 unittest
 {
-	void checkResult(string file)
+	string file;
+	void checkPre()
 	{
-		if(scriptlikeDryRun)
-			assert(!std.file.exists(file));
-		else
-		{
-			assert(std.file.exists(file));
-			assert(std.file.isFile(file));
-			assert(cast(string) std.file.read(file) == "abc123");
-		}
+		assert(!std.file.exists(file));
 	}
 
-	testFileOperation!("write", "Path")(() {
+	void checkPost()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+		assert(cast(string) std.file.read(file) == "abc123");
+	}
+
+	// Create
+	testFileOperation!("write", "Create: string")(() {
 		mixin(useTmpName!"file");
-		write(Path(file), "abc123");
-		checkResult(file);
+
+		checkPre();
+		write(file, "abc123");
+		mixin(checkResult);
 	});
 
-	testFileOperation!("write", "string")(() {
+	testFileOperation!("write", "Create: Path")(() {
 		mixin(useTmpName!"file");
+
+		checkPre();
+		write(Path(file), "abc123");
+		mixin(checkResult);
+	});
+
+	// Overwrite
+	testFileOperation!("write", "Overwrite: string")(() {
+		mixin(useTmpName!"file");
+
+		checkPre();
+		write(file, "hello");
 		write(file, "abc123");
-		checkResult(file);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("write", "Overwrite: Path")(() {
+		mixin(useTmpName!"file");
+
+		checkPre();
+		write(Path(file), "hello");
+		write(Path(file), "abc123");
+		mixin(checkResult);
 	});
 }
 
@@ -132,6 +157,43 @@ void append(in string name, in void[] buffer)
 
 	if(!scriptlikeDryRun)
 		std.file.append(name, buffer);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+	void checkPre()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+		assert(cast(string) std.file.read(file) == "abc123");
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+		assert(cast(string) std.file.read(file) == "abc123hello");
+	}
+
+	testFileOperation!("append", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		checkPre();
+		append(file, "hello");
+		mixin(checkResult);
+	});
+
+	testFileOperation!("append", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		checkPre();
+		append(Path(file), "hello");
+		mixin(checkResult);
+	});
 }
 
 /// Like $(FULL_STD_FILE rename), but supports Path, command echoing and dryrun.
@@ -161,6 +223,68 @@ void rename(in string from, in string to)
 		std.file.rename(from, to);
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string file1;
+	string file2;
+	void checkPre()
+	{
+		assert(!std.file.exists(file2));
+		assert(std.file.exists(file1));
+		assert(std.file.isFile(file1));
+		assert(cast(string) std.file.read(file1) == "abc");
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(file1));
+		assert(std.file.exists(file2));
+		assert(std.file.isFile(file2));
+		assert(cast(string) std.file.read(file2) == "abc");
+	}
+
+	testFileOperation!("rename", "string,string")(() {
+		mixin(useTmpName!("file1", 1));
+		mixin(useTmpName!("file2", 2));
+		std.file.write(file1, "abc");
+
+		checkPre();
+		rename(file1, file2);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("rename", "string,Path")(() {
+		mixin(useTmpName!("file1", 1));
+		mixin(useTmpName!("file2", 2));
+		std.file.write(file1, "abc");
+
+		checkPre();
+		rename(file1, Path(file2));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("rename", "Path,string")(() {
+		mixin(useTmpName!("file1", 1));
+		mixin(useTmpName!("file2", 2));
+		std.file.write(file1, "abc");
+
+		checkPre();
+		rename(Path(file1), file2);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("rename", "Path,Path")(() {
+		mixin(useTmpName!("file1", 1));
+		mixin(useTmpName!("file2", 2));
+		std.file.write(file1, "abc");
+
+		checkPre();
+		rename(Path(file1), Path(file2));
+		mixin(checkResult);
+	});
+}
+
 /// Like $(FULL_STD_FILE remove), but supports Path, command echoing and dryrun.
 void remove(in Path name)
 {
@@ -174,6 +298,41 @@ void remove(in string name)
 
 	if(!scriptlikeDryRun)
 		std.file.remove(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+	void checkPre()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+		assert(cast(string) std.file.read(file) == "abc");
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(file));
+	}
+
+	testFileOperation!("remove", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc");
+
+		checkPre();
+		remove(file);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("remove", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc");
+
+		checkPre();
+		remove(Path(file));
+		mixin(checkResult);
+	});
 }
 
 /// Like $(FULL_STD_FILE getSize), but supports Path and command echoing.
@@ -246,8 +405,36 @@ SysTime timeLastModified(in Path name, SysTime returnIfMissing)
 /// Like $(FULL_STD_FILE exists), but supports Path and command echoing.
 bool exists(in Path name) @trusted
 {
+	return exists(name.toRawString());
+}
+
+///ditto
+bool exists(in string name) @trusted
+{
 	yapFunc(name);
-	return std.file.exists(name.toRawString());
+	return std.file.exists(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("exists", "string")(() {
+		mixin(useTmpName!"file");
+
+		assert(!exists(file));
+		std.file.write(file, "abc");
+		assert(exists(file));
+	});
+
+	testFileOperation!("exists", "Path")(() {
+		mixin(useTmpName!"file");
+
+		assert(!exists(Path(file)));
+		std.file.write(file, "abc");
+		assert(exists(Path(file)));
+	});
 }
 
 /// Like $(FULL_STD_FILE getAttributes), but supports Path and command echoing.
@@ -483,6 +670,13 @@ template slurp(Types...)
 
 version(unittest_scriptlike_d)
 {
+	immutable checkResult = q{
+		if(scriptlikeDryRun)
+			checkPre();
+		else
+			checkPost();
+	};
+
 	// Runs the provided test in both normal and dryrun modes.
 	// The provided test can read scriptlikeDryRun and assert appropriately.
 	//

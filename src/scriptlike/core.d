@@ -284,8 +284,8 @@ version(unittest_scriptlike_d)
 	// Get a unique temp pathname (guaranteed not to exist or collide), and
 	// clean up at the end up scope, deleting it if it exists.
 	// Path received can be used as either a file or dir, doesn't matter.
-	immutable useTmpName(string name, int id=0, string suffix=null) = "
-		immutable "~name~" = tmpName("~to!string(id)~", `"~suffix~"`);
+	immutable useTmpName(string name, int id=0, string suffix=null) =
+		name~" = tmpName("~to!string(id)~", `"~suffix~"`);
 		scope(exit) unittest_tryRemovePath("~name~");
 	";
 
