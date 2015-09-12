@@ -685,7 +685,8 @@ version(unittest_scriptlike_d)
 	void testFileOperation(string funcName, string msg = null, string module_ = __MODULE__)
 		(void delegate() test)
 	{
-		import std.stdio : writeln;
+		static import std.stdio;
+		import std.stdio : writeln, stdout;
 		
 		string capturedEcho;
 		void captureEcho(string str)
@@ -695,42 +696,59 @@ version(unittest_scriptlike_d)
 		}
 
 		// Test normally
-		writeln("Testing: ", module_, ".", funcName, (msg? ": " : ""), msg);
-		scriptlikeEcho = false;
-		scriptlikeDryRun = false;
-		capturedEcho = null;
-		scriptlikeCustomEcho = &captureEcho;
-		test();
-		assert(
-			capturedEcho == "",
-			"Expected the test not to echo, but it echoed this:\n------------\n"~capturedEcho~"------------"
-		);
+		{
+			std.stdio.write("Testing ", module_, ".", funcName, (msg? ": " : ""), msg, "\t[normal]");
+			stdout.flush();
+			scriptlikeEcho = false;
+			scriptlikeDryRun = false;
+			capturedEcho = null;
+			scriptlikeCustomEcho = &captureEcho;
+
+			scope(failure) writeln();
+			test();
+			assert(
+				capturedEcho == "",
+				"Expected the test not to echo, but it echoed this:\n------------\n"~capturedEcho~"------------"
+			);
+		}
 		
 		// Test in echo mode
-		writeln("    Repeating with echo");
-		scriptlikeEcho = true;
-		scriptlikeDryRun = false;
-		capturedEcho = null;
-		scriptlikeCustomEcho = &captureEcho;
-		test();
-		assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
-		assert(
-			capturedEcho.canFind(funcName~": "),
-			"Couldn't find '"~funcName~": ' in test's echo output:\n------------\n"~capturedEcho~"------------"
-		);
+		{
+			std.stdio.write(" [echo]");
+			stdout.flush();
+			scriptlikeEcho = true;
+			scriptlikeDryRun = false;
+			capturedEcho = null;
+			scriptlikeCustomEcho = &captureEcho;
+
+			scope(failure) writeln();
+			test();
+			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
+			assert(
+				capturedEcho.canFind(funcName~": "),
+				"Couldn't find '"~funcName~": ' in test's echo output:\n------------\n"~capturedEcho~"------------"
+			);
+		}
 		
 		// Test in dry run mode
-		writeln("    Repeating with dry run");
-		scriptlikeEcho = false;
-		scriptlikeDryRun = true;
-		capturedEcho = null;
-		scriptlikeCustomEcho = &captureEcho;
-		test();
-		assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
-		assert(
-			capturedEcho.canFind(funcName~": "),
-			"Couldn't find '"~funcName~": ' in the test's echo output:\n------------"~capturedEcho~"------------"
-		);
+		{
+			std.stdio.write(" [dryrun]");
+			stdout.flush();
+			scriptlikeEcho = false;
+			scriptlikeDryRun = true;
+			capturedEcho = null;
+			scriptlikeCustomEcho = &captureEcho;
+
+			scope(failure) writeln();
+			test();
+			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
+			assert(
+				capturedEcho.canFind(funcName~": "),
+				"Couldn't find '"~funcName~": ' in the test's echo output:\n------------"~capturedEcho~"------------"
+			);
+		}
+
+		writeln();
 	}
 
 	unittest

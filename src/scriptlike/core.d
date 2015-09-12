@@ -249,7 +249,7 @@ version(unittest_scriptlike_d)
 		import core.exception;
 		import scriptlike.core;
 
-		writeln("Testing: `~module_~`: `~testName~`");
+		writeln("Testing `~module_~`: `~testName~`");
 		scriptlikeEcho = false;
 		scriptlikeDryRun = false;
 		scriptlikeCustomEcho = null;
