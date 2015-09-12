@@ -69,7 +69,7 @@ void main(string[] args) {
 myscript.bat:
 ```batch
 @echo off
-rdmd -I %APPDATA%/dub/packages/scriptlike-0.9.3/src/ myscript.d %*
+rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.3/src/ myscript.d %*
 ```
 
 On Linux/OSX:

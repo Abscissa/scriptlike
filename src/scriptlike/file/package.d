@@ -31,6 +31,7 @@ unittest
 	import std.typecons;
 
 	import scriptlike.path;
+	import scriptlike.core : tmpname;
 	
 	// std.file.slurp seems to randomly trigger an internal std.algorithm
 	// assert failure on DMD 2.064.2, so don't test it there. Seems
@@ -51,21 +52,18 @@ unittest
 
 	writeln("Running Scriptlike unittests: std.file wrappers");
 	
-	immutable tempname  = std.path.buildPath(std.file.tempDir(), "deleteme.script like.unit test.pid"  ~ to!string(thisProcessID));
-	immutable tempname2 = std.path.buildPath(std.file.tempDir(), "deleteme.script like.unit test2.pid" ~ to!string(thisProcessID));
-	immutable tempname3 = std.path.buildPath(std.file.tempDir(), "deleteme.script like.unit test3.pid" ~ to!string(thisProcessID), "somefile");
-	auto tempPath  = Path(tempname);
+	immutable tempname1 = tmpname(1);
+	immutable tempname2 = tmpname(2);
+	immutable tempname3 = tmpname(3, "somefile");
+	auto tempPath  = Path(tempname1);
 	auto tempPath2 = Path(tempname2);
 	auto tempPath3 = Path(tempname3);
-	assert(!std.file.exists(tempname));
-	assert(!std.file.exists(tempname2));
-	assert(!std.file.exists( std.path.dirName(tempname3) ));
-	assert(!std.file.exists(tempname3));
 	
+	void testA(T)(T tempPath)
 	{
 		scope(exit)
 		{
-			if(std.file.exists(tempname)) std.file.remove(tempname);
+			if(std.file.exists(tempname1)) std.file.remove(tempname1);
 		}
 
 		tempPath.write("stuff");
@@ -107,14 +105,22 @@ unittest
 		assert(!tempPath.existsAsDir());
 		assert(!tempPath.existsAsSymlink());
 	}
-	
+
+	import std.stdio : stdout;
+	writeln("    testA with string"); stdout.flush();
+	testA(tempPath.toRawString()); // Test with string
+
+	writeln("    testA with Path"); stdout.flush();
+	testA(tempPath); // Test with Path
+
+	writeln("    more..."); stdout.flush();
 	{
 		assert(!tempPath.exists());
 		assert(!tempPath2.exists());
 
 		scope(exit)
 		{
-			if(std.file.exists(tempname))  std.file.remove(tempname);
+			if(std.file.exists(tempname1)) std.file.remove(tempname1);
 			if(std.file.exists(tempname2)) std.file.remove(tempname2);
 		}
 		tempPath.write("ABC");
@@ -136,7 +142,7 @@ unittest
 	{
 		scope(exit)
 		{
-			if(std.file.exists(tempname))  std.file.rmdir(tempname);
+			if(std.file.exists(tempname1)) std.file.rmdir(tempname1);
 			if(std.file.exists(tempname3)) std.file.rmdir(tempname3);
 			if(std.file.exists( std.path.dirName(tempname3) )) std.file.rmdir( std.path.dirName(tempname3) );
 		}
@@ -167,7 +173,7 @@ unittest
 		scope(exit) chdir(saveDirName);
 
 		tempPath.chdir();
-		assert(getcwd() == tempname);
+		assert(getcwd() == tempname1);
 		saveDir.chdir();
 		assert(getcwd() == saveDirName);
 		
@@ -200,7 +206,7 @@ unittest
 			scope(exit)
 			{
 				if(std.file.exists(tempname2)) std.file.remove(tempname2);
-				if(std.file.exists(tempname))  std.file.remove(tempname);
+				if(std.file.exists(tempname1)) std.file.remove(tempname1);
 			}
 			tempPath.write("DEF");
 			
@@ -214,7 +220,7 @@ unittest
 			assert(tempPath2.existsAsSymlink());
 			
 			auto linkTarget = tempPath2.readLink();
-			assert(linkTarget.toRawString() == tempname);
+			assert(linkTarget.toRawString() == tempname1);
 		}
 	}
 	
@@ -223,7 +229,7 @@ unittest
 
 		scope(exit)
 		{
-			if(std.file.exists(tempname)) std.file.remove(tempname);
+			if(std.file.exists(tempname1)) std.file.remove(tempname1);
 		}
 
 		import scriptlike.process;
@@ -271,7 +277,7 @@ unittest
 	{
 		scope(exit)
 		{
-			if(std.file.exists(tempname))  std.file.rmdir(tempname);
+			if(std.file.exists(tempname1)) std.file.rmdir(tempname1);
 			if(std.file.exists(tempname3)) std.file.rmdir(tempname3);
 			if(std.file.exists( std.path.dirName(tempname3) )) std.file.rmdir( std.path.dirName(tempname3) );
 		}

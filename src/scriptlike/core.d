@@ -239,3 +239,36 @@ unittest
 		"Multiple params: John Doe."
 	);
 }
+
+// Generate a temporary filepath unique to the current process and current
+// unittest block. Takes optional id number and path suffix.
+// Guaranteed not to already exist.
+version(unittest_scriptlike_d)
+string tmpname(int id = 0, string suffix = null, string func = __FUNCTION__)
+{
+	import std.conv : text;
+	import std.process : thisProcessID;
+	
+	// Include some spaces in the path, too:
+	auto withoutSuffix = std.path.buildPath(
+		std.file.tempDir(),
+		text("deleteme.script like.unit test.pid", thisProcessID, ".", func, ".num", id),
+		suffix
+	);
+	
+	auto path = std.path.buildPath(withoutSuffix, suffix);
+	
+	// Delete if it already exists
+	if(std.file.exists(withoutSuffix))
+	{
+		if(std.file.isDir(withoutSuffix))
+			std.file.rmdirRecurse(withoutSuffix);
+		else
+			std.file.remove(withoutSuffix);
+	}
+
+	assert(!std.file.exists(path));
+	assert(!std.file.exists(withoutSuffix));
+	
+	return path;
+}
