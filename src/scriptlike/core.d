@@ -243,7 +243,7 @@ unittest
 // Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
 {
-	immutable initTest(string testName, string module_ = __MODULE__) = `
+	immutable initTest(string testName, string msg = null, string module_ = __MODULE__) = `
 		import std.stdio: writeln;
 		import std.exception;
 		import core.exception;

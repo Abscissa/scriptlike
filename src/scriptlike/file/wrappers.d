@@ -94,10 +94,8 @@ void write(in string name, const void[] buffer)
 version(unittest_scriptlike_d)
 unittest
 {
-	testFileOperation!"write"(() {
-		mixin(useTmpName!"file");
-		write(file, "abc123");
-
+	void checkResult(string file)
+	{
 		if(scriptlikeDryRun)
 			assert(!std.file.exists(file));
 		else
@@ -106,6 +104,18 @@ unittest
 			assert(std.file.isFile(file));
 			assert(cast(string) std.file.read(file) == "abc123");
 		}
+	}
+
+	testFileOperation!("write", "Path")(() {
+		mixin(useTmpName!"file");
+		write(Path(file), "abc123");
+		checkResult(file);
+	});
+
+	testFileOperation!("write", "string")(() {
+		mixin(useTmpName!"file");
+		write(file, "abc123");
+		checkResult(file);
 	});
 }
 
@@ -533,17 +543,17 @@ version(unittest_scriptlike_d)
 	{
 		mixin(initTest!"testFileOperation");
 		
-		testFileOperation!("test", "Echo works 1")(() {
-			void test()
+		testFileOperation!("testFileOperation", "Echo works 1")(() {
+			void testFileOperation()
 			{
 				yapFunc();
 			}
-			test();
+			testFileOperation();
 		});
 		
-		testFileOperation!("test", "Echo works 2")(() {
-			if(scriptlikeEcho)        scriptlikeCustomEcho("test: ");
-			else if(scriptlikeDryRun) scriptlikeCustomEcho("test: ");
+		testFileOperation!("testFileOperation", "Echo works 2")(() {
+			if(scriptlikeEcho)        scriptlikeCustomEcho("testFileOperation: ");
+			else if(scriptlikeDryRun) scriptlikeCustomEcho("testFileOperation: ");
 			else                      {}
 		});
 		
@@ -551,16 +561,16 @@ version(unittest_scriptlike_d)
 			auto countNormal = 0;
 			auto countEcho   = 0;
 			auto countDryRun = 0;
-			testFileOperation!("test", "Gets run in each mode")(() {
+			testFileOperation!("testFileOperation", "Gets run in each mode")(() {
 				if(scriptlikeEcho)
 				{
 					countEcho++;
-					scriptlikeCustomEcho("test: ");
+					scriptlikeCustomEcho("testFileOperation: ");
 				}
 				else if(scriptlikeDryRun)
 				{
 					countDryRun++;
-					scriptlikeCustomEcho("test: ");
+					scriptlikeCustomEcho("testFileOperation: ");
 				}
 				else
 					countNormal++; 
@@ -571,22 +581,22 @@ version(unittest_scriptlike_d)
 		}
 		
 		assertThrown!AssertError(
-			testFileOperation!("test", "Echoing even with both echo and dryrun disabled")(() {
-				scriptlikeCustomEcho("test: ");
+			testFileOperation!("testFileOperation", "Echoing even with both echo and dryrun disabled")(() {
+				scriptlikeCustomEcho("testFileOperation: ");
 			})
 		);
 		
 		assertThrown!AssertError(
-			testFileOperation!("test", "No echo in echo mode")(() {
+			testFileOperation!("testFileOperation", "No echo in echo mode")(() {
 				if(scriptlikeEcho)        {}
-				else if(scriptlikeDryRun) scriptlikeCustomEcho("test: ");
+				else if(scriptlikeDryRun) scriptlikeCustomEcho("testFileOperation: ");
 				else                      {}
 				})
 		);
 		
 		assertThrown!AssertError(
-			testFileOperation!("test", "No echo in dryrun mode")(() {
-				if(scriptlikeEcho)        scriptlikeCustomEcho("test: ");
+			testFileOperation!("testFileOperation", "No echo in dryrun mode")(() {
+				if(scriptlikeEcho)        scriptlikeCustomEcho("testFileOperation: ");
 				else if(scriptlikeDryRun) {}
 				else                      {}
 				})
