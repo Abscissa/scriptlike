@@ -28,7 +28,7 @@ import scriptlike.path.extras;
 /// Alias of same-named function from $(MODULE_STD_FILE)
 alias read       = std.file.read;
 alias readText() = std.file.readText; ///ditto
-alias write      = std.file.write;    ///ditto
+//alias write      = std.file.write;    ///ditto
 alias append     = std.file.append;   ///ditto
 alias rename     = std.file.rename;   ///ditto
 alias remove     = std.file.remove;   ///ditto
@@ -69,7 +69,7 @@ void[] read(in Path name, size_t upTo = size_t.max)
 	return std.file.read(name.toRawString(), upTo);
 }
 
-/// Like $(FULL_STD_FILE readTXXXXXXXext), but supports Path and command echoing.
+/// Like $(FULL_STD_FILE readText), but supports Path and command echoing.
 S readText(S = string)(in Path name)
 {
 	yapFunc(name);
@@ -89,6 +89,24 @@ void write(in string name, const void[] buffer)
 	
 	if(!scriptlikeDryRun)
 		std.file.write(name, buffer);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	testFileOperation!"write"(() {
+		mixin(useTmpName!"file");
+		write(file, "abc123");
+
+		if(scriptlikeDryRun)
+			assert(!std.file.exists(file));
+		else
+		{
+			assert(std.file.exists(file));
+			assert(std.file.isFile(file));
+			assert(cast(string) std.file.read(file) == "abc123");
+		}
+	});
 }
 
 /// Like $(FULL_STD_FILE append), but supports Path, command echoing and dryrun.
@@ -451,4 +469,62 @@ template slurp(Types...)
 	auto path = Path( std.file.tempDir() );
 	yapFunc(path);
 	return path;
+}
+
+version(unittest_scriptlike_d)
+{
+	// Runs the provided test in both normal and dryrun modes.
+	// The provided test can read scriptlikeDryRun and assert appropriately.
+	//
+	// Automatically ensures the test echoes in the echo and dryrun modes,
+	// and doesn't echo otherwise.
+	void testFileOperation(string funcName, string module_ = __MODULE__)(void delegate() test)
+	{
+		import std.stdio : writeln;
+		
+		string capturedEcho;
+		void captureEcho(string str)
+		{
+			capturedEcho ~= str;
+			capturedEcho ~= '\n';
+		}
+
+		// Test normally
+		writeln("Testing: ", module_, ": ", funcName);
+		scriptlikeEcho = false;
+		scriptlikeDryRun = false;
+		capturedEcho = null;
+		scriptlikeCustomEcho = &captureEcho;
+		test();
+		assert(
+			capturedEcho == "",
+			"Expected test not to echo, but it echoed this:\n------------\n"~capturedEcho~"------------"
+		);
+		
+		// Test in echo mode
+		writeln("    Repeating with echo");
+		scriptlikeEcho = true;
+		scriptlikeDryRun = false;
+		capturedEcho = null;
+		scriptlikeCustomEcho = &captureEcho;
+		test();
+		assert(capturedEcho != "", "Expected test to echo, but it didn't.");
+		assert(
+			capturedEcho.canFind(funcName~": "),
+			"Couldn't find '"~funcName~": ' in test's echo output:\n------------\n"~capturedEcho~"------------"
+		);
+		
+		// Test in dry run mode
+		writeln("    Repeating with dry run");
+		scriptlikeEcho = false;
+		scriptlikeDryRun = true;
+		capturedEcho = null;
+		scriptlikeCustomEcho = &captureEcho;
+		test();
+		assert(capturedEcho != "", "Expected test to echo, but it didn't.");
+		assert(
+			capturedEcho.canFind(funcName~": "),
+			"Couldn't find '"~funcName~": ' in test's echo output:\n------------"~capturedEcho~"------------"
+		);
+	}
 }

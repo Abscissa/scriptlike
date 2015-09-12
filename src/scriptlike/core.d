@@ -240,35 +240,67 @@ unittest
 	);
 }
 
-// Generate a temporary filepath unique to the current process and current
-// unittest block. Takes optional id number and path suffix.
-// Guaranteed not to already exist.
+// Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
-string tmpname(int id = 0, string suffix = null, string func = __FUNCTION__)
 {
-	import std.conv : text;
-	import std.process : thisProcessID;
-	
-	// Include some spaces in the path, too:
-	auto withoutSuffix = std.path.buildPath(
-		std.file.tempDir(),
-		text("deleteme.script like.unit test.pid", thisProcessID, ".", func, ".num", id),
-		suffix
-	);
-	
-	auto path = std.path.buildPath(withoutSuffix, suffix);
-	
-	// Delete if it already exists
-	if(std.file.exists(withoutSuffix))
-	{
-		if(std.file.isDir(withoutSuffix))
-			std.file.rmdirRecurse(withoutSuffix);
-		else
-			std.file.remove(withoutSuffix);
-	}
+	immutable initTest(string testName, string module_ = __MODULE__) = `
+		import std.stdio: writeln;
+		import scriptlike.core;
 
-	assert(!std.file.exists(path));
-	assert(!std.file.exists(withoutSuffix));
+		writeln("Testing: `~module_~`: `~testName~`");
+		scriptlikeEcho = false;
+		scriptlikeDryRun = false;
+		scriptlikeCustomEcho = null;
+	`;
 	
-	return path;
+	// Generate a temporary filepath unique to the current process and current
+	// unittest block. Takes optional id number and path suffix.
+	// Guaranteed not to already exist.
+	// 
+	// Path received can be used as either a file or dir, doesn't matter.
+	string tmpName(int id = 0, string suffix = null, string func = __FUNCTION__)
+	out(result)
+	{
+		assert(!std.file.exists(result));
+	}
+	body
+	{
+		import std.conv : text;
+		import std.process : thisProcessID;
+		
+		// Include some spaces in the path, too:
+		auto withoutSuffix = std.path.buildPath(
+			std.file.tempDir(),
+			text("deleteme.script like.unit test.pid", thisProcessID, ".", func, ".num", id)
+		);
+		unittest_tryRemovePath(withoutSuffix);
+		
+		// Add suffix
+		return std.path.buildPath(withoutSuffix, suffix);
+	}
+	
+	// Get a unique temp pathname (guaranteed not to exist or collide), and
+	// clean up at the end up scope, deleting it if it exists.
+	// Path received can be used as either a file or dir, doesn't matter.
+	immutable useTmpName(string name, int id=0, string suffix=null) = "
+		immutable "~name~" = tmpName("~to!string(id)~", `"~suffix~"`);
+		scope(exit) unittest_tryRemovePath("~name~");
+	";
+
+	// Delete if it already exists, regardless of whether it's a file or directory.
+	void unittest_tryRemovePath(string path)
+	out
+	{
+		assert(!std.file.exists(path));
+	}
+	body
+	{
+		if(std.file.exists(path))
+		{
+			if(std.file.isDir(path))
+				std.file.rmdirRecurse(path);
+			else
+				std.file.remove(path);
+		}
+	}
 }

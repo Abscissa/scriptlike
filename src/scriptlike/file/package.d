@@ -31,7 +31,7 @@ unittest
 	import std.typecons;
 
 	import scriptlike.path;
-	import scriptlike.core : tmpname;
+	import scriptlike.core : tmpName;
 	
 	// std.file.slurp seems to randomly trigger an internal std.algorithm
 	// assert failure on DMD 2.064.2, so don't test it there. Seems
@@ -52,9 +52,9 @@ unittest
 
 	writeln("Running Scriptlike unittests: std.file wrappers");
 	
-	immutable tempname1 = tmpname(1);
-	immutable tempname2 = tmpname(2);
-	immutable tempname3 = tmpname(3, "somefile");
+	immutable tempname1 = tmpName(1);
+	immutable tempname2 = tmpName(2);
+	immutable tempname3 = tmpName(3, "somefile");
 	auto tempPath  = Path(tempname1);
 	auto tempPath2 = Path(tempname2);
 	auto tempPath3 = Path(tempname3);
