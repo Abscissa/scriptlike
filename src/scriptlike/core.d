@@ -240,6 +240,16 @@ unittest
 	);
 }
 
+immutable gagEcho = q{
+	auto saveCustomEcho = scriptlikeCustomEcho;
+
+	void dummyEcho(string str) {}
+	saveCustomEcho = &dummyEcho;
+	
+	scope(exit)
+		scriptlikeCustomEcho = saveCustomEcho;
+};
+
 // Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
 {

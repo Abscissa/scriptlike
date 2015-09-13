@@ -387,16 +387,6 @@ unittest
 	});
 }
 
-private immutable gagEcho = q{
-	auto saveCustomEcho = scriptlikeCustomEcho;
-
-	void dummyEcho(string str) {}
-	saveCustomEcho = &dummyEcho;
-	
-	scope(exit)
-		scriptlikeCustomEcho = saveCustomEcho;
-};
-
 /++
 Much like std.array.Appender!string, but specifically geared towards
 building a command string out of arguments. String and Path can both

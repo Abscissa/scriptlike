@@ -190,6 +190,9 @@ bool tryRename(T1, T2)(T1 from, T2 to)
 		(is(T2==string) || is(T2==Path))
 	)
 {
+	yapFunc(from.escapeShellArg(), " -> ", to.escapeShellArg());
+	mixin(gagEcho);
+
 	if(from.exists())
 	{
 		rename(from, to);
