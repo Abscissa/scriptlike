@@ -94,9 +94,9 @@ FAQ
 
 ### Why not just use a shebang line instead of the bash helper script?
 
-Short: You can, but it won't work work on other people's machines.
+**Short:** You can, but it won't work work on other people's machines.
 
-Long: D does support Posix shebang lines, so you *could* omit the `myscript` file and add the following to the top of `myscript.d`:
+**Long:** D does support Posix shebang lines, so you *could* omit the `myscript` file and add the following to the top of `myscript.d`:
 
 ```bash
 #!/PATH/TO/rdmd --shebang -I~/.dub/packages/scriptlike-0.9.3/src/
@@ -110,16 +110,16 @@ Additionally, using the shebang method on Posix would mean that invoking the scr
 
 ### Why the -of?
 
-Short: So rdmd doesn't break [```std.file.thisExePath```](dlang.org/phobos/std_file.html#thisExePath).
+**Short:** So rdmd doesn't break [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath).
 
-Long: Without ```-of```, rdmd will create the executable binary in a temporary directory. So if your program uses [```std.file.thisExePath```](dlang.org/phobos/std_file.html#thisExePath) to find the directory your program is in, it will only get the temporary directory, instead of the directory with your script.
+**Long:** Without ```-of```, rdmd will create the executable binary in a temporary directory. So if your program uses [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath) to find the directory your program is in, it will only get the temporary directory, instead of the directory with your script.
 
-Of course, if your program doesn't use [```std.file.thisExePath```](dlang.org/phobos/std_file.html#thisExePath), then it doesn't matter and you can omit the ```-of```.
+Of course, if your program doesn't use [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath), then it doesn't matter and you can omit the ```-of```.
 
-Why even use [```std.file.thisExePath```](dlang.org/phobos/std_file.html#thisExePath) instead of ```args[0]```? Because ```args[0]``` is notoriously unreliable and for various reasons, will often not give you the *real* path to the *real* executable (this is true in any language, not just D).
+Why even use [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath) instead of ```args[0]```? Because ```args[0]``` is notoriously unreliable and for various reasons, will often not give you the *real* path to the *real* executable (this is true in any language, not just D).
 
 ### What's with the ```"$(dirname "$(readlink "$0")")"``` and ```%~dp0```?
 
-Short: So you can run your script from any directory, not just its own.
+**Short:** So you can run your script from any directory, not just its own.
 
-Long: Those are the Posix/Windows shell methods to get the directory of the currently-running script. This way, if you run your script from a different working directory, rdmd will look for your D file is the correct place, rather than just assuming it's in whatever directory you happen to be in.
+**Long:** Those are the Posix/Windows shell methods to get the directory of the currently-running script. This way, if you run your script from a different working directory, rdmd will look for your D file is the correct place, rather than just assuming it's in whatever directory you happen to be in.
