@@ -26,8 +26,8 @@ import scriptlike.core;
 import scriptlike.path.extras;
 
 /// Alias of same-named function from $(MODULE_STD_FILE)
-alias read       = std.file.read;
-alias readText() = std.file.readText; ///ditto
+//alias read       = std.file.read;
+//alias readText() = std.file.readText; ///ditto
 //alias write      = std.file.write;    ///ditto
 //alias append     = std.file.append;   ///ditto
 //alias rename     = std.file.rename;   ///ditto
@@ -46,10 +46,10 @@ alias readText() = std.file.readText; ///ditto
 //alias isDir             = std.file.isDir;             ///ditto
 //alias isFile            = std.file.isFile;            ///ditto
 //alias isSymlink()       = std.file.isSymlink;         ///ditto
-alias chdir             = std.file.chdir;             ///ditto
-alias mkdir             = std.file.mkdir;             ///ditto
-alias mkdirRecurse      = std.file.mkdirRecurse;      ///ditto
-alias rmdir             = std.file.rmdir;             ///ditto
+//alias chdir             = std.file.chdir;             ///ditto
+//alias mkdir             = std.file.mkdir;             ///ditto
+//alias mkdirRecurse      = std.file.mkdirRecurse;      ///ditto
+//alias rmdir             = std.file.rmdir;             ///ditto
 
 version(ddoc_scriptlike_d) alias symlink() = std.file.symlink; ///ditto
 else version(Posix)        alias symlink() = std.file.symlink; ///ditto
@@ -58,22 +58,74 @@ version(ddoc_scriptlike_d) alias readLink() = std.file.readLink; ///ditto
 else version(Posix)        alias readLink() = std.file.readLink; ///ditto
 
 alias copy         = std.file.copy;         ///ditto
-alias rmdirRecurse = std.file.rmdirRecurse; ///ditto
+//alias rmdirRecurse = std.file.rmdirRecurse; ///ditto
 alias dirEntries   = std.file.dirEntries;   ///ditto
 alias slurp        = std.file.slurp;        ///ditto
 
 /// Like $(FULL_STD_FILE read), but supports Path and command echoing.
 void[] read(in Path name, size_t upTo = size_t.max)
 {
+	return read(name.toRawString(), upTo);
+}
+
+///ditto
+void[] read(in string name, size_t upTo = size_t.max)
+{
 	yapFunc(name);
-	return std.file.read(name.toRawString(), upTo);
+	return std.file.read(name, upTo);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("read", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		assert(cast(string) read(file) == "abc123");
+	});
+
+	testFileOperation!("read", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		assert(cast(string) read(Path(file)) == "abc123");
+	});
 }
 
 /// Like $(FULL_STD_FILE readText), but supports Path and command echoing.
 S readText(S = string)(in Path name)
 {
+	return readText(name.toRawString());
+}
+
+///ditto
+S readText(S = string)(in string name)
+{
 	yapFunc(name);
-	return std.file.readText(name.toRawString());
+	return std.file.readText(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("readText", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		assert(cast(string) readText(file) == "abc123");
+	});
+
+	testFileOperation!("readText", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		assert(cast(string) readText(Path(file)) == "abc123");
+	});
 }
 
 /// Like $(FULL_STD_FILE write), but supports Path, command echoing and dryrun.
@@ -900,6 +952,38 @@ void mkdir(in string pathname)
 		std.file.mkdir(pathname);
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+	void checkPre()
+	{
+		assert(!std.file.exists(dir));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+	}
+
+	testFileOperation!("mkdir", "string")(() {
+		mixin(useTmpName!"dir");
+
+		checkPre();
+		mkdir(dir);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("mkdir", "Path")(() {
+		mixin(useTmpName!"dir");
+
+		checkPre();
+		mkdir(Path(dir));
+		mixin(checkResult);
+	});
+}
+
 /// Like $(FULL_STD_FILE mkdirRecurse), but supports Path, command echoing and dryrun.
 void mkdirRecurse(in Path pathname)
 {
@@ -915,6 +999,38 @@ void mkdirRecurse(in string pathname)
 		std.file.mkdirRecurse(pathname);
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+	void checkPre()
+	{
+		assert(!std.file.exists(dir));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+	}
+
+	testFileOperation!("mkdirRecurse", "string")(() {
+		mixin(useTmpName!("dir", "subdir"));
+
+		checkPre();
+		mkdirRecurse(dir);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("mkdirRecurse", "Path")(() {
+		mixin(useTmpName!("dir", "subdir"));
+
+		checkPre();
+		mkdirRecurse(Path(dir));
+		mixin(checkResult);
+	});
+}
+
 /// Like $(FULL_STD_FILE rmdir), but supports Path, command echoing and dryrun.
 void rmdir(in Path pathname)
 {
@@ -928,6 +1044,40 @@ void rmdir(in string pathname)
 
 	if(!scriptlikeDryRun)
 		std.file.rmdir(pathname);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+	void checkPre()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(dir));
+	}
+
+	testFileOperation!("rmdir", "string")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		checkPre();
+		rmdir(dir);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("rmdir", "Path")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		checkPre();
+		rmdir(Path(dir));
+		mixin(checkResult);
+	});
 }
 
 version(ddoc_scriptlike_d)
@@ -1019,6 +1169,40 @@ void rmdirRecurse(in string pathname)
 
 	if(!scriptlikeDryRun)
 		std.file.rmdirRecurse(pathname);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+	void checkPre()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists( std.path.dirName(dir) ));
+	}
+
+	testFileOperation!("rmdirRecurse", "string")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		rmdirRecurse( std.path.dirName(dir) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("rmdirRecurse", "Path")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		rmdirRecurse(Path( std.path.dirName(dir) ));
+		mixin(checkResult);
+	});
 }
 
 /// Like $(FULL_STD_FILE dirEntries), but supports Path and command echoing.
@@ -1123,7 +1307,7 @@ version(unittest_scriptlike_d)
 			test();
 			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 			assert(
-				capturedEcho.canFind(funcName~": "),
+				capturedEcho.startsWith(funcName~": "),
 				"Couldn't find '"~funcName~": ' in test's echo output:\n------------\n"~capturedEcho~"------------"
 			);
 		}
@@ -1142,7 +1326,7 @@ version(unittest_scriptlike_d)
 			test();
 			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 			assert(
-				capturedEcho.canFind(funcName~": "),
+				capturedEcho.startsWith(funcName~": "),
 				"Couldn't find '"~funcName~": ' in the test's echo output:\n------------"~capturedEcho~"------------"
 			);
 		}
