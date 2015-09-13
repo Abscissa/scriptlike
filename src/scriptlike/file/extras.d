@@ -236,8 +236,8 @@ unittest
 		std.file.write(file1, "abc");
 
 		checkPre();
-		tryRename(file1, file2);
-		tryRename(notExist1, notExist2);
+		assert( tryRename(file1, file2) );
+		assert( !tryRename(notExist1, notExist2) );
 		mixin(checkResult);
 	});
 
@@ -249,8 +249,8 @@ unittest
 		std.file.write(file1, "abc");
 
 		checkPre();
-		tryRename(file1, Path(file2));
-		tryRename(notExist1, Path(notExist2));
+		assert( tryRename(file1, Path(file2)) );
+		assert( !tryRename(notExist1, Path(notExist2)) );
 		mixin(checkResult);
 	});
 
@@ -262,8 +262,8 @@ unittest
 		std.file.write(file1, "abc");
 
 		checkPre();
-		tryRename(Path(file1), file2);
-		tryRename(Path(notExist1), notExist2);
+		assert( tryRename(Path(file1), file2) );
+		assert( !tryRename(Path(notExist1), notExist2) );
 		mixin(checkResult);
 	});
 
@@ -275,8 +275,8 @@ unittest
 		std.file.write(file1, "abc");
 
 		checkPre();
-		tryRename(Path(file1), Path(file2));
-		tryRename(Path(notExist1), Path(notExist2));
+		assert( tryRename(Path(file1), Path(file2)) );
+		assert( !tryRename(Path(notExist1), Path(notExist2)) );
 		mixin(checkResult);
 	});
 }
@@ -287,6 +287,9 @@ unittest
 /// Returns: Success?
 bool tryRemove(T)(T name) if(is(T==string) || is(T==Path))
 {
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
 	if(name.exists())
 	{
 		remove(name);
@@ -296,11 +299,57 @@ bool tryRemove(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string file, notExist;
+	void checkPre()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+		assert(cast(string) std.file.read(file) == "abc");
+
+		assert(!std.file.exists(notExist));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(file));
+		assert(!std.file.exists(notExist));
+	}
+
+	testFileOperation!("tryRemove", "string")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+
+		checkPre();
+		assert( tryRemove(file) );
+		assert( !tryRemove(notExist) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryRemove", "Path")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+
+		checkPre();
+		assert( tryRemove(Path(file)) );
+		assert( !tryRemove(Path(notExist)) );
+		mixin(checkResult);
+	});
+}
+
 /// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
 /// Supports Path and command echoing.
+///
 /// Returns: Success?
 bool tryMkdir(T)(T name) if(is(T==string) || is(T==Path))
 {
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
 	if(!name.exists())
 	{
 		mkdir(name);
@@ -310,11 +359,55 @@ bool tryMkdir(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir, alreadyExist;
+	void checkPre()
+	{
+		assert(!std.file.exists(dir));
+		assert(std.file.exists(alreadyExist));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+		assert(std.file.exists(alreadyExist));
+	}
+
+	testFileOperation!("tryMkdir", "string")(() {
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"alreadyExist");
+		std.file.mkdir(alreadyExist);
+
+		checkPre();
+		assert( tryMkdir(dir) );
+		assert( !tryMkdir(alreadyExist) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryMkdir", "Path")(() {
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"alreadyExist");
+		std.file.mkdir(alreadyExist);
+
+		checkPre();
+		assert( tryMkdir(Path(dir)) );
+		assert( !tryMkdir(Path(alreadyExist)) );
+		mixin(checkResult);
+	});
+}
+
 /// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
 /// Supports Path and command echoing.
+///
 /// Returns: Success?
 bool tryMkdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 {
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
 	if(!name.exists())
 	{
 		mkdirRecurse(name);
@@ -324,11 +417,55 @@ bool tryMkdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir, alreadyExist;
+	void checkPre()
+	{
+		assert(!std.file.exists(dir));
+		assert(std.file.exists(alreadyExist));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+		assert(std.file.exists(alreadyExist));
+	}
+
+	testFileOperation!("tryMkdirRecurse", "string")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"alreadyExist");
+		std.file.mkdir(alreadyExist);
+
+		checkPre();
+		assert( tryMkdirRecurse(dir) );
+		assert( !tryMkdirRecurse(alreadyExist) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryMkdirRecurse", "Path")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"alreadyExist");
+		std.file.mkdir(alreadyExist);
+
+		checkPre();
+		assert( tryMkdirRecurse(Path(dir)) );
+		assert( !tryMkdirRecurse(Path(alreadyExist)) );
+		mixin(checkResult);
+	});
+}
+
 /// If 'name' exists, then rmdir. Otherwise do nothing.
 /// Supports Path and command echoing.
+///
 /// Returns: Success?
 bool tryRmdir(T)(T name) if(is(T==string) || is(T==Path))
 {
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
 	if(name.exists())
 	{
 		rmdir(name);
@@ -338,10 +475,49 @@ bool tryRmdir(T)(T name) if(is(T==string) || is(T==Path))
 	return false;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir, notExist;
+	void checkPre()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(dir));
+	}
+
+	testFileOperation!("tryRmdir", "string")(() {
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"notExist");
+		std.file.mkdir(dir);
+
+		checkPre();
+		assert( tryRmdir(dir) );
+		assert( !tryRmdir(notExist) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryRmdir", "Path")(() {
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"notExist");
+		std.file.mkdir(dir);
+
+		checkPre();
+		assert( tryRmdir(Path(dir)) );
+		assert( !tryRmdir(Path(notExist)) );
+		mixin(checkResult);
+	});
+}
+
 version(ddoc_scriptlike_d)
 {
 	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
 	/// Supports Path and command echoing.
+	///
 	/// Returns: Success?
 	bool trySymlink(T1, T2)(T1 original, T2 link)
 		if(
@@ -357,6 +533,9 @@ else version(Posix)
 			(is(T2==string) || is(T2==Path))
 		)
 	{
+		yapFunc("[original] ", original.escapeShellArg(), " : [symlink] ", link.escapeShellArg());
+		mixin(gagEcho);
+
 		if(original.exists())
 		{
 			symlink(original, link);
@@ -365,10 +544,95 @@ else version(Posix)
 		
 		return false;
 	}
+
+	version(unittest_scriptlike_d)
+	unittest
+	{
+		string file, link, notExistFile, notExistLink;
+		void checkPre()
+		{
+			assert(std.file.exists(file));
+			assert(std.file.isFile(file));
+			assert(cast(string) std.file.read(file) == "abc123");
+			
+			assert(!std.file.exists(link));
+
+			assert(!std.file.exists(notExistFile));
+			assert(!std.file.exists(notExistLink));
+		}
+
+		void checkPost()
+		{
+			assert(std.file.exists(file));
+			assert(std.file.isFile(file));
+			assert(cast(string) std.file.read(file) == "abc123");
+			
+			assert(std.file.exists(link));
+			assert(std.file.isSymlink(link));
+			assert(std.file.readLink(link) == file);
+			assert(cast(string) std.file.read(link) == "abc123");
+
+			assert(!std.file.exists(notExistFile));
+			assert(!std.file.exists(notExistLink));
+		}
+
+		testFileOperation!("trySymlink", "string,string")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			mixin(useTmpName!"notExistFile");
+			mixin(useTmpName!"notExistLink");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			assert( trySymlink(file, link) );
+			assert( !trySymlink(notExistFile, notExistLink) );
+			mixin(checkResult);
+		});
+
+		testFileOperation!("trySymlink", "string,Path")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			mixin(useTmpName!"notExistFile");
+			mixin(useTmpName!"notExistLink");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			assert( trySymlink(file, Path(link)) );
+			assert( !trySymlink(notExistFile, Path(notExistLink)) );
+			mixin(checkResult);
+		});
+
+		testFileOperation!("trySymlink", "Path,string")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			mixin(useTmpName!"notExistFile");
+			mixin(useTmpName!"notExistLink");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			assert( trySymlink(Path(file), link) );
+			assert( !trySymlink(Path(notExistFile), notExistLink) );
+			mixin(checkResult);
+		});
+
+		testFileOperation!("trySymlink", "Path,Path")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			mixin(useTmpName!"notExistFile");
+			mixin(useTmpName!"notExistLink");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			assert( trySymlink(Path(file), Path(link)) );
+			assert( !trySymlink(Path(notExistFile), Path(notExistLink)) );
+			mixin(checkResult);
+		});
+	}
 }
 
 /// If 'from' exists, then copy. Otherwise do nothing.
 /// Supports Path and command echoing.
+///
 /// Returns: Success?
 bool tryCopy(T1, T2)(T1 from, T2 to)
 	if(
@@ -376,6 +640,9 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 		(is(T2==string) || is(T2==Path))
 	)
 {
+	yapFunc(from.escapeShellArg(), " -> ", to.escapeShellArg());
+	mixin(gagEcho);
+
 	if(from.exists())
 	{
 		copy(from, to);
@@ -385,11 +652,98 @@ bool tryCopy(T1, T2)(T1 from, T2 to)
 	return false;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string file1, file2, notExist1, notExist2;
+	void checkPre()
+	{
+		assert(!std.file.exists(notExist1));
+		assert(!std.file.exists(notExist2));
+
+		assert(std.file.exists(file1));
+		assert(std.file.isFile(file1));
+		assert(cast(string) std.file.read(file1) == "abc");
+
+		assert(!std.file.exists(file2));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists(notExist1));
+		assert(!std.file.exists(notExist2));
+
+		assert(std.file.exists(file1));
+		assert(std.file.isFile(file1));
+		assert(cast(string) std.file.read(file1) == "abc");
+
+		assert(std.file.exists(file2));
+		assert(std.file.isFile(file2));
+		assert(cast(string) std.file.read(file2) == "abc");
+	}
+
+	testFileOperation!("tryCopy", "string,string")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		mixin(useTmpName!"notExist1");
+		mixin(useTmpName!"notExist2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		assert( tryCopy(file1, file2) );
+		assert( !tryCopy(notExist1, notExist2) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryCopy", "string,Path")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		mixin(useTmpName!"notExist1");
+		mixin(useTmpName!"notExist2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		assert( tryCopy(file1, Path(file2)) );
+		assert( !tryCopy(notExist1, Path(notExist2)) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryCopy", "Path,string")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		mixin(useTmpName!"notExist1");
+		mixin(useTmpName!"notExist2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		assert( tryCopy(Path(file1), file2) );
+		assert( !tryCopy(Path(notExist1), notExist2) );
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryCopy", "Path,Path")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		mixin(useTmpName!"notExist1");
+		mixin(useTmpName!"notExist2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		assert( tryCopy(Path(file1), Path(file2)) );
+		assert( !tryCopy(Path(notExist1), Path(notExist2)) );
+		mixin(checkResult);
+	});
+}
+
 /// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
 /// Supports Path and command echoing.
+///
 /// Returns: Success?
 bool tryRmdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 {
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
 	if(name.exists())
 	{
 		rmdirRecurse(name);
@@ -397,4 +751,46 @@ bool tryRmdirRecurse(T)(T name) if(is(T==string) || is(T==Path))
 	}
 	
 	return false;
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir, notExist;
+	void checkPre()
+	{
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+
+		assert(!std.file.exists( notExist ));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists( std.path.dirName(dir) ));
+
+		assert(!std.file.exists( notExist ));
+	}
+
+	testFileOperation!("tryRmdirRecurse", "string")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		assert(tryRmdirRecurse( std.path.dirName(dir) ));
+		assert(!tryRmdirRecurse( notExist ));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryRmdirRecurse", "Path")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		assert(tryRmdirRecurse(Path( std.path.dirName(dir) )));
+		assert(!tryRmdirRecurse(Path( notExist ) ));
+		mixin(checkResult);
+	});
 }

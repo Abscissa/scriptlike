@@ -12,6 +12,11 @@ $(UL
 	$(FIXED
 		Previous release broke the `unittest` script when `dub test` support was added.
 	)
+	$(FIXED
+		In echo mode, several functions would echo the wrong "try*" or
+		non-"try*" version. Ex: `run` echoed `tryRun`, and `tryRename`
+		echoed `rename`.
+	)
 	$(ENHANCE
 		Add $(API_CORE interp) for interpolated strings:
 		`string s = mixin( interp!"Value is ${/+any D expression here+/}" )`
