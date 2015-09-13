@@ -56,6 +56,9 @@ Path("some working dir").run(cmd.data);
 +/
 void run(string command)
 {
+	yapFunc(command);
+	mixin(gagEcho);
+
 	auto errorLevel = tryRun(command);
 	if(errorLevel != 0)
 		throw new ErrorLevelException(errorLevel, command);
@@ -69,6 +72,67 @@ void run(Path workingDirectory, string command)
 	scope(exit) saveDir.chdir();
 	
 	run(command);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.string : strip;
+
+	string scratchDir;
+	string targetFile;
+	string expectedContent;
+	void checkPre()
+	{
+		assert(!std.file.exists(targetFile));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(targetFile));
+		assert(std.file.isFile(targetFile));
+		assert(strip(cast(string) std.file.read(targetFile)) == expectedContent);
+	}
+
+	testFileOperation!("run", "default dir")(() {
+		mixin(useTmpName!"scratchDir");
+		mixin(useTmpName!("targetFile", "dummy"));
+		std.file.mkdir(scratchDir);
+		std.file.chdir(scratchDir);
+		std.file.mkdir(std.path.dirName(targetFile));
+		expectedContent = scratchDir;
+
+		checkPre();
+		run(text(pwd, " > ", Path(targetFile)));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("run", "custom dir")(() {
+		mixin(useTmpName!"scratchDir");
+		mixin(useTmpName!("targetFile", "dummy"));
+		std.file.mkdir(scratchDir);
+		std.file.chdir(scratchDir);
+		std.file.mkdir(std.path.dirName(targetFile));
+		expectedContent = std.path.dirName(targetFile);
+
+		checkPre();
+		run(Path(std.path.dirName(targetFile)), text(pwd, " > dummy"));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("run", "bad command")(() {
+		import std.exception : assertThrown;
+
+		void doIt()
+		{
+			run("cd this-path-does-not-exist-scriptlike"~quiet);
+		}
+
+		if(scriptlikeDryRun)
+			doIt();
+		else
+			assertThrown!ErrorLevelException( doIt() );
+	});
 }
 
 /++
@@ -165,7 +229,7 @@ unittest
 		mixin(checkResult);
 	});
 
-	testFileOperation!("tryRun", "nonexistent command")(() {
+	testFileOperation!("tryRun", "bad command")(() {
 		import std.exception : assertNotThrown;
 		mixin(useTmpName!"scratchDir");
 		std.file.mkdir(scratchDir);
@@ -230,7 +294,7 @@ unittest
 			assert(strip(result) == dir);
 	});
 
-	testFileOperation!("runCollect", "nonexistent command")(() {
+	testFileOperation!("runCollect", "bad command")(() {
 		import std.exception : assertThrown;
 
 		void doIt()
@@ -280,6 +344,47 @@ auto tryRunCollect(Path workingDirectory, string command)
 	scope(exit) saveDir.chdir();
 	
 	return tryRunCollect(command);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.string : strip;
+	string dir;
+	
+	testFileOperation!("tryRunCollect", "default dir")(() {
+		auto result = tryRunCollect(pwd);
+		
+		assert(result.status == 0);
+		if(scriptlikeDryRun)
+			assert(result.output == "");
+		else
+			assert(strip(result.output) == std.file.getcwd());
+	});
+
+	testFileOperation!("tryRunCollect", "custom dir")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		auto result = Path(dir).tryRunCollect(pwd);
+
+		assert(result.status == 0);
+		if(scriptlikeDryRun)
+			assert(result.output == "");
+		else
+			assert(strip(result.output) == dir);
+	});
+
+	testFileOperation!("tryRunCollect", "bad command")(() {
+		import std.exception : assertThrown;
+
+		auto result = tryRunCollect("cd this-path-does-not-exist-scriptlike"~quiet);
+		if(scriptlikeDryRun)
+			assert(result.status == 0);
+		else
+			assert(result.status != 0);
+		assert(result.output == "");
+	});
 }
 
 private immutable gagEcho = q{
