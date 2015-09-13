@@ -33,18 +33,6 @@ unittest
 	import scriptlike.path;
 	import scriptlike.core : tmpName;
 	
-	// std.file.slurp seems to randomly trigger an internal std.algorithm
-	// assert failure on DMD 2.064.2, so don't test it there. Seems
-	// to be fixed in DMD 2.065.
-	static import std.compiler;
-	static if(
-		std.compiler.vendor == std.compiler.Vendor.digitalMars ||
-		(std.compiler.version_major == 2 && std.compiler.version_minor == 64)
-	)
-		enum testSlurp = false;
-	else
-		enum testSlurp = true;
-
 	import std.stdio : writeln;
 	import std.process : thisProcessID;
 	import core.thread;
@@ -74,11 +62,8 @@ unittest
 		assert(tempPath.readText() == "stuff more");
 		assert(tempPath.getSize() == 10);
 
-		if(testSlurp)
-		{
-			auto parsed = tempPath.slurp!(string, string)("%s %s");
-			assert(equal(parsed, [tuple("stuff", "more")]));
-		}
+		auto parsed = tempPath.slurp!(string, string)("%s %s");
+		assert(equal(parsed, [tuple("stuff", "more")]));
 		
 		SysTime timeA, timeB, timeC;
 		tempPath.getTimes(timeA, timeB);
