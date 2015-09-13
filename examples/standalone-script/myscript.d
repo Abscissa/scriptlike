@@ -1,4 +1,3 @@
-#!/PATH/TO/rdmd --shebang -I~/.dub/packages/scriptlike-0.9.3/src/
 import scriptlike;
 
 void main(string[] args) {
