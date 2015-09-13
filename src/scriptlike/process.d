@@ -119,6 +119,56 @@ int tryRun(Path workingDirectory, string command)
 	return tryRun(command);
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	string scratchDir;
+	string targetFile;
+	string expectedContent;
+	void checkPre()
+	{
+		assert(!std.file.exists(targetFile));
+	}
+
+	void checkPost()
+	{
+		import std.string : strip;
+		assert(std.file.exists(targetFile));
+		assert(std.file.isFile(targetFile));
+		assert(strip(cast(string) std.file.read(targetFile)) == expectedContent);
+	}
+
+	version(Posix)        enum pwd = "pwd";
+	else version(Windows) enum pwd = "cd";
+	else static assert(0);
+
+	testFileOperation!("tryRun", "default dir")(() {
+		mixin(useTmpName!"scratchDir");
+		mixin(useTmpName!("targetFile", "dummy"));
+		std.file.mkdir(scratchDir);
+		std.file.chdir(scratchDir);
+		std.file.mkdir(std.path.dirName(targetFile));
+		expectedContent = scratchDir;
+
+		checkPre();
+		tryRun(text(pwd, " > ", Path(targetFile)));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryRun", "custom dir")(() {
+		mixin(useTmpName!"scratchDir");
+		mixin(useTmpName!("targetFile", "dummy"));
+		std.file.mkdir(scratchDir);
+		std.file.chdir(scratchDir);
+		std.file.mkdir(std.path.dirName(targetFile));
+		expectedContent = std.path.dirName(targetFile);
+
+		checkPre();
+		tryRun(Path(std.path.dirName(targetFile)), text(pwd, " > dummy"));
+		mixin(checkResult);
+	});
+}
+
 /// Backwards-compatibility alias. runShell may become deprecated in the
 /// future, so you should use tryRun or run insetad.
 alias runShell = tryRun;
