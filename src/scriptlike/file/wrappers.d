@@ -25,43 +25,6 @@ static import std.path;
 import scriptlike.core;
 import scriptlike.path.extras;
 
-/// Alias of same-named function from $(MODULE_STD_FILE)
-//alias read       = std.file.read;
-//alias readText() = std.file.readText; ///ditto
-//alias write      = std.file.write;    ///ditto
-//alias append     = std.file.append;   ///ditto
-//alias rename     = std.file.rename;   ///ditto
-//alias remove     = std.file.remove;   ///ditto
-//alias getSize    = std.file.getSize;  ///ditto
-//alias getTimes   = std.file.getTimes; ///ditto
-
-//version(ddoc_scriptlike_d) alias getTimesWin = std.file.getTimesWin; ///ditto
-//else version(Windows)      alias getTimesWin = std.file.getTimesWin; ///ditto
-
-//alias setTimes          = std.file.setTimes;          ///ditto
-//alias timeLastModified  = std.file.timeLastModified;  ///ditto
-//alias exists            = std.file.exists;            ///ditto
-//alias getAttributes     = std.file.getAttributes;     ///ditto
-//alias getLinkAttributes = std.file.getLinkAttributes; ///ditto
-//alias isDir             = std.file.isDir;             ///ditto
-//alias isFile            = std.file.isFile;            ///ditto
-//alias isSymlink()       = std.file.isSymlink;         ///ditto
-//alias chdir             = std.file.chdir;             ///ditto
-//alias mkdir             = std.file.mkdir;             ///ditto
-//alias mkdirRecurse      = std.file.mkdirRecurse;      ///ditto
-//alias rmdir             = std.file.rmdir;             ///ditto
-
-version(ddoc_scriptlike_d) alias symlink() = std.file.symlink; ///ditto
-else version(Posix)        alias symlink() = std.file.symlink; ///ditto
-
-version(ddoc_scriptlike_d) alias readLink() = std.file.readLink; ///ditto
-else version(Posix)        alias readLink() = std.file.readLink; ///ditto
-
-alias copy         = std.file.copy;         ///ditto
-//alias rmdirRecurse = std.file.rmdirRecurse; ///ditto
-alias dirEntries   = std.file.dirEntries;   ///ditto
-alias slurp        = std.file.slurp;        ///ditto
-
 /// Like $(FULL_STD_FILE read), but supports Path and command echoing.
 void[] read(in Path name, size_t upTo = size_t.max)
 {
@@ -1096,6 +1059,9 @@ version(ddoc_scriptlike_d)
 
 	/// Posix-only. Like $(FULL_STD_FILE readLink), but supports Path and command echoing.
 	Path readLink(Path link);
+
+	///ditto
+	string readLink(string link);
 }
 else version(Posix)
 {
@@ -1122,10 +1088,105 @@ else version(Posix)
 			std.file.symlink(original, link);
 	}
 
+	version(unittest_scriptlike_d)
+	unittest
+	{
+		string file, link;
+		void checkPre()
+		{
+			assert(std.file.exists(file));
+			assert(std.file.isFile(file));
+			assert(cast(string) std.file.read(file) == "abc123");
+			
+			assert(!std.file.exists(link));
+		}
+
+		void checkPost()
+		{
+			assert(std.file.exists(file));
+			assert(std.file.isFile(file));
+			assert(cast(string) std.file.read(file) == "abc123");
+			
+			assert(std.file.exists(link));
+			assert(std.file.isSymlink(link));
+			assert(std.file.readLink(link) == file);
+			assert(cast(string) std.file.read(link) == "abc123");
+		}
+
+		testFileOperation!("symlink", "string,string")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			symlink(file, link);
+			mixin(checkResult);
+		});
+
+		testFileOperation!("symlink", "string,Path")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			symlink(file, Path(link));
+			mixin(checkResult);
+		});
+
+		testFileOperation!("symlink", "Path,string")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			symlink(Path(file), link);
+			mixin(checkResult);
+		});
+
+		testFileOperation!("symlink", "Path,Path")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+
+			checkPre();
+			symlink(Path(file), Path(link));
+			mixin(checkResult);
+		});
+	}
+
 	Path readLink(Path link)
 	{
+		return Path( readLink(link.toRawString()) );
+	}
+
+	string readLink(string link)
+	{
 		yapFunc(link);
-		return Path( std.file.readLink(link.toRawString()) );
+		return std.file.readLink(link);
+	}
+
+	version(unittest_scriptlike_d)
+	unittest
+	{
+		string file, link;
+
+		testFileOperation!("readLink", "string")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+			std.file.symlink(file, link);
+
+			assert(readLink(link) == file);
+		});
+
+		testFileOperation!("readLink", "Path")(() {
+			mixin(useTmpName!"file");
+			mixin(useTmpName!"link");
+			std.file.write(file, "abc123");
+			std.file.symlink(file, link);
+
+			assert(readLink(Path(link)) == Path(file));
+		});
 	}
 }
 
@@ -1154,6 +1215,72 @@ void copy(in string from, in string to)
 
 	if(!scriptlikeDryRun)
 		std.file.copy(from, to);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file1;
+	string file2;
+	void checkPre()
+	{
+		assert(std.file.exists(file1));
+		assert(std.file.isFile(file1));
+		assert(cast(string) std.file.read(file1) == "abc");
+
+		assert(!std.file.exists(file2));
+	}
+
+	void checkPost()
+	{
+		assert(std.file.exists(file1));
+		assert(std.file.isFile(file1));
+		assert(cast(string) std.file.read(file1) == "abc");
+
+		assert(std.file.exists(file2));
+		assert(std.file.isFile(file2));
+		assert(cast(string) std.file.read(file2) == "abc");
+	}
+
+	testFileOperation!("copy", "string,string")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		copy(file1, file2);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("copy", "string,Path")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		copy(file1, Path(file2));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("copy", "Path,string")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		copy(Path(file1), file2);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("copy", "Path,Path")(() {
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
+		std.file.write(file1, "abc");
+
+		checkPre();
+		copy(Path(file1), Path(file2));
+		mixin(checkResult);
+	});
 }
 
 /// Like $(FULL_STD_FILE rmdirRecurse), but supports Path, command echoing and dryrun.
@@ -1206,28 +1333,114 @@ unittest
 }
 
 /// Like $(FULL_STD_FILE dirEntries), but supports Path and command echoing.
-auto dirEntries(Path path, SpanMode mode, bool followSymlink = true)
+auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
 {
 	yapFunc(path);
-	return std.file.dirEntries(path.toRawString(), mode, followSymlink);
+	return std.file.dirEntries(path, mode, followSymlink);
 }
 
-/// Like $(FULL_STD_FILE dirEntries), but supports Path and command echoing.
-auto dirEntries(Path path, string pattern, SpanMode mode,
+///ditto
+auto dirEntries(Path path, SpanMode mode, bool followSymlink = true)
+{
+	return dirEntries(path.toRawString(), mode, followSymlink);
+}
+
+///ditto
+auto dirEntries(string path, string pattern, SpanMode mode,
 	bool followSymlink = true)
 {
 	yapFunc(path);
-	return std.file.dirEntries(path.toRawString(), pattern, mode, followSymlink);
+	return std.file.dirEntries(path, pattern, mode, followSymlink);
+}
+
+///ditto
+auto dirEntries(Path path, string pattern, SpanMode mode,
+	bool followSymlink = true)
+{
+	return dirEntries(path.toRawString(), pattern, mode, followSymlink);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+
+	testFileOperation!("dirEntries", "string")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		auto range = dirEntries(std.path.dirName(dir), SpanMode.shallow);
+		assert(range.front.name == dir);
+		range.popFront();
+		assert(range.empty);
+	});
+
+	testFileOperation!("dirEntries", "Path")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		auto range = dirEntries(Path(std.path.dirName(dir)), SpanMode.shallow);
+		assert(range.front.name == dir);
+		range.popFront();
+		assert(range.empty);
+	});
+
+	testFileOperation!("dirEntries", "string,pattern")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		auto range = dirEntries(std.path.dirName(dir), "*", SpanMode.shallow);
+		assert(range.front.name == dir);
+		range.popFront();
+		assert(range.empty);
+	});
+
+	testFileOperation!("dirEntries", "Path,pattern")(() {
+		mixin(useTmpName!("dir", "subdir"));
+		std.file.mkdirRecurse(dir);
+
+		auto range = dirEntries(Path(std.path.dirName(dir)), "*", SpanMode.shallow);
+		assert(range.front.name == dir);
+		range.popFront();
+		assert(range.empty);
+	});
 }
 
 /// Like $(FULL_STD_FILE slurp), but supports Path and command echoing.
-template slurp(Types...)
+auto slurp(Types...)(Path filename, in string format)
 {
-	auto slurp(Path filename, in string format)
-	{
-		yapFunc(filename);
-		return std.file.slurp!Types(filename.toRawString(), format);
-	}
+	return slurp!Types(filename.toRawString(), format);
+}
+
+///ditto
+auto slurp(Types...)(string filename, in string format)
+{
+	yapFunc(filename);
+	return std.file.slurp!Types(filename, format);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("slurp", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc, 123");
+
+		auto result = slurp!(string, int)(file, "%s, %s");
+		auto expected = [Tuple!(string, int)("abc", 123)];
+		assert(result == expected);
+	});
+
+	testFileOperation!("slurp", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc, 123");
+
+		auto result = slurp!(string, int)(Path(file), "%s, %s");
+		auto expected = [Tuple!(string, int)("abc", 123)];
+		assert(result == expected);
+	});
 }
 
 /// Like $(FULL_STD_FILE thisExePath), but supports Path and command echoing.
@@ -1238,12 +1451,28 @@ template slurp(Types...)
 	return path;
 }
 
+version(unittest_scriptlike_d)
+unittest
+{
+	testFileOperation!("thisExePath", "Path")(() {
+		thisExePath();
+	});
+}
+
 /// Like $(FULL_STD_FILE tempDir), but supports Path and command echoing.
 @trusted Path tempDir()
 {
 	auto path = Path( std.file.tempDir() );
 	yapFunc(path);
 	return path;
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	testFileOperation!("tempDir", "Path")(() {
+		assert( tempDir() == Path(std.file.tempDir()) );
+	});
 }
 
 version(unittest_scriptlike_d)
