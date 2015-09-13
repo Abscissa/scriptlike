@@ -115,7 +115,7 @@ struct Path
 	/// Convert to string, quoting or escaping spaces if necessary.
 	string toString()
 	{
-		return escapeShellArg(str);
+		return .escapeShellArg(str);
 	}
 	
 	/// Returns the underlying string. Does NOT do any escaping, even if path contains spaces.
@@ -234,6 +234,9 @@ struct Path
 	{
 		return str == "";
 	}
+
+	/// Included for the sake of generic code that accepts either string or Path.
+	alias escapeShellArg = toString;
 }
 
 /// Convenience alias

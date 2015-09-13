@@ -20,6 +20,10 @@ $(UL
 		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
 	)
 	$(ENHANCE
+		Add $(API_PATH_EXTR Path.escapeShellArg) for the sake of generic code
+		that accepts either string or Path.
+	)
+	$(ENHANCE
 		Improved internal tests.
 	)
 )
