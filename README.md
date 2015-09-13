@@ -269,7 +269,7 @@ Echoing can be customized via [```scriptlikeCustomEcho```](http://semitwist.com/
 /++
 Output:
 --------
-tryRun: echo Hello > file.txt
+run: echo Hello > file.txt
 mkdirRecurse: 'some/new/dir'
 copy: 'file.txt' -> 'some/new/dir/target name.txt'
 Gonna run foo() now...
@@ -327,7 +327,21 @@ See: [```scriptlikeDryRun```](http://semitwist.com/scriptlike/scriptlike/core/sc
 Single function to bail out with an error message, exception-safe.
 
 ```d
+/++
+Example:
+--------
+$ rdmd test.d
+test: ERROR: Need two args, not 0!
+$ rdmd test.d abc 123
+test: ERROR: First arg must be 'foobar', not 'abc'!
+--------
++/
+
 import scriptlike;
+
+void main(string[] args) {
+	helper(args);
+}
 
 // Throws a Fail exception on bad args:
 void helper(string[] args) {
@@ -338,18 +352,6 @@ void helper(string[] args) {
 	if(args[1] != "foobar")
 		fail("First arg must be 'foobar', not '", args[1], "'!");
 }
-
-void main(string[] args) {
-	helper(args);
-}
-
-/++
-Example:
-$ rdmd test.d
-test: ERROR: Need two args, not 0!
-$ rdmd test.d abc 123
-test: ERROR: First arg must be 'foobar', not 'abc'!
-+/
 ```
 
 See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html), [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
