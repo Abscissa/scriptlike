@@ -334,6 +334,13 @@ version(unittest_scriptlike_d)
 		
 		auto originalCurrentDir = std.file.getcwd();
 		
+		scope(exit)
+		{
+			scriptlikeEcho = false;
+			scriptlikeDryRun = false;
+			scriptlikeCustomEcho = null;
+		}
+		
 		// Test normally
 		{
 			std.stdio.write("Testing ", module_, ".", funcName, (msg? ": " : ""), msg, "\t[normal]");
