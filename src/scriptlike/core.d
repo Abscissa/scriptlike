@@ -286,7 +286,7 @@ version(unittest_scriptlike_d)
 	// Path received can be used as either a file or dir, doesn't matter.
 	immutable useTmpName(string name, string suffix=null) =
 		name~" = tmpName(`"~name~"`, `"~suffix~"`);
-		scope(exit) unittest_tryRemovePath("~name~");
+		scope(exit) unittest_tryRemovePath(tmpName(`"~name~"`));
 	";
 
 	// Delete if it already exists, regardless of whether it's a file or directory.
