@@ -243,6 +243,14 @@ unittest
 // Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
 {
+	version(Posix)        enum pwd = "pwd";
+	else version(Windows) enum pwd = "cd";
+	else static assert(0);
+
+	version(Posix)        enum quiet = " >/dev/null 2>/dev/null";
+	else version(Windows) enum quiet = " > NUL 2> NUL";
+	else static assert(0);
+
 	immutable initTest(string testName, string msg = null, string module_ = __MODULE__) = `
 		import std.stdio: writeln;
 		import std.exception;

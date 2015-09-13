@@ -122,6 +122,8 @@ int tryRun(Path workingDirectory, string command)
 version(unittest_scriptlike_d)
 unittest
 {
+	import std.string : strip;
+
 	string scratchDir;
 	string targetFile;
 	string expectedContent;
@@ -132,15 +134,10 @@ unittest
 
 	void checkPost()
 	{
-		import std.string : strip;
 		assert(std.file.exists(targetFile));
 		assert(std.file.isFile(targetFile));
 		assert(strip(cast(string) std.file.read(targetFile)) == expectedContent);
 	}
-
-	version(Posix)        enum pwd = "pwd";
-	else version(Windows) enum pwd = "cd";
-	else static assert(0);
 
 	testFileOperation!("tryRun", "default dir")(() {
 		mixin(useTmpName!"scratchDir");
@@ -167,6 +164,15 @@ unittest
 		tryRun(Path(std.path.dirName(targetFile)), text(pwd, " > dummy"));
 		mixin(checkResult);
 	});
+
+	testFileOperation!("tryRun", "nonexistent command")(() {
+		import std.exception : assertNotThrown;
+		mixin(useTmpName!"scratchDir");
+		std.file.mkdir(scratchDir);
+		std.file.chdir(scratchDir);
+
+		assertNotThrown( tryRun("cd this-path-does-not-exist-scriptlike"~quiet) );
+	});
 }
 
 /// Backwards-compatibility alias. runShell may become deprecated in the
@@ -177,6 +183,9 @@ alias runShell = tryRun;
 /// the output instead of displaying it.
 string runCollect(string command)
 {
+	yapFunc(command);
+	mixin(gagEcho);
+	
 	auto result = tryRunCollect(command);
 	if(result.status != 0)
 		throw new ErrorLevelException(result.status, command);
@@ -192,6 +201,48 @@ string runCollect(Path workingDirectory, string command)
 	scope(exit) saveDir.chdir();
 	
 	return runCollect(command);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.string : strip;
+	string dir;
+	
+	testFileOperation!("runCollect", "default dir")(() {
+		auto result = runCollect(pwd);
+		
+		if(scriptlikeDryRun)
+			assert(result == "");
+		else
+			assert(strip(result) == std.file.getcwd());
+	});
+
+	testFileOperation!("runCollect", "custom dir")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		auto result = Path(dir).runCollect(pwd);
+
+		if(scriptlikeDryRun)
+			assert(result == "");
+		else
+			assert(strip(result) == dir);
+	});
+
+	testFileOperation!("runCollect", "nonexistent command")(() {
+		import std.exception : assertThrown;
+
+		void doIt()
+		{
+			runCollect("cd this-path-does-not-exist-scriptlike"~quiet);
+		}
+
+		if(scriptlikeDryRun)
+			doIt();
+		else
+			assertThrown!ErrorLevelException( doIt() );
+	});
 }
 
 /// Similar to tryRun(), but (like $(FULL_STD_PROCESS executeShell)) captures
@@ -230,6 +281,16 @@ auto tryRunCollect(Path workingDirectory, string command)
 	
 	return tryRunCollect(command);
 }
+
+private immutable gagEcho = q{
+	auto saveCustomEcho = scriptlikeCustomEcho;
+
+	void dummyEcho(string str) {}
+	saveCustomEcho = &dummyEcho;
+	
+	scope(exit)
+		scriptlikeCustomEcho = saveCustomEcho;
+};
 
 /++
 Much like std.array.Appender!string, but specifically geared towards
