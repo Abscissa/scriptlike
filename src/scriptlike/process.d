@@ -97,6 +97,8 @@ unittest
 	testFileOperation!("run", "default dir")(() {
 		mixin(useTmpName!"scratchDir");
 		mixin(useTmpName!("targetFile", "dummy"));
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 		std.file.mkdir(scratchDir);
 		std.file.chdir(scratchDir);
 		std.file.mkdir(std.path.dirName(targetFile));
@@ -110,6 +112,8 @@ unittest
 	testFileOperation!("run", "custom dir")(() {
 		mixin(useTmpName!"scratchDir");
 		mixin(useTmpName!("targetFile", "dummy"));
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 		std.file.mkdir(scratchDir);
 		std.file.chdir(scratchDir);
 		std.file.mkdir(std.path.dirName(targetFile));
@@ -206,6 +210,8 @@ unittest
 	testFileOperation!("tryRun", "default dir")(() {
 		mixin(useTmpName!"scratchDir");
 		mixin(useTmpName!("targetFile", "dummy"));
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 		std.file.mkdir(scratchDir);
 		std.file.chdir(scratchDir);
 		std.file.mkdir(std.path.dirName(targetFile));
@@ -219,6 +225,8 @@ unittest
 	testFileOperation!("tryRun", "custom dir")(() {
 		mixin(useTmpName!"scratchDir");
 		mixin(useTmpName!("targetFile", "dummy"));
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 		std.file.mkdir(scratchDir);
 		std.file.chdir(scratchDir);
 		std.file.mkdir(std.path.dirName(targetFile));
@@ -232,6 +240,8 @@ unittest
 	testFileOperation!("tryRun", "bad command")(() {
 		import std.exception : assertNotThrown;
 		mixin(useTmpName!"scratchDir");
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 		std.file.mkdir(scratchDir);
 		std.file.chdir(scratchDir);
 

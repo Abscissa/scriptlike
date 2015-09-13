@@ -886,6 +886,8 @@ unittest
 	testFileOperation!("chdir", "string")(() {
 		mixin(useTmpName!"dir");
 		std.file.mkdir(dir);
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 
 		chdir(dir);
 		assert(std.file.getcwd() == dir);
@@ -894,6 +896,8 @@ unittest
 	testFileOperation!("chdir", "Path")(() {
 		mixin(useTmpName!"dir");
 		std.file.mkdir(dir);
+		auto origDir = std.file.getcwd();
+		scope(exit) std.file.chdir(origDir);
 
 		chdir(Path(dir));
 		assert(std.file.getcwd() == dir);
