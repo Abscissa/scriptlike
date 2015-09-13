@@ -472,7 +472,7 @@ else version(Windows)
 			mixin(useTmpName!"file");
 			std.file.write(file, "abc123");
 
-			SysTime a, b;
+			SysTime a, b, c;
 			getTimesWin(Path(file), a, b, c);
 		});
 	}
