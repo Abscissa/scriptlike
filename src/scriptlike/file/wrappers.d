@@ -30,22 +30,22 @@ alias read       = std.file.read;
 alias readText() = std.file.readText; ///ditto
 //alias write      = std.file.write;    ///ditto
 //alias append     = std.file.append;   ///ditto
-alias rename     = std.file.rename;   ///ditto
-alias remove     = std.file.remove;   ///ditto
-alias getSize    = std.file.getSize;  ///ditto
-alias getTimes   = std.file.getTimes; ///ditto
+//alias rename     = std.file.rename;   ///ditto
+//alias remove     = std.file.remove;   ///ditto
+//alias getSize    = std.file.getSize;  ///ditto
+//alias getTimes   = std.file.getTimes; ///ditto
 
-version(ddoc_scriptlike_d) alias getTimesWin = std.file.getTimesWin; ///ditto
-else version(Windows)      alias getTimesWin = std.file.getTimesWin; ///ditto
+//version(ddoc_scriptlike_d) alias getTimesWin = std.file.getTimesWin; ///ditto
+//else version(Windows)      alias getTimesWin = std.file.getTimesWin; ///ditto
 
-alias setTimes          = std.file.setTimes;          ///ditto
-alias timeLastModified  = std.file.timeLastModified;  ///ditto
+//alias setTimes          = std.file.setTimes;          ///ditto
+//alias timeLastModified  = std.file.timeLastModified;  ///ditto
 //alias exists            = std.file.exists;            ///ditto
-alias getAttributes     = std.file.getAttributes;     ///ditto
-alias getLinkAttributes = std.file.getLinkAttributes; ///ditto
-alias isDir             = std.file.isDir;             ///ditto
-alias isFile            = std.file.isFile;            ///ditto
-alias isSymlink()       = std.file.isSymlink;         ///ditto
+//alias getAttributes     = std.file.getAttributes;     ///ditto
+//alias getLinkAttributes = std.file.getLinkAttributes; ///ditto
+//alias isDir             = std.file.isDir;             ///ditto
+//alias isFile            = std.file.isFile;            ///ditto
+//alias isSymlink()       = std.file.isSymlink;         ///ditto
 alias chdir             = std.file.chdir;             ///ditto
 alias mkdir             = std.file.mkdir;             ///ditto
 alias mkdirRecurse      = std.file.mkdirRecurse;      ///ditto
@@ -338,8 +338,34 @@ unittest
 /// Like $(FULL_STD_FILE getSize), but supports Path and command echoing.
 ulong getSize(in Path name)
 {
+	return getSize(name.toRawString());
+}
+
+///ditto
+ulong getSize(in string name)
+{
 	yapFunc(name);
-	return std.file.getSize(name.toRawString());
+	return std.file.getSize(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("getSize", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+		
+		assert(getSize(file) == 6);
+	});
+
+	testFileOperation!("getSize", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		assert(getSize(Path(file)) == 6);
+	});
 }
 
 /// Like $(FULL_STD_FILE getTimes), but supports Path and command echoing.
@@ -347,8 +373,38 @@ void getTimes(in Path name,
 	out SysTime accessTime,
 	out SysTime modificationTime)
 {
+	getTimes(name.toRawString(), accessTime, modificationTime);
+}
+
+///ditto
+void getTimes(in string name,
+	out SysTime accessTime,
+	out SysTime modificationTime)
+{
 	yapFunc(name);
-	std.file.getTimes(name.toRawString(), accessTime, modificationTime);
+	std.file.getTimes(name, accessTime, modificationTime);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("getTimes", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		SysTime a, b;
+		getTimes(file, a, b);
+	});
+
+	testFileOperation!("getTimes", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		SysTime a, b;
+		getTimes(Path(file), a, b);
+	});
 }
 
 version(ddoc_scriptlike_d)
@@ -358,14 +414,53 @@ version(ddoc_scriptlike_d)
 		out SysTime fileCreationTime,
 		out SysTime fileAccessTime,
 		out SysTime fileModificationTime);
+
+	///ditto
+	void getTimesWin(in string name,
+		out SysTime fileCreationTime,
+		out SysTime fileAccessTime,
+		out SysTime fileModificationTime);
 }
-else version(Windows) void getTimesWin(in Path name,
-	out SysTime fileCreationTime,
-	out SysTime fileAccessTime,
-	out SysTime fileModificationTime)
+else version(Windows)
 {
-	yapFunc(name);
-	std.file.getTimesWin(name.toRawString(), fileCreationTime, fileAccessTime, fileModificationTime);
+	void getTimesWin(in Path name,
+		out SysTime fileCreationTime,
+		out SysTime fileAccessTime,
+		out SysTime fileModificationTime)
+	{
+		getTimesWin(name.toRawString(), fileCreationTime, fileAccessTime, fileModificationTime);
+	}
+
+	void getTimesWin(in string name,
+		out SysTime fileCreationTime,
+		out SysTime fileAccessTime,
+		out SysTime fileModificationTime)
+	{
+		yapFunc(name);
+		std.file.getTimesWin(name, fileCreationTime, fileAccessTime, fileModificationTime);
+	}
+
+	version(unittest_scriptlike_d)
+	unittest
+	{
+		string file;
+
+		testFileOperation!("getTimesWin", "string")(() {
+			mixin(useTmpName!"file");
+			std.file.write(file, "abc123");
+
+			SysTime a, b, c;
+			getTimesWin(file, a, b, c);
+		});
+
+		testFileOperation!("getTimesWin", "Path")(() {
+			mixin(useTmpName!"file");
+			std.file.write(file, "abc123");
+
+			SysTime a, b;
+			getTimesWin(Path(file), a, b, c);
+		});
+	}
 }
 
 /// Like $(FULL_STD_FILE setTimes), but supports Path, command echoing and dryrun.
@@ -388,18 +483,123 @@ void setTimes(in string name,
 		std.file.setTimes(name, accessTime, modificationTime);
 }
 
-/// Like $(FULL_STD_FILE timeLastModified), but supports Path and command echoing.
-SysTime timeLastModified(in Path name)
+version(unittest_scriptlike_d)
+unittest
 {
-	yapFunc(name);
-	return std.file.timeLastModified(name.toRawString());
+	string file;
+	SysTime actualAccessTime, actualModTime;
+	SysTime expectedAccessTime = SysTime(234567890);
+	SysTime expectedModTime    = SysTime(123456789);
+	
+	void checkPre()
+	{
+		std.file.getTimes(file, actualAccessTime, actualModTime);
+		assert(actualAccessTime != expectedAccessTime);
+		assert(actualModTime != expectedModTime);
+	}
+
+	void checkPost()
+	{
+		std.file.getTimes(file, actualAccessTime, actualModTime);
+		assert(actualAccessTime == expectedAccessTime);
+		assert(actualModTime == expectedModTime);
+	}
+
+	/+
+	testFileOperation!("setTimes", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc");
+
+		checkPre();
+		setTimes(file, expectedAccessTime, expectedModTime);
+		mixin(checkResult);
+	});
+
+	testFileOperation!("setTimes", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc");
+
+		checkPre();
+		setTimes(Path(file), expectedAccessTime, expectedModTime);
+		mixin(checkResult);
+	});
+	+/
 }
 
 /// Like $(FULL_STD_FILE timeLastModified), but supports Path and command echoing.
-SysTime timeLastModified(in Path name, SysTime returnIfMissing)
+SysTime timeLastModified(in Path name)
+{
+	return timeLastModified(name.toRawString());
+}
+
+///ditto
+SysTime timeLastModified(in string name)
 {
 	yapFunc(name);
-	return std.file.timeLastModified(name.toRawString(), returnIfMissing);
+	return std.file.timeLastModified(name);
+}
+
+///ditto
+SysTime timeLastModified(in Path name, SysTime returnIfMissing)
+{
+	return timeLastModified(name.toRawString(), returnIfMissing);
+}
+
+///ditto
+SysTime timeLastModified(in string name, SysTime returnIfMissing)
+{
+	yapFunc(name);
+	return std.file.timeLastModified(name, returnIfMissing);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("timeLastModified", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		timeLastModified(file);
+	});
+
+	testFileOperation!("timeLastModified", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		timeLastModified(Path(file));
+	});
+
+	testFileOperation!("timeLastModified", "string,SysTime - exists")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		auto ifMissing = SysTime(123);
+		timeLastModified(file, ifMissing);
+	});
+
+	testFileOperation!("timeLastModified", "Path,SysTime - exists")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		auto ifMissing = SysTime(123);
+		timeLastModified(Path(file), ifMissing);
+	});
+
+	testFileOperation!("timeLastModified", "string,SysTime - missing")(() {
+		mixin(useTmpName!"file");
+
+		auto ifMissing = SysTime(123);
+		assert(timeLastModified(file, ifMissing) == SysTime(123));
+	});
+
+	testFileOperation!("timeLastModified", "Path,SysTime - missing")(() {
+		mixin(useTmpName!"file");
+
+		auto ifMissing = SysTime(123);
+		assert(timeLastModified(Path(file), ifMissing) == SysTime(123));
+	});
 }
 
 /// Like $(FULL_STD_FILE exists), but supports Path and command echoing.
@@ -440,36 +640,208 @@ unittest
 /// Like $(FULL_STD_FILE getAttributes), but supports Path and command echoing.
 uint getAttributes(in Path name)
 {
+	return getAttributes(name.toRawString());
+}
+
+///ditto
+uint getAttributes(in string name)
+{
 	yapFunc(name);
-	return std.file.getAttributes(name.toRawString());
+	return std.file.getAttributes(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("getAttributes", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		getAttributes(file);
+	});
+
+	testFileOperation!("getAttributes", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		getAttributes(Path(file));
+	});
 }
 
 /// Like $(FULL_STD_FILE getLinkAttributes), but supports Path and command echoing.
 uint getLinkAttributes(in Path name)
 {
+	return getLinkAttributes(name.toRawString());
+}
+
+///ditto
+uint getLinkAttributes(in string name)
+{
 	yapFunc(name);
-	return std.file.getLinkAttributes(name.toRawString());
+	return std.file.getLinkAttributes(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file;
+
+	testFileOperation!("getLinkAttributes", "string")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		getLinkAttributes(file);
+	});
+
+	testFileOperation!("getLinkAttributes", "Path")(() {
+		mixin(useTmpName!"file");
+		std.file.write(file, "abc123");
+
+		getLinkAttributes(Path(file));
+	});
 }
 
 /// Like $(FULL_STD_FILE isDir), but supports Path and command echoing.
 @property bool isDir(in Path name)
 {
+	return isDir(name.toRawString());
+}
+
+///ditto
+@property bool isDir(in string name)
+{
 	yapFunc(name);
-	return std.file.isDir(name.toRawString());
+	return std.file.isDir(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file, dir;
+
+	testFileOperation!("isDir", "string")(() {
+		mixin(useTmpName!("file", 1));
+		mixin(useTmpName!("dir", 2));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+
+		assert( !isDir(file) );
+		assert( isDir(dir) );
+	});
+
+	testFileOperation!("isDir", "Path")(() {
+		mixin(useTmpName!("file", 1));
+		mixin(useTmpName!("dir", 2));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+
+		assert( !isDir(Path(file)) );
+		assert( isDir(Path(dir)) );
+	});
 }
 
 /// Like $(FULL_STD_FILE isFile), but supports Path and command echoing.
 @property bool isFile(in Path name)
 {
+	return isFile(name.toRawString());
+}
+
+///ditto
+@property bool isFile(in string name)
+{
 	yapFunc(name);
-	return std.file.isFile(name.toRawString());
+	return std.file.isFile(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file, dir;
+
+	testFileOperation!("isFile", "string")(() {
+		mixin(useTmpName!("file", 1));
+		mixin(useTmpName!("dir", 2));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+
+		assert( isFile(file) );
+		assert( !isFile(dir) );
+	});
+
+	testFileOperation!("isFile", "Path")(() {
+		mixin(useTmpName!("file", 1));
+		mixin(useTmpName!("dir", 2));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+
+		assert( isFile(Path(file)) );
+		assert( !isFile(Path(dir)) );
+	});
 }
 
 /// Like $(FULL_STD_FILE isSymlink), but supports Path and command echoing.
-@property bool isSymlink(Path name)
+@property bool isSymlink(in Path name)
+{
+	return isSymlink(name.toRawString());
+}
+
+///ditto
+@property bool isSymlink(in string name)
 {
 	yapFunc(name);
-	return std.file.isSymlink(name.toRawString());
+	return std.file.isSymlink(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file, dir, fileLink, dirLink;
+
+	testFileOperation!("isSymlink", "string")(() {
+		mixin(useTmpName!("file",     1));
+		mixin(useTmpName!("dir",      2));
+		mixin(useTmpName!("fileLink", 3));
+		mixin(useTmpName!("dirLink",  4));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+		version(Posix)
+		{
+			std.file.symlink(file, fileLink);
+			std.file.symlink(dir, dirLink);
+		}
+
+		assert( !isSymlink(file) );
+		assert( !isSymlink(dir) );
+		version(Posix)
+		{
+			assert( isSymlink(fileLink) );
+			assert( isSymlink(dirLink) );
+		}
+	});
+
+	testFileOperation!("isSymlink", "Path")(() {
+		mixin(useTmpName!("file",     1));
+		mixin(useTmpName!("dir",      2));
+		mixin(useTmpName!("fileLink", 3));
+		mixin(useTmpName!("dirLink",  4));
+		std.file.write(file, "abc123");
+		std.file.mkdir(dir);
+		version(Posix)
+		{
+			std.file.symlink(file, fileLink);
+			std.file.symlink(dir, dirLink);
+		}
+
+		assert( !isSymlink(Path(file)) );
+		assert( !isSymlink(Path(dir)) );
+		version(Posix)
+		{
+			assert( isSymlink(Path(fileLink)) );
+			assert( isSymlink(Path(dirLink)) );
+		}
+	});
 }
 
 /// Like $(FULL_STD_FILE getcwd), but returns a Path.
@@ -489,6 +861,28 @@ void chdir(in string pathname)
 {
 	yapFunc(pathname.escapeShellArg());
 	std.file.chdir(pathname);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string dir;
+
+	testFileOperation!("chdir", "string")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		chdir(dir);
+		assert(std.file.getcwd() == dir);
+	});
+
+	testFileOperation!("chdir", "Path")(() {
+		mixin(useTmpName!"dir");
+		std.file.mkdir(dir);
+
+		chdir(Path(dir));
+		assert(std.file.getcwd() == dir);
+	});
 }
 
 /// Like $(FULL_STD_FILE mkdir), but supports Path, command echoing and dryrun.
@@ -694,7 +1088,9 @@ version(unittest_scriptlike_d)
 			capturedEcho ~= str;
 			capturedEcho ~= '\n';
 		}
-
+		
+		auto originalCurrentDir = std.file.getcwd();
+		
 		// Test normally
 		{
 			std.stdio.write("Testing ", module_, ".", funcName, (msg? ": " : ""), msg, "\t[normal]");
@@ -705,6 +1101,7 @@ version(unittest_scriptlike_d)
 			scriptlikeCustomEcho = &captureEcho;
 
 			scope(failure) writeln();
+			scope(exit) std.file.chdir(originalCurrentDir);
 			test();
 			assert(
 				capturedEcho == "",
@@ -722,6 +1119,7 @@ version(unittest_scriptlike_d)
 			scriptlikeCustomEcho = &captureEcho;
 
 			scope(failure) writeln();
+			scope(exit) std.file.chdir(originalCurrentDir);
 			test();
 			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 			assert(
@@ -740,6 +1138,7 @@ version(unittest_scriptlike_d)
 			scriptlikeCustomEcho = &captureEcho;
 
 			scope(failure) writeln();
+			scope(exit) std.file.chdir(originalCurrentDir);
 			test();
 			assert(capturedEcho != "", "Expected the test to echo, but it didn't.");
 			assert(
