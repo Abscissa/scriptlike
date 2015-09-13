@@ -260,7 +260,7 @@ version(unittest_scriptlike_d)
 	// Guaranteed not to already exist.
 	// 
 	// Path received can be used as either a file or dir, doesn't matter.
-	string tmpName(int id = 0, string suffix = null, string func = __FUNCTION__)
+	string tmpName(string id = null, string suffix = null, string func = __FUNCTION__)
 	out(result)
 	{
 		assert(!std.file.exists(result));
@@ -273,7 +273,7 @@ version(unittest_scriptlike_d)
 		// Include some spaces in the path, too:
 		auto withoutSuffix = std.path.buildPath(
 			std.file.tempDir(),
-			text("deleteme.script like.unit test.pid", thisProcessID, ".", func, ".num", id)
+			text("deleteme.script like.unit test.pid", thisProcessID, ".", func, ".", id)
 		);
 		unittest_tryRemovePath(withoutSuffix);
 		
@@ -284,8 +284,8 @@ version(unittest_scriptlike_d)
 	// Get a unique temp pathname (guaranteed not to exist or collide), and
 	// clean up at the end up scope, deleting it if it exists.
 	// Path received can be used as either a file or dir, doesn't matter.
-	immutable useTmpName(string name, int id=0, string suffix=null) =
-		name~" = tmpName("~to!string(id)~", `"~suffix~"`);
+	immutable useTmpName(string name, string suffix=null) =
+		name~" = tmpName(`"~name~"`, `"~suffix~"`);
 		scope(exit) unittest_tryRemovePath("~name~");
 	";
 

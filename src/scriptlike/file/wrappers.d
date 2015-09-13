@@ -245,8 +245,8 @@ unittest
 	}
 
 	testFileOperation!("rename", "string,string")(() {
-		mixin(useTmpName!("file1", 1));
-		mixin(useTmpName!("file2", 2));
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
 		std.file.write(file1, "abc");
 
 		checkPre();
@@ -255,8 +255,8 @@ unittest
 	});
 
 	testFileOperation!("rename", "string,Path")(() {
-		mixin(useTmpName!("file1", 1));
-		mixin(useTmpName!("file2", 2));
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
 		std.file.write(file1, "abc");
 
 		checkPre();
@@ -265,8 +265,8 @@ unittest
 	});
 
 	testFileOperation!("rename", "Path,string")(() {
-		mixin(useTmpName!("file1", 1));
-		mixin(useTmpName!("file2", 2));
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
 		std.file.write(file1, "abc");
 
 		checkPre();
@@ -275,8 +275,8 @@ unittest
 	});
 
 	testFileOperation!("rename", "Path,Path")(() {
-		mixin(useTmpName!("file1", 1));
-		mixin(useTmpName!("file2", 2));
+		mixin(useTmpName!"file1");
+		mixin(useTmpName!"file2");
 		std.file.write(file1, "abc");
 
 		checkPre();
@@ -722,8 +722,8 @@ unittest
 	string file, dir;
 
 	testFileOperation!("isDir", "string")(() {
-		mixin(useTmpName!("file", 1));
-		mixin(useTmpName!("dir", 2));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 
@@ -732,8 +732,8 @@ unittest
 	});
 
 	testFileOperation!("isDir", "Path")(() {
-		mixin(useTmpName!("file", 1));
-		mixin(useTmpName!("dir", 2));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 
@@ -761,8 +761,8 @@ unittest
 	string file, dir;
 
 	testFileOperation!("isFile", "string")(() {
-		mixin(useTmpName!("file", 1));
-		mixin(useTmpName!("dir", 2));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 
@@ -771,8 +771,8 @@ unittest
 	});
 
 	testFileOperation!("isFile", "Path")(() {
-		mixin(useTmpName!("file", 1));
-		mixin(useTmpName!("dir", 2));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 
@@ -800,10 +800,10 @@ unittest
 	string file, dir, fileLink, dirLink;
 
 	testFileOperation!("isSymlink", "string")(() {
-		mixin(useTmpName!("file",     1));
-		mixin(useTmpName!("dir",      2));
-		mixin(useTmpName!("fileLink", 3));
-		mixin(useTmpName!("dirLink",  4));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"fileLink");
+		mixin(useTmpName!"dirLink");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 		version(Posix)
@@ -822,10 +822,10 @@ unittest
 	});
 
 	testFileOperation!("isSymlink", "Path")(() {
-		mixin(useTmpName!("file",     1));
-		mixin(useTmpName!("dir",      2));
-		mixin(useTmpName!("fileLink", 3));
-		mixin(useTmpName!("dirLink",  4));
+		mixin(useTmpName!"file");
+		mixin(useTmpName!"dir");
+		mixin(useTmpName!"fileLink");
+		mixin(useTmpName!"dirLink");
 		std.file.write(file, "abc123");
 		std.file.mkdir(dir);
 		version(Posix)

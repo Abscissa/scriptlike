@@ -52,9 +52,9 @@ unittest
 
 	writeln("Running Scriptlike unittests: std.file wrappers");
 	
-	immutable tempname1 = tmpName(1);
-	immutable tempname2 = tmpName(2);
-	immutable tempname3 = tmpName(3, "somefile");
+	immutable tempname1 = tmpName("1");
+	immutable tempname2 = tmpName("2");
+	immutable tempname3 = tmpName("3", "somefile");
 	auto tempPath  = Path(tempname1);
 	auto tempPath2 = Path(tempname2);
 	auto tempPath3 = Path(tempname3);
