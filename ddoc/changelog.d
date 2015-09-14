@@ -17,6 +17,11 @@ $(UL
 		non-"try*" version. Ex: `run` echoed `tryRun`, and `tryRename`
 		echoed `rename`.
 	)
+	$(FIXED
+		$(API_PATH_EXTR Path) and $(API_PATH_EXTR buildNormalizedPathFixed) now
+		convert back/forward slashes to native on BOTH Windows and Posix, not
+		just on Windows.
+	)
 	$(ENHANCE
 		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
 	)

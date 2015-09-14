@@ -248,6 +248,9 @@ alias defaultExt = defaultExtension; ///ditto
 /// Like buildNormalizedPath, but if the result is the current directory,
 /// this returns "." instead of "". However, if all the inputs are "", or there
 /// are no inputs, this still returns "" just like buildNormalizedPath.
+///
+/// Also, unlike buildNormalizedPath, this converts back/forward slashes to
+/// native on BOTH Windows and Posix, not just on Windows.
 string buildNormalizedPathFixed(string[] paths...)
 	@trusted pure nothrow
 {
@@ -258,6 +261,11 @@ string buildNormalizedPathFixed(string[] paths...)
 		return "";
 	
 	auto result = std.path.buildNormalizedPath(paths);
+
+	version(Posix)        result = result.replace(`\`, `/`);
+	else version(Windows) { /+ do nothing +/ }
+	else                  static assert(0);
+
 	return result==""? "." : result;
 }
 
