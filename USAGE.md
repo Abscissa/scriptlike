@@ -110,13 +110,13 @@ Additionally, using the shebang method on Posix would mean that invoking the scr
 
 ### Why the -of?
 
-**Short:** So rdmd doesn't break [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath).
+**Short:** So rdmd doesn't break [```thisExePath```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/thisExePath.html).
 
-**Long:** Without ```-of```, rdmd will create the executable binary in a temporary directory. So if your program uses [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath) to find the directory your program is in, it will only get the temporary directory, instead of the directory with your script.
+**Long:** Without ```-of```, rdmd will create the executable binary in a temporary directory. So if your program uses [```thisExePath```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/thisExePath.html) to find the directory your program is in, it will only get the temporary directory, instead of the directory with your script.
 
-Of course, if your program doesn't use [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath), then it doesn't matter and you can omit the ```-of```.
+Of course, if your program doesn't use [```thisExePath```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/thisExePath.html), then it doesn't matter and you can omit the ```-of```.
 
-Why even use [```std.file.thisExePath```](http://dlang.org/phobos/std_file.html#thisExePath) instead of ```args[0]```? Because ```args[0]``` is notoriously unreliable and for various reasons, will often not give you the *real* path to the *real* executable (this is true in any language, not just D).
+Why even use [```thisExePath```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/thisExePath.html) instead of ```args[0]```? Because ```args[0]``` is notoriously unreliable and for various reasons, will often not give you the *real* path to the *real* executable (this is true in any language, not just D).
 
 ### What's with the ```"$(dirname "$(readlink "$0")")"``` and ```%~dp0```?
 
