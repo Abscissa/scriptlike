@@ -244,11 +244,77 @@ immutable gagEcho = q{
 	auto saveCustomEcho = scriptlikeCustomEcho;
 
 	void dummyEcho(string str) {}
-	saveCustomEcho = &dummyEcho;
+	scriptlikeCustomEcho = &dummyEcho;
 	
 	scope(exit)
 		scriptlikeCustomEcho = saveCustomEcho;
 };
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.stdio : writeln;
+	writeln("Running Scriptlike unittests: gagecho 1");
+	
+	scriptlikeEcho = true;
+	scriptlikeDryRun = true;
+	scriptlikeCustomEcho = null;
+	{
+		mixin(gagEcho);
+		assert(scriptlikeEcho == true);
+		assert(scriptlikeDryRun == true);
+		assert(scriptlikeCustomEcho != null);
+	}
+	assert(scriptlikeEcho == true);
+	assert(scriptlikeDryRun == true);
+	assert(scriptlikeCustomEcho == null);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.stdio : writeln;
+	writeln("Running Scriptlike unittests: gagecho 2");
+	
+	scriptlikeEcho = false;
+	scriptlikeDryRun = false;
+	scriptlikeCustomEcho = null;
+	{
+		mixin(gagEcho);
+		assert(scriptlikeEcho == false);
+		assert(scriptlikeDryRun == false);
+		assert(scriptlikeCustomEcho != null);
+	}
+	assert(scriptlikeEcho == false);
+	assert(scriptlikeDryRun == false);
+	assert(scriptlikeCustomEcho == null);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.stdio : writeln;
+	writeln("Running Scriptlike unittests: gagecho 3");
+	
+	void testEcho(string str)
+	{
+		import std.stdio;
+		writeln(str);
+	}
+	scriptlikeEcho = false;
+	scriptlikeDryRun = false;
+	scriptlikeCustomEcho = &testEcho;
+	{
+		mixin(gagEcho);
+		assert(scriptlikeEcho == false);
+		assert(scriptlikeDryRun == false);
+		assert(scriptlikeCustomEcho != null);
+		assert(scriptlikeCustomEcho != &testEcho);
+	}
+	assert(scriptlikeEcho == false);
+	assert(scriptlikeDryRun == false);
+	assert(scriptlikeCustomEcho == &testEcho);
+}
 
 // Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
