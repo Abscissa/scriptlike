@@ -180,7 +180,8 @@ unittest
 	});
 }
 
-/// If 'from' exists, then rename. Otherwise do nothing.
+/// If 'from' exists, then rename. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -281,7 +282,8 @@ unittest
 	});
 }
 
-/// If 'name' exists, then remove. Otherwise do nothing.
+/// If 'name' exists, then remove. Otherwise, do nothing and return false.
+///
 /// Supports Path, command echoing and dryrun.
 ///
 /// Returns: Success?
@@ -341,7 +343,8 @@ unittest
 	});
 }
 
-/// If 'name' doesn't already exist, then mkdir. Otherwise do nothing.
+/// If 'name' doesn't already exist, then mkdir. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -399,7 +402,8 @@ unittest
 	});
 }
 
-/// If 'name' doesn't already exist, then mkdirRecurse. Otherwise do nothing.
+/// If 'name' doesn't already exist, then mkdirRecurse. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -457,7 +461,8 @@ unittest
 	});
 }
 
-/// If 'name' exists, then rmdir. Otherwise do nothing.
+/// If 'name' exists, then rmdir. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -515,7 +520,8 @@ unittest
 
 version(ddoc_scriptlike_d)
 {
-	/// Posix-only. If 'original' exists, then symlink. Otherwise do nothing.
+	/// Posix-only. If 'original' exists, then symlink. Otherwise, do nothing and return false.
+	///
 	/// Supports Path and command echoing.
 	///
 	/// Returns: Success?
@@ -630,7 +636,8 @@ else version(Posix)
 	}
 }
 
-/// If 'from' exists, then copy. Otherwise do nothing.
+/// If 'from' exists, then copy. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -735,7 +742,8 @@ unittest
 	});
 }
 
-/// If 'name' exists, then rmdirRecurse. Otherwise do nothing.
+/// If 'name' exists, then rmdirRecurse. Otherwise, do nothing and return false.
+///
 /// Supports Path and command echoing.
 ///
 /// Returns: Success?
@@ -791,6 +799,158 @@ unittest
 		checkPre();
 		assert(tryRmdirRecurse(Path( std.path.dirName(dir) )));
 		assert(!tryRmdirRecurse(Path( notExist ) ));
+		mixin(checkResult);
+	});
+}
+
+/// Delete `name` regardless of whether it's a file or directory.
+/// If it's a directory, it's deleted recursively, via
+/// $(API_FILE_WRAP rmdirRecurse). Throws if the file/directory doesn't exist.
+///
+/// If you just want to make sure a file/dir is gone, and don't care whether
+/// it already exists or not, consider using `tryRemovePath` instead.
+///
+/// Supports Path and command echoing.
+void removePath(T)(T name) if(is(T==string) || is(T==Path))
+{
+	yapFunc(name.escapeShellArg());
+
+	if(name.exists() && name.isDir())
+		rmdirRecurse(name);
+	else
+		remove(name);
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	import std.exception;
+	string file, dir, notExist;
+
+	void checkPre()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+
+		assert(!std.file.exists( notExist ));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists( file ));
+		assert(!std.file.exists( std.path.dirName(dir) ));
+		assert(!std.file.exists( notExist ));
+	}
+
+	testFileOperation!("removePath", "string")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		removePath( file );
+		removePath( std.path.dirName(dir) );
+		if(scriptlikeDryRun)
+			removePath( notExist );
+		else
+			assertThrown(removePath( notExist ));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("removePath", "Path")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		removePath(Path( file ));
+		removePath(Path( std.path.dirName(dir) ));
+		if(scriptlikeDryRun)
+			removePath(Path( notExist ));
+		else
+			assertThrown(removePath(Path( notExist ) ));
+		mixin(checkResult);
+	});
+}
+
+/// If `name` exists, then delete it regardless of whether it's a file or
+/// directory. If it doesn't already exist, do nothing and return false.
+///
+/// If you want an exception to be thrown if `name` doesn't already exist,
+/// use `removePath` instead.
+///
+/// Supports Path and command echoing.
+///
+/// Returns: Success?
+bool tryRemovePath(T)(T name) if(is(T==string) || is(T==Path))
+{
+	yapFunc(name.escapeShellArg());
+	mixin(gagEcho);
+
+	if(name.exists())
+	{
+		removePath(name);
+		return true;
+	}
+	
+	return false;
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+	string file, dir, notExist;
+
+	void checkPre()
+	{
+		assert(std.file.exists(file));
+		assert(std.file.isFile(file));
+
+		assert(std.file.exists(dir));
+		assert(std.file.isDir(dir));
+
+		assert(!std.file.exists( notExist ));
+	}
+
+	void checkPost()
+	{
+		assert(!std.file.exists( file ));
+		assert(!std.file.exists( std.path.dirName(dir) ));
+		assert(!std.file.exists( notExist ));
+	}
+
+	testFileOperation!("tryRemovePath", "string")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		assert(tryRemovePath( file ));
+		assert(tryRemovePath( std.path.dirName(dir) ));
+		assert(!tryRemovePath( notExist ));
+		mixin(checkResult);
+	});
+
+	testFileOperation!("tryRemovePath", "Path")(() {
+		mixin(useTmpName!"file");
+		mixin(useTmpName!("dir", "subdir"));
+		mixin(useTmpName!"notExist");
+		std.file.write(file, "abc");
+		std.file.mkdirRecurse(dir);
+
+		checkPre();
+		assert(tryRemovePath(Path( file )));
+		assert(tryRemovePath(Path( std.path.dirName(dir) )));
+		assert(!tryRemovePath(Path( notExist ) ));
 		mixin(checkResult);
 	});
 }

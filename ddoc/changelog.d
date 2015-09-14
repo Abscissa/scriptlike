@@ -18,18 +18,24 @@ $(UL
 		echoed `rename`.
 	)
 	$(ENHANCE
+		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
+	)
+	$(ENHANCE
 		Add $(API_CORE interp) for interpolated strings:
 		`string s = mixin( interp!"Value is ${/+any D expression here+/}" )`
 	)
 	$(ENHANCE
-		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
+		Add $(API_FILE_EXTR removePath)/$(API_FILE_EXTR tryRemovePath) for
+		deleting a path regardless of whether it's a file or directory. (Calls
+		$(API_FILE_WRAP remove) for files and $(API_FILE_WRAP rmdirRecurse) for
+		directories.)
 	)
 	$(ENHANCE
 		Add $(API_PATH_EXTR Path.escapeShellArg) for the sake of generic code
 		that accepts either string or Path.
 	)
 	$(ENHANCE
-		Improved internal tests.
+		Improved internal unittests.
 	)
 )
 

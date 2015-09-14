@@ -308,6 +308,7 @@ version(unittest_scriptlike_d)
 	";
 
 	// Delete if it already exists, regardless of whether it's a file or directory.
+	// Just like `tryRemovePath`, but intentionally ignores echo and dryrun modes.
 	void unittest_tryRemovePath(string path)
 	out
 	{
