@@ -241,21 +241,20 @@ unittest
 }
 
 immutable gagEcho = q{
-	auto saveCustomEcho = scriptlikeCustomEcho;
+	auto _gagEcho_saveCustomEcho = scriptlikeCustomEcho;
 
-	void dummyEcho(string str) {}
-	scriptlikeCustomEcho = &dummyEcho;
-	
+	scriptlikeCustomEcho = delegate(string str) {};
 	scope(exit)
-		scriptlikeCustomEcho = saveCustomEcho;
+		scriptlikeCustomEcho = _gagEcho_saveCustomEcho;
 };
 
 version(unittest_scriptlike_d)
 unittest
 {
 	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: gagecho 1");
+	writeln("Running Scriptlike unittests: gagecho");
 	
+	// Test 1
 	scriptlikeEcho = true;
 	scriptlikeDryRun = true;
 	scriptlikeCustomEcho = null;
@@ -268,14 +267,8 @@ unittest
 	assert(scriptlikeEcho == true);
 	assert(scriptlikeDryRun == true);
 	assert(scriptlikeCustomEcho == null);
-}
-
-version(unittest_scriptlike_d)
-unittest
-{
-	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: gagecho 2");
 	
+	// Test 2
 	scriptlikeEcho = false;
 	scriptlikeDryRun = false;
 	scriptlikeCustomEcho = null;
@@ -288,14 +281,8 @@ unittest
 	assert(scriptlikeEcho == false);
 	assert(scriptlikeDryRun == false);
 	assert(scriptlikeCustomEcho == null);
-}
-
-version(unittest_scriptlike_d)
-unittest
-{
-	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: gagecho 3");
 	
+	// Test 3
 	void testEcho(string str)
 	{
 		import std.stdio;
