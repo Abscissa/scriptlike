@@ -55,14 +55,14 @@ void main(string[] args)
 	lookupTest[testName]();
 }
 
-void showTestName(string func = __FUNCTION__)
+void showTestName()
 {
-	writeln("Test: ", func);
+	writeln("Testing ", testName, ".d");
 }
 
 string rdmdCommand(string testName)
 {
-	return "rdmd --force -I../../src "~testName~".d";
+	return "rdmd --force -debug -g -I../../src "~testName~".d";
 }
 
 string normalizeNewlines(string str)
@@ -94,7 +94,7 @@ string quote(string str)
 }
 
 void testAll()
-{//scriptlikeEcho = true;
+{
 	bool failed = false; // Have any tests failed?
 	
 	foreach(name; lookupTest.keys.sort)
@@ -103,7 +103,8 @@ void testAll()
 		// Instead of running the test function directly, run it as a separate
 		// process. This way, we can safely continue running all the tests
 		// even if one throws an AssertError or other Error.
-		auto status = tryRun("." ~ dirSeparator ~ "testFeature " ~ (scriptlikeEcho? "-v ":"") ~ name);
+		auto verbose = scriptlikeEcho? "-v " : "";
+		auto status = tryRun("." ~ dirSeparator ~ "testFeature " ~ verbose ~ name);
 		if(status != 0)
 			failed = true;
 	}

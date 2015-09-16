@@ -45,6 +45,6 @@ version(unittest_scriptlike_d) void main() {}
 version(unittest_scriptlike_d)
 unittest
 {
-	writeln("Testing sample programs in 'examples/features'");
-	run("examples/features/testFeature All");
+	writeln("Testing sample programs in 'examples/features':");
+	run(text( Path("examples/features/testFeature"), " All" ));
 }
