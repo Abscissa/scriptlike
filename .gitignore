@@ -14,6 +14,6 @@ src/scriptlike/packageVersion.d
 ddoc/packageVersion.ddoc
 
 examples/standalone-script/.myscript
-examples/features/.testFeature
+tests/.testFeature
 
 *.exe

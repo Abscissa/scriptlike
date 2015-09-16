@@ -62,7 +62,7 @@ void showTestName()
 
 string rdmdCommand(string testName)
 {
-	return "rdmd --force -debug -g -I../../src "~testName~".d";
+	return "rdmd --force -debug -g -I../src ../examples/features/"~testName~".d";
 }
 
 string normalizeNewlines(string str)
@@ -232,7 +232,7 @@ void testUserInputPrompts()
 "Nana
 20
 y
-UserInputPrompts.d
+testFeature.d
 2
 7
 \n\n"

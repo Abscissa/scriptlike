@@ -46,5 +46,5 @@ version(unittest_scriptlike_d)
 unittest
 {
 	writeln("Testing sample programs in 'examples/features':");
-	run(text( Path("examples/features/testFeature"), " All" ));
+	run(text( Path("tests/testFeature"), " All" ));
 }
