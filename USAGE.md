@@ -4,7 +4,7 @@ How to Use Scriptlike in Scripts
 These examples can be found in the "[examples](https://github.com/Abscissa/scriptlike/blob/master/examples)" directory.
 
 * [In a DUB-based project](#in-a-dub-based-project)
-* [In a standalone script](#in-a-standalone-script)
+* [In a plain script](#in-a-plain-script)
 * [FAQ](#faq)
 
 In a DUB-based project
@@ -40,7 +40,7 @@ Run your project with dub like normal:
 $ dub
 ```
 
-In a standalone script
+In a plain script
 ----------------------
 
 Assuming you have [DMD](http://dlang.org/download.html#dmd) and [DUB](http://code.dlang.org/download) installed:
