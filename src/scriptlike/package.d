@@ -40,3 +40,11 @@ public import scriptlike.std;
 
 version(D_Ddoc) import changelog;
 version(unittest_scriptlike_d) void main() {}
+
+// Run tests for sample programs in 'examples/features'
+version(unittest_scriptlike_d)
+unittest
+{
+	writeln("Testing sample programs in 'examples/features'");
+	run("examples/features/testFeature All");
+}

@@ -25,6 +25,7 @@ Features
 * [Dry Run Assistance](#dry-run-assistance)
 * [Fail](#fail)
 
+
 ### Automatic Phobos Import
 
 For most typical Phobos modules. Unless you [don't want to](http://semitwist.com/scriptlike/scriptlike/only.html). Who needs rows and rows of standard lib imports for a mere script?
@@ -88,25 +89,29 @@ Simple, reliable, cross-platform. No more worrying about slashes, paths-with-spa
 // This is AUTOMATICALLY kept normalized (via std.path.buildNormalizedPath)
 auto dir = Path("foo/bar");
 dir ~= "subdir"; // Append a subdirectory
-//dir ~= "subdir/"; // IDENTICAL to previous line, no worries!
 
-// No worries about forword/backslashes!
+// No worries about trailing slashes!
+assert(Path("foo/bar") == Path("foo/bar/"));
+assert(Path("foo/bar/") == Path("foo/bar//"));
+
+
+// No worries about forward/backslashes!
 assert(dir == Path("foo/bar/subdir"));
 assert(dir == Path("foo\\bar\\subdir"));
 
 // No worries about spaces!
 auto file = dir.up ~ "different subdir\\Filename with spaces.txt";
-assert(dir == Path("foo/bar/different subdir/Filename with spaces.txt"));
-writeln(dir.toString()); // Always properly escaped for current platform!
-writeln(dir.toRawString()); // Don't escape!
+assert(file == Path("foo/bar/different subdir/Filename with spaces.txt"));
+writeln(file); // Path.toString() always properly escapes for current platform!
+writeln(file.toRawString()); // Don't escape!
 
 // Even file extentions are type-safe!
 Ext ext = file.extension;
-auto anotherFile = Path("/path/to/file") ~ ext;
+auto anotherFile = Path("path/to/file") ~ ext;
 assert(anotherFile.baseName == Path("file.txt"));
 
 // std.path and std.file are wrapped to offer Path/Ext support
-assert(dirName(anotherFile) == Path("/path/to"));
+assert(dirName(anotherFile) == Path("path/to"));
 copy(anotherFile, Path("target/path/new file.txt"));
 ```
 
@@ -119,13 +124,13 @@ Less pedantic, when you don't care if there's nothing to do:
 ```d
 // Just MAKE SURE this exists! If it's already there, then GREAT!
 tryMkdir("somedir");
-//mkdir("somedir"); // Exception: Already exists!
-tryMkdir("somedir"); // No error, works fine!
+assertThrown( mkdir("somedir") ); // Exception: Already exists!
+tryMkdir("somedir"); // Works fine!
 
 // Just MAKE SURE this is gone! If it's already gone, then GREAT!
 tryRmdir("somedir");
-//rmdir("somedir"); // Exception: Already gone!
-tryRmdir("somedir"); // No error, works fine!
+assertThrown( rmdir("somedir") ); // Exception: Already gone!
+tryRmdir("somedir"); // Works fine!
 
 // Just MAKE SURE it doesn't exist. Don't bother me if it doesn't!
 tryRemove("file");
@@ -133,9 +138,10 @@ tryRemove("file");
 // Copy if it exists, otherwise don't worry about it.
 tryCopy("file", "file-copy");
 
-// Is this a directory? If it doesn't even
-// exist, then obviously it's NOT a directory.
-if(existsAsDir("foo/bar"))
+// Is this a directory? If it doesn't even exist,
+// then it's obviously NOT a directory.
+assertThrown( isDir("foo/bar") ); // Exception: Doesn't exist!
+if(existsAsDir("foo/bar")) // Works fine!
 	{/+ ...do stuff... +/}
 ```
 
@@ -152,10 +158,10 @@ run("dmd --help"); // Display DMD help screen
 pause(); // Wait for user to hit Enter
 
 // Automatically throws ErrorLevelException(1, "dmd --bad-flag")
-//run("dmd --bad-flag");
+assertThrown!ErrorLevelException( run("dmd --bad-flag") );
 
 // Automatically throws ErrorLevelException(-1, "this-cmd-does-not-exist")
-//run("this-cmd-does-not-exist");
+assertThrown!ErrorLevelException( run("this-cmd-does-not-exist") );
 
 // Don't bail on error
 int statusCode = tryRun("dmd --bad-flag");
@@ -178,8 +184,9 @@ myProjectDir.run(text("dmd ", mainFile, " -O")); // mainFile is properly escaped
 version(Posix)        enum pwd = "pwd";
 else version(Windows) enum pwd = "cd";
 else static assert(0);
-auto expectedDir = getcwd() ~ myProjectDir;
-assert( Path(myProjectDir.runCollect(pwd)) == expectedDir);
+auto output = myProjectDir.runCollect(pwd);
+auto expected = getcwd() ~ myProjectDir;
+assert( Path(output.strip()) == expected );
 ```
 
 See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html), [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html), [```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```getcwd```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/getcwd.html), [```canFind```](http://dlang.org/phobos/std_algorithm_searching.html#.canFind), [```text```](http://dlang.org/phobos/std_conv.html#text)
@@ -195,8 +202,8 @@ Echoing can be customized via [```scriptlikeCustomEcho```](http://semitwist.com/
 Output:
 --------
 run: echo Hello > file.txt
-mkdirRecurse: 'some/new/dir'
-copy: 'file.txt' -> 'some/new/dir/target name.txt'
+mkdirRecurse: some/new/dir
+copy: file.txt -> 'some/new/dir/target name.txt'
 Gonna run foo() now...
 foo: i = 42
 --------
@@ -232,10 +239,10 @@ scriptlikeDryRun = true;
 
 // When dry-run is enabled, this echoes but doesn't actually copy or invoke DMD.
 copy("original.d", "app.d");
-run("dmd app.d -ofbin/app")
+run("dmd app.d -ofbin/app");
 
 // Works fine in dry-run, since it doesn't modify the filesystem.
-bool isItThere = exists("another-file"))
+bool isItThere = exists("another-file");
 
 if(!scriptlikeDryRun)
 {
