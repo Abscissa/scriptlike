@@ -61,22 +61,23 @@ void main(string[] args) {
 }
 ```
 
-myscript:
+myscript.sh:
 ```bash
 #!/bin/sh
-SCRIPT_DIR="$(dirname "$(readlink "$0")")"
+SCRIPT_DIR="$(dirname "$(dirname "$0")/$(readlink "$0")")"
 rdmd -I~/.dub/packages/scriptlike-0.9.3/src/ -of$SCRIPT_DIR/.myscript $SCRIPT_DIR/myscript.d "$@"
 ```
 
 myscript.bat:
 ```batch
 @echo off
-rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.3/src/ -of%~dp0myscript.bin %~dp0myscript.d %*
+rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.3/src/ -of%~dp0myscript %~dp0myscript.d %*
 ```
 
 On Linux/OSX:
 ```bash
-$ chmod +x myscript
+$ chmod +x myscript.sh
+$ ln -s myscript.sh myscript
 $ dub fetch scriptlike --version=0.9.3
 $ ./myscript Frank
 Hello, Frank!
@@ -118,8 +119,16 @@ Of course, if your program doesn't use [```thisExePath```](http://semitwist.com/
 
 Why even use [```thisExePath```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/thisExePath.html) instead of ```args[0]```? Because ```args[0]``` is notoriously unreliable and for various reasons, will often not give you the *real* path to the *real* executable (this is true in any language, not just D).
 
-### What's with the ```"$(dirname "$(readlink "$0")")"``` and ```%~dp0```?
+### What's with the ```$SCRIPT_DIR``` and ```%~dp0``` stuff?
 
 **Short:** So you can run your script from any directory, not just its own.
 
-**Long:** Those are the Posix/Windows shell methods to get the directory of the currently-running script. This way, if you run your script from a different working directory, rdmd will look for your D file is the correct place, rather than just assuming it's in whatever directory you happen to be in.
+**Long:** Those are the ways to get the directory of the currently-running script in Posix/Windows shells. This way, if you run your script from a different working directory, rdmd will look for your D file is the correct place, rather than just assuming it's in whatever directory you happen to be in.
+
+Note that on OSX, you will still need to run the script from it's own directory (unless you run a symlink to the script, then you can still run the symlink from any directory). This is because OSX doesn't implement ```readlink -f``` and plain old ```readlink``` only produces output for symlinks.
+
+### Why bother with the symlink? Why not just rename ```myscript.sh``` to ``myscript```?
+
+**Short:** So you can run your script from any directory, not just its own...*on OSX*.
+
+**Long:** Normally you could use ```"$(dirname "$(readlink -f "$0")")"``` to get ```$SCRIPT_DIR```. But ```readlink -f``` is reported to not work on OSX (and some other BSDs, although it worked for me on OpenBSD 10.2). So plain old ordinary ```readlink``` is needed. But that *only* works on actual links. Hence, the symlink to ```myscript.sh```.

@@ -1,0 +1,7 @@
+#!/bin/sh
+TARGET_NAME="$(readlink "$0")" # Returns nothing if it isn't a link
+if [ -z "$SCRIPT_DIR" ]; then
+	TARGET_NAME="$(readlink -f "$0")" # Returns nothing OSX
+fi
+SCRIPT_DIR="$(dirname "$TARGET_NAME")"
+rdmd -I~/.dub/packages/scriptlike-0.9.3/src/ -of$SCRIPT_DIR/.myscript $SCRIPT_DIR/myscript.d "$@"

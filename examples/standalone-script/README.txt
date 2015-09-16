@@ -17,6 +17,11 @@ $ myscript Frank
 
 On Linux/OSX:
 -------------
+$ ln -s myscript.sh myscript
 $ ./myscript
 or
 $ ./myscript Frank
+
+Yes, the link is important (at least on OSX). This is due to a workaround for
+OSX's lack of 'readlink -f', which is needed to make the scripts runnable from
+ANY directory, not just their own.
