@@ -53,6 +53,7 @@ void main(string[] args)
 
 	// Run test
 	chdir(thisExePath.dirName);
+	tryMkdir("bin"); // gdmd doesn't automatically create the output directory.
 	lookupTest[testName]();
 }
 
