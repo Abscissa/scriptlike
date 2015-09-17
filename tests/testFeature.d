@@ -63,7 +63,12 @@ void showTestName()
 
 string rdmdCommand(string testName)
 {
-	return "rdmd --compiler="~environment["DMD"]~" --force -debug -g -I../src ../examples/features/"~testName~".d";
+	version(Windows)
+		return "rdmd --compiler="~environment["DMD"]~" --force -debug -g -I../src ../examples/features/"~testName~".d";
+	else version(Posix)
+		return environment["DMD"]~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/features/"~testName~".d && bin/"~testName;
+	else
+		static assert(0);
 }
 
 string normalizeNewlines(string str)

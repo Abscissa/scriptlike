@@ -15,5 +15,6 @@ ddoc/packageVersion.ddoc
 
 examples/plain-script/.myscript
 tests/.testFeature
+tests/bin/
 
 *.exe
