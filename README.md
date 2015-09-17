@@ -291,7 +291,7 @@ See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [`
 Disambiguating write and write
 ------------------------------
 
-Since they're both imported by default, you may get symbol conflict errors when trying to use [```scriptlike.file.wrappers.write```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/write.html) (which wraps [```std.file.write```](http://dlang.org/phobos/std_file.html#write)) or [```std.stdio.write```](http://dlang.org/phobos/std_stdio.html#.write). And unfortunately, DMD issue [#11847](https://issues.dlang.org/show_bug.cgi?id=11847) currently makes it impossible to use a qualified name lookup for ```scriptlike.file.wrappers.write```.
+Since they're both imported by default, you may get symbol conflict errors when trying to use [```scriptlike.file.wrappers.write```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/write.html) (which wraps [```std.file.write```](http://dlang.org/phobos/std_file.html#write)) or [```std.stdio.write```](http://dlang.org/phobos/std_stdio.html#.write). And unfortunately, DMD issue [#11847](https://issues.dlang.org/show_bug.cgi?id=11847) currently makes it impossible to use a qualified name lookup for [```scriptlike.file.wrappers.write```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/write.html).
 
 Here's how to easily avoid symbol conflict errors with Scriptlike and ```write```:
 
