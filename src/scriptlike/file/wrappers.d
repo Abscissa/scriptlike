@@ -38,6 +38,11 @@ void[] read(in string name, size_t upTo = size_t.max)
 	return std.file.read(name, upTo);
 }
 
+/// Alias of read, included to provide naming symmetry with writeFile, which
+/// helps avoid naming conflicts with
+/// $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_stdio.html#.write, std.stdio.write)).
+alias readFile = read;
+
 version(unittest_scriptlike_d)
 unittest
 {
@@ -92,6 +97,11 @@ unittest
 }
 
 /// Like $(FULL_STD_FILE write), but supports Path, command echoing and dryrun.
+///
+/// To avoid naming conflicts with
+/// $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_stdio.html#.write, std.stdio.write)),
+/// you may wish to use the writeFile alias instead. A readFile is also provided
+/// for symmetry with writeFile.
 void write(in Path name, const void[] buffer)
 {
 	write(name.toRawString(), buffer);
@@ -105,6 +115,11 @@ void write(in string name, const void[] buffer)
 	if(!scriptlikeDryRun)
 		std.file.write(name, buffer);
 }
+
+/// Alias of write to help avoid naming conflicts with
+/// $(D_INLINECODE $(LINK2 http://dlang.org/phobos/std_stdio.html#.write, std.stdio.write)).
+/// A readFile is also provided for symmetry with writeFile.
+alias writeFile = write;
 
 version(unittest_scriptlike_d)
 unittest

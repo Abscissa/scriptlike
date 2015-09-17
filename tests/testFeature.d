@@ -13,6 +13,7 @@ void main(string[] args)
 		"All":                       &testAll,
 		"AutomaticPhobosImport":     &testAutomaticPhobosImport,
 		"CommandEchoing":            &testCommandEchoing,
+		"DisambiguatingWrite":       &testDisambiguatingWrite,
 		"DryRunAssistance":          &testDryRunAssistance,
 		"Fail":                      &testFail,
 		"Filepaths":                 &testFilepaths,
@@ -131,6 +132,16 @@ Gonna run foo() now...
 foo: i = 42
 ";
 	
+	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	assert(output == expected);
+}
+
+void testDisambiguatingWrite()
+{
+	showTestName();
+
+	immutable expected =  "Hello worldHello world";
+
 	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
 	assert(output == expected);
 }

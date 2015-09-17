@@ -287,3 +287,26 @@ void helper(string[] args) {
 ```
 
 See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html), [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html), [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
+
+Disambiguating write and write
+------------------------------
+
+Since they're both imported by default, you may get symbol conflict errors when trying to use [```scriptlike.file.wrappers.write```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/write.html) (which wraps [```std.file.write```](http://dlang.org/phobos/std_file.html#write)) or [```std.stdio.write```](http://dlang.org/phobos/std_stdio.html#.write). And unfortunately, DMD issue [#11847](https://issues.dlang.org/show_bug.cgi?id=11847) currently makes it impossible to use a qualified name lookup for ```scriptlike.file.wrappers.write```.
+
+Here's how to easily avoid symbol conflict errors with Scriptlike and ```write```:
+
+```d
+// Save file
+write("filename.txt", "content");
+// Change line above to...
+writeFile("filename.txt", "content"); // Convenience alias included in scriptlike
+
+// Output to stdout with no newline
+write("Hello world");
+// Change line above to...
+std.stdio.write("Hello world");
+// or...
+stdout.write("Hello world");
+```
+
+See: [```scriptlike.file.wrappers.writeFile```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/writeFile.html), [```scriptlike.file.wrappers.readFile```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/readFile.html), [```scriptlike.file.wrappers.write```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/write.html), [```std.file.write```](http://dlang.org/phobos/std_file.html#write), [```std.stdio.write```](http://dlang.org/phobos/std_stdio.html#.write)
