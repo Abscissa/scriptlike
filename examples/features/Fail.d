@@ -1,9 +1,9 @@
 /++
 Example:
 --------
-$ rdmd test.d
+$ test
 test: ERROR: Need two args, not 0!
-$ rdmd test.d abc 123
+$ test abc 123
 test: ERROR: First arg must be 'foobar', not 'abc'!
 --------
 +/

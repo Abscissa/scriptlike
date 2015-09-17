@@ -34,7 +34,7 @@ For most typical Phobos modules. Unless you [don't want to](http://semitwist.com
 import scriptlike;
 //import scriptlike.only; // In case you don't want Phobos auto-imported
 void main() {
-	writeln("Works!");
+    writeln("Works!");
 }
 ```
 
@@ -50,7 +50,7 @@ auto age = userInput!int("And your age");
 
 if(userInput!bool("Do you want to continue?"))
 {
-	auto outputFolder = pathLocation("Where you do want to place the output?");
+	string outputFolder = pathLocation("Where you do want to place the output?");
 	auto color = menu!string("What color would you like to use?", ["Blue", "Green"]);
 }
 
@@ -64,7 +64,7 @@ See: [```userInput```](http://semitwist.com/scriptlike/scriptlike/interact/userI
 
 ### String Interpolation
 
-Variable expansion inside strings:
+Variable (and expression) expansion inside strings:
 
 ```d
 // Output: The number 21 doubled is 42!
@@ -143,6 +143,16 @@ tryCopy("file", "file-copy");
 assertThrown( isDir("foo/bar") ); // Exception: Doesn't exist!
 if(existsAsDir("foo/bar")) // Works fine!
 	{/+ ...do stuff... +/}
+
+// Bonus! Single function to delete files OR directories!
+writeFile("file.txt", "abc");
+tryMkdirRecurse("foo/bar/dir");
+writeFile("foo/bar/dir/file.txt", "123");
+// Delete with the same function!
+removePath("file.txt"); // Calls 'remove'
+removePath("foo");      // Calls 'rmdirRecurse'
+tryRemovePath("file.txt"); // Also comes in try flavor!
+tryRemovePath("foo");
 ```
 
 See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
@@ -260,11 +270,12 @@ Single function to bail out with an error message, exception-safe.
 
 ```d
 /++
+/++
 Example:
 --------
-$ rdmd test.d
+$ test
 test: ERROR: Need two args, not 0!
-$ rdmd test.d abc 123
+$ test abc 123
 test: ERROR: First arg must be 'foobar', not 'abc'!
 --------
 +/

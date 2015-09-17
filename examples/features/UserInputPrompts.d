@@ -7,7 +7,7 @@ void main()
 
 	if(userInput!bool("Do you want to continue?"))
 	{
-		auto outputFolder = pathLocation("Where you do want to place the output?");
+		string outputFolder = pathLocation("Where you do want to place the output?");
 		auto color = menu!string("What color would you like to use?", ["Blue", "Green"]);
 	}
 
