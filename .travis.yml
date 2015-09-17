@@ -3,10 +3,14 @@ sudo: false
 
 matrix:
     include:
+        - d: dmd
+        - d: dmd-2.068.1
         - d: dmd-2.068.0
         - d: dmd-2.067.1
         - d: dmd-2.067.0
         - d: dmd-2.066.1
         - d: dmd-2.066.0
+        - d: ldc
         - d: ldc-0.15.1
+        - d: gdc
         - d: gdc-4.9.2
