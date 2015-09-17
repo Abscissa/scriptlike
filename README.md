@@ -155,7 +155,7 @@ tryRemovePath("file.txt"); // Also comes in try flavor!
 tryRemovePath("foo");
 ```
 
-See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
+See: [```tryMkdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdir.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryMkdirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryMkdirRecurse.html), [```mkdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/mkdir.html), [```tryRmdir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRmdir.html), [```rmdir```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/rmdir.html), [```tryRemove```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemove.html), [```tryCopy```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryCopy.html), [```existsAsDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/existsAsDir.html), [```removePath```](http://semitwist.com/scriptlike/scriptlike/file/extras/removePath.html), [```tryRemovePath```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryRemovePath.html), [```writeFile```](http://semitwist.com/scriptlike/scriptlike/file/extras/writeFile.html) and [more...](http://semitwist.com/scriptlike/scriptlike/file/extras.html)
 
 ### Script-Style Shell Commands
 
@@ -199,7 +199,7 @@ auto expected = getcwd() ~ myProjectDir;
 assert( Path(output.strip()) == expected );
 ```
 
-See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html), [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html), [```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```getcwd```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/getcwd.html), [```canFind```](http://dlang.org/phobos/std_algorithm_searching.html#.canFind), [```text```](http://dlang.org/phobos/std_conv.html#text)
+See: [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```tryRun```](http://semitwist.com/scriptlike/scriptlike/process/tryRun.html), [```runCollect```](http://semitwist.com/scriptlike/scriptlike/process/runCollect.html), [```tryRunCollect```](http://semitwist.com/scriptlike/scriptlike/process/tryRunCollect.html), [```pause```](http://semitwist.com/scriptlike/scriptlike/interact/pause.html), [```Path```](http://semitwist.com/scriptlike/scriptlike/path/extras/Path.html), [```getcwd```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/getcwd.html), [```ErrorLevelException```](http://semitwist.com/scriptlike/scriptlike/process/ErrorLevelException.html), [```assertThrown```](http://dlang.org/phobos/std_exception.html#assertThrown), [```canFind```](http://dlang.org/phobos/std_algorithm_searching.html#.canFind), [```text```](http://dlang.org/phobos/std_conv.html#text), [```strip```](http://dlang.org/phobos/std_string.html#.strip)
 
 ### Command Echoing
 
@@ -262,7 +262,7 @@ if(!scriptlikeDryRun)
 }
 ```
 
-See: [```scriptlikeDryRun```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeDryRun.html)
+See: [```scriptlikeDryRun```](http://semitwist.com/scriptlike/scriptlike/core/scriptlikeDryRun.html), [```copy```](semitwist.com/scriptlike/scriptlike/file/wrappers/copy.html), [```run```](http://semitwist.com/scriptlike/scriptlike/process/run.html), [```exists```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/exists.html), [```read```](http://semitwist.com/scriptlike/scriptlike/file/wrappers/read.html)
 
 ### Fail
 
