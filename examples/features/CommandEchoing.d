@@ -4,6 +4,12 @@ void main()
 {
 	// Setup and cleanup
 	chdir(thisExePath.dirName);
+	scope(exit)
+	{
+		scriptlikeEcho = false;
+		tryRemove("file.txt");
+		tryRmdirRecurse("some");
+	}
 
 	/++
 	Output:
