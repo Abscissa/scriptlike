@@ -64,10 +64,11 @@ void showTestName()
 
 string rdmdCommand(string testName)
 {
+	auto envDmd = environment.get("DMD", "dmd");
 	version(Windows)
-		return "rdmd --compiler="~environment["DMD"]~" --force -debug -g -I../src ../examples/features/"~testName~".d";
+		return "rdmd --compiler="~envDmd~" --force -debug -g -I../src ../examples/features/"~testName~".d";
 	else version(Posix)
-		return environment["DMD"]~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/features/"~testName~".d && bin/"~testName;
+		return envDmd~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/features/"~testName~".d && bin/"~testName;
 	else
 		static assert(0);
 }
