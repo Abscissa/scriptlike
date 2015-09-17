@@ -64,6 +64,9 @@ void showTestName()
 
 string rdmdCommand(string testName)
 {
+	// Don't use rdmd on Posix, because it isn't included with travis-ci's ldc/gdc.
+	// Travis-ci doesn't do Windows, so it doesn't matter there. Which is good
+	// because I don't feel like figuring out globbing on Windows.
 	auto envDmd = environment.get("DMD", "dmd");
 	version(Windows)
 		return "rdmd --compiler="~envDmd~" --force -debug -g -I../src ../examples/features/"~testName~".d";

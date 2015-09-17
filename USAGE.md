@@ -71,7 +71,7 @@ rdmd -I~/.dub/packages/scriptlike-0.9.3/src/ -of$SCRIPT_DIR/.myscript $SCRIPT_DI
 myscript.bat:
 ```batch
 @echo off
-rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.3/src/ -of%~dp0myscript %~dp0myscript.d %*
+rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.3/src/ -of%~dp0.myscript %~dp0myscript.d %*
 ```
 
 On Linux/OSX:
@@ -132,3 +132,11 @@ Note that on OSX, you will still need to run the script from it's own directory 
 **Short:** So you can run your script from any directory, not just its own...*on OSX*.
 
 **Long:** Normally you could use ```"$(dirname "$(readlink -f "$0")")"``` to get ```$SCRIPT_DIR```. But ```readlink -f``` is reported to not work on OSX (and some other BSDs, although it worked for me on OpenBSD 10.2). So plain old ordinary ```readlink``` is needed. But that *only* works on actual links. Hence, the symlink to ```myscript.sh```.
+
+### Why have the Windows executable named ```.myscript.exe```? Why not just name it ```myscript.exe```?
+
+**Short:** Consistency, and to not hijack the .bat file.
+
+**Long:** On Windows, .exe files take precedence over .bat, so the next time you run ```myscript``` it'll *seem* to work, but will run the .exe directly, not the .bat. So it won't recompile when you change ```myscript.d```.
+
+The leading dot also provides consistency with the Posix script, which is helpful when working in out modern cross-platform world.
