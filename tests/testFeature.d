@@ -28,9 +28,9 @@ void main(string[] args)
 
 	failEnforce(
 		args.length == 2,
-		"Invalid  args.\n",
+		"Invalid args.\n",
 		"\n",
-		"Usage: testFeature [-v] {name}\n",
+		"Usage: testFeature [-v] NAME\n",
 		"\n",
 		"Options:\n",
 		"-v  Verbose\n",
@@ -63,7 +63,7 @@ void showTestName()
 
 string rdmdCommand(string testName)
 {
-	return "rdmd --force -debug -g -I../src ../examples/features/"~testName~".d";
+	return "rdmd --compiler="~environment["DMD"]~" --force -debug -g -I../src ../examples/features/"~testName~".d";
 }
 
 string normalizeNewlines(string str)
