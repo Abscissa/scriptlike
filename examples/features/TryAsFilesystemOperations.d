@@ -26,4 +26,14 @@ void main()
 	assertThrown( isDir("foo/bar") ); // Exception: Doesn't exist!
 	if(existsAsDir("foo/bar")) // Works fine!
 		{/+ ...do stuff... +/}
+
+	// Bonus! Single function to delete files OR directories!
+	writeFile("file.txt", "abc");
+	tryMkdirRecurse("foo/bar/dir");
+	writeFile("foo/bar/dir/file.txt", "123");
+	// Delete with the same function!
+	removePath("file.txt"); // Calls 'remove'
+	removePath("foo");      // Calls 'rmdirRecurse'
+	tryRemovePath("file.txt"); // Also comes in try flavor!
+	tryRemovePath("foo");
 }
