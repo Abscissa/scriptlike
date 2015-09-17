@@ -195,6 +195,14 @@ void testFilepaths()
 
 void testScriptStyleShellCommands()
 {
+	// This test relies on "dmd" being available on the PATH
+	auto dmdResult = tryRunCollect("dmd --help");
+	if(dmdResult.status != 0)
+	{
+		writeln(`Skipping `, testName, `.d: Couldn't find 'dmd' on the PATH.`);
+		return;
+	}
+
 	showTestName();
 	
 	immutable inFile = "testinput.txt";
