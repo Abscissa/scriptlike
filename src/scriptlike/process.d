@@ -22,11 +22,19 @@ class ErrorLevelException : Exception
 	int errorLevel;
 	string command;
 	
-	this(int errorLevel, string command, string file=__FILE__, size_t line=__LINE__)
+	/// The command's output is only available if the command was executed with
+	/// runCollect. If it was executed with run, then Scriptlike doesn't have
+	/// access to the output since it was simply sent straight to stdout/stderr.
+	string output;
+	
+	this(int errorLevel, string command, string output=null, string file=__FILE__, size_t line=__LINE__)
 	{
 		this.errorLevel = errorLevel;
 		this.command = command;
+		this.output = output;
 		auto msg = text("Command exited with error level ", errorLevel, ": ", command);
+		if(output)
+			msg ~= text("\nCommand's output:\n------\n", output, "------\n");
 		super(msg, file, line);
 	}
 }
@@ -262,7 +270,7 @@ string runCollect(string command)
 	
 	auto result = tryRunCollect(command);
 	if(result.status != 0)
-		throw new ErrorLevelException(result.status, command);
+		throw new ErrorLevelException(result.status, command, result.output);
 
 	return result.output;
 }

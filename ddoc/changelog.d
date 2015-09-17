@@ -40,6 +40,11 @@ $(UL
 		the sake of generic code.
 	)
 	$(ENHANCE
+		When $(API_PROCESS runCollect) throws, the $(API_PROCESS ErrorLevelException)
+		now includes and displays the command's output (otherwise there'd be no
+		way to inspect the command's output for diagnostic purposes).
+	)
+	$(ENHANCE
 		Greatly extended and improved set of tests.
 	)
 )
