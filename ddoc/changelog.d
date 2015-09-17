@@ -36,11 +36,11 @@ $(UL
 		directories.)
 	)
 	$(ENHANCE
-		Add $(API_PATH_EXTR Path.escapeShellArg) for the sake of generic code
-		that accepts either string or Path.
+		Add a Path-accepting overload of $(API_PATH_EXTR escapeShellArg) for
+		the sake of generic code.
 	)
 	$(ENHANCE
-		Improved internal unittests.
+		Greatly extended and improved set of tests.
 	)
 )
 

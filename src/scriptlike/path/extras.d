@@ -234,9 +234,6 @@ struct Path
 	{
 		return str == "";
 	}
-
-	/// Included for the sake of generic code that accepts either string or Path.
-	alias escapeShellArg = toString;
 }
 
 /// Convenience alias
@@ -270,6 +267,10 @@ string buildNormalizedPathFixed(string[] paths...)
 }
 
 /// Properly escape arguments containing spaces for the command shell, if necessary.
+///
+/// Although Path doesn't stricktly need this (since Path.toString automatically
+/// calls this anyway), an overload of escapeShellArg which accepts a Path is
+/// provided for the sake of generic code.
 const(string) escapeShellArg(in string str)
 {
 	if(str.canFind(' '))
@@ -284,3 +285,10 @@ const(string) escapeShellArg(in string str)
 	else
 		return str;
 }
+
+///ditto
+string escapeShellArg(Path path)
+{
+	return path.toString();
+}
+
