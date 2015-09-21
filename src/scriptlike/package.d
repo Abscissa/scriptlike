@@ -48,8 +48,8 @@ unittest
 	version(Windows)
 		// This Posix artifact gets in the way of calling .myscript.exe
 		// Only an issue when Win/Posix machines are operating from the same directory.
-		tryRemove("tests/.testFeature");
+		tryRemove("tests/.testExample");
 
 	writeln("Testing sample programs in 'examples':");
-	run(text( Path("tests/testFeature"), " All" ));
+	run(text( Path("tests/testExample"), " All" ));
 }

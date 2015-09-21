@@ -15,7 +15,7 @@ ddoc/packageVersion.ddoc
 
 examples/dub-project/myscript
 examples/plain-script/.myscript
-tests/.testFeature
+tests/.testExample*
 tests/bin/
 
 *.exe

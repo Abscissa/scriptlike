@@ -34,14 +34,14 @@ void main(string[] args)
 		args.length == 2,
 		"Invalid args.\n",
 		"\n",
-		"Usage: testFeature [-v] NAME\n",
+		"Usage: testExample [-v] NAME\n",
 		"\n",
 		"Options:\n",
 		"-v  Verbose\n",
 		"\n",
 		"Examples:\n",
-		"    testFeature All\n",
-		"    testFeature features/UserInputPrompts\n",
+		"    testExample All\n",
+		"    testExample features/UserInputPrompts\n",
 		"\n",
 		"Available Test Names:\n",
 		"    ", lookupTest.keys.sort.join("\n    "),
@@ -117,7 +117,7 @@ void testAll()
 		// process. This way, we can safely continue running all the tests
 		// even if one throws an AssertError or other Error.
 		auto verbose = scriptlikeEcho? "-v " : "";
-		auto status = tryRun("." ~ dirSeparator ~ "testFeature " ~ verbose ~ name);
+		auto status = tryRun("." ~ dirSeparator ~ "testExample " ~ verbose ~ name);
 		if(status != 0)
 			failed = true;
 	}
@@ -243,7 +243,7 @@ void testUserInputPrompts()
 "Nana
 20
 y
-testFeature.d
+testExample.d
 2
 7
 \n\n"
