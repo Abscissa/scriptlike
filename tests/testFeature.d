@@ -11,16 +11,20 @@ void main(string[] args)
 	// Init test lookup
 	lookupTest = [
 		"All":                       &testAll,
-		"AutomaticPhobosImport":     &testAutomaticPhobosImport,
-		"CommandEchoing":            &testCommandEchoing,
-		"DisambiguatingWrite":       &testDisambiguatingWrite,
-		"DryRunAssistance":          &testDryRunAssistance,
-		"Fail":                      &testFail,
-		"Filepaths":                 &testFilepaths,
-		"ScriptStyleShellCommands":  &testScriptStyleShellCommands,
-		"StringInterpolation":       &testStringInterpolation,
-		"TryAsFilesystemOperations": &testTryAsFilesystemOperations,
-		"UserInputPrompts":          &testUserInputPrompts,
+
+		"features/AutomaticPhobosImport":     &testAutomaticPhobosImport,
+		"features/CommandEchoing":            &testCommandEchoing,
+		"features/DisambiguatingWrite":       &testDisambiguatingWrite,
+		"features/DryRunAssistance":          &testDryRunAssistance,
+		"features/Fail":                      &testFail,
+		"features/Filepaths":                 &testFilepaths,
+		"features/ScriptStyleShellCommands":  &testScriptStyleShellCommands,
+		"features/StringInterpolation":       &testStringInterpolation,
+		"features/TryAsFilesystemOperations": &testTryAsFilesystemOperations,
+		"features/UserInputPrompts":          &testUserInputPrompts,
+
+		"DubProject":                &testDubProject,
+		"PlainScript":               &testPlainScript,
 	];
 
 	// Check args
@@ -37,10 +41,10 @@ void main(string[] args)
 		"\n",
 		"Examples:\n",
 		"    testFeature All\n",
-		"    testFeature UserInputPrompts\n",
+		"    testFeature features/UserInputPrompts\n",
 		"\n",
 		"Available Test Names:\n",
-		"    ", lookupTest.keys.sort,
+		"    ", lookupTest.keys.sort.join("\n    "),
 	);
 
 	testName = args[1];
@@ -48,18 +52,16 @@ void main(string[] args)
 		(testName in lookupTest) != null,
 		"No such test '", testName, "'.\n",
 		"Available Test Names:\n",
-		"    ", lookupTest.keys.sort,
+		"    ", lookupTest.keys.sort.join("\n    "),
 	);
 
-	// Run test
+	// Setup for test
 	chdir(thisExePath.dirName);
-	tryMkdir("bin"); // gdmd doesn't automatically create the output directory.
-	lookupTest[testName]();
-}
+	tryMkdirRecurse("bin/features"); // gdmd doesn't automatically create the output directory.
 
-void showTestName()
-{
-	writeln("Testing ", testName, ".d");
+	// Run test
+	writeln("Testing ", testName);
+	lookupTest[testName]();
 }
 
 string rdmdCommand(string testName)
@@ -69,9 +71,9 @@ string rdmdCommand(string testName)
 	// because I don't feel like figuring out globbing on Windows.
 	auto envDmd = environment.get("DMD", "dmd");
 	version(Windows)
-		return "rdmd --compiler="~envDmd~" --force -debug -g -I../src ../examples/features/"~testName~".d";
+		return "rdmd --compiler="~envDmd~" --force -debug -g -I../src ../examples/"~testName~".d";
 	else version(Posix)
-		return envDmd~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/features/"~testName~".d && bin/"~testName;
+		return envDmd~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
 	else
 		static assert(0);
 }
@@ -125,15 +127,12 @@ void testAll()
 
 void testAutomaticPhobosImport()
 {
-	showTestName();
 	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
 	assert(output == "Works!\n");
 }
 
 void testCommandEchoing()
 {
-	showTestName();
-
 	immutable expected = 
 "run: echo Hello > file.txt
 mkdirRecurse: "~("some/new/dir".fixSlashes)~"
@@ -148,8 +147,6 @@ foo: i = 42
 
 void testDisambiguatingWrite()
 {
-	showTestName();
-
 	immutable expected =  "Hello worldHello world";
 
 	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
@@ -158,8 +155,6 @@ void testDisambiguatingWrite()
 
 void testDryRunAssistance()
 {
-	showTestName();
-
 	immutable expected = 
 "copy: original.d -> app.d
 run: dmd app.d -ofbin/app
@@ -172,8 +167,6 @@ exists: another-file
 
 void testFail()
 {
-	showTestName();
-	
 	auto result = tryRunCollect( rdmdCommand(testName) );
 	assert(result.status > 0);
 	assert(result.output.normalizeNewlines == "Fail: ERROR: Need two args, not 0!\n");
@@ -188,8 +181,6 @@ void testFail()
 
 void testFilepaths()
 {
-	showTestName();
-
 	immutable expected = 
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes.quote) ~ "\n" ~
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes) ~ "\n";
@@ -208,14 +199,11 @@ void testScriptStyleShellCommands()
 		return;
 	}
 
-	showTestName();
-	
 	immutable inFile = "testinput.txt";
 	scope(exit)
 		tryRemove(inFile);
 
-	import scriptlike.file.wrappers : write;
-	write(inFile, "\n");
+	writeFile(inFile, "\n");
 
 	version(OSX) enum key = "Return";
 	else         enum key = "Enter";
@@ -229,8 +217,6 @@ void testScriptStyleShellCommands()
 
 void testStringInterpolation()
 {
-	showTestName();
-	
 	immutable expected = 
 "The number 21 doubled is 42!
 Empty braces output nothing.
@@ -243,21 +229,17 @@ Multiple params: John Doe.
 
 void testTryAsFilesystemOperations()
 {
-	showTestName();
 	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
 	assert(output == "");
 }
 
 void testUserInputPrompts()
 {
-	showTestName();
-	
 	immutable inFile = "testinput.txt";
 	scope(exit)
 		tryRemove(inFile);
 
-	import scriptlike.file.wrappers : write;
-	write(inFile,
+	writeFile(inFile,
 "Nana
 20
 y
@@ -285,4 +267,65 @@ No Input. Quit
 
 	auto output = runCollect( rdmdCommand(testName) ~ " < " ~ inFile ).normalizeNewlines;
 	assert(output.canFind(expectedExcerpt));
+}
+
+void testUseInScripts(string subdir, Path workingDir, string command)
+{
+	auto projDir = Path("../examples/"~subdir);
+
+	// Test with cmdline arg
+	{
+		immutable expected = text(
+"This script is in directory: ", (thisExePath.dirName ~ projDir), "
+Hello, Frank!
+");
+
+		auto output = workingDir.runCollect( command~" Frank" ).normalizeNewlines;
+		assert(output == expected);
+	}
+
+	// Test interactive
+	{
+		immutable inFile = "testinput.txt";
+		scope(exit)
+			tryRemove(workingDir ~ inFile);
+
+		writeFile(workingDir ~ inFile, "George\n");
+
+		immutable expected = text(
+"This script is in directory: ", (thisExePath.dirName ~ projDir), "
+What's your name?
+> Hello, George!
+");
+
+		auto output = workingDir.runCollect( command~" < "~inFile ).normalizeNewlines;
+		assert(output == expected);
+	}
+}
+
+void testDubProject()
+{
+	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q -- ");
+}
+
+void testPlainScript()
+{
+	version(Windows)
+		// This Posix artifact gets in the way of calling .myscript.exe
+		// Only an issue when Win/Posix machines are operating from the same directory.
+		tryRemove("../examples/plain-script/.myscript");
+
+	writeln("    Testing from its own directory...");
+	testUseInScripts(
+		"plain-script",
+		Path("../examples/plain-script"),
+		"."~dirSeparator~"myscript"
+	);
+
+	writeln("    Testing from different directory...");
+	testUseInScripts(
+		"plain-script",
+		Path("../tests/bin"),
+		Path("../../examples/plain-script/myscript").toRawString()
+	);
 }

@@ -41,10 +41,15 @@ public import scriptlike.std;
 version(D_Ddoc) import changelog;
 version(unittest_scriptlike_d) void main() {}
 
-// Run tests for sample programs in 'examples/features'
+// Run tests for sample programs in 'examples'
 version(unittest_scriptlike_d)
 unittest
 {
-	writeln("Testing sample programs in 'examples/features':");
+	version(Windows)
+		// This Posix artifact gets in the way of calling .myscript.exe
+		// Only an issue when Win/Posix machines are operating from the same directory.
+		tryRemove("tests/.testFeature");
+
+	writeln("Testing sample programs in 'examples':");
 	run(text( Path("tests/testFeature"), " All" ));
 }

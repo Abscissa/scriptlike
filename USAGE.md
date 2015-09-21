@@ -50,8 +50,9 @@ myscript.d:
 import scriptlike;
 
 void main(string[] args) {
-	string name;
+	writeln("This script is in directory: ", thisExePath.dirName);
 
+	string name;
 	if(args.length > 1)
 		name = args[1];
 	else
