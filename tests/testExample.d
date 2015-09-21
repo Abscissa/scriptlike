@@ -195,7 +195,7 @@ void testScriptStyleShellCommands()
 	auto dmdResult = tryRunCollect("dmd --help");
 	if(dmdResult.status != 0)
 	{
-		writeln(`Skipping `, testName, `.d: Couldn't find 'dmd' on the PATH.`);
+		writeln(`Skipping `, testName, `: Couldn't find 'dmd' on the PATH.`);
 		return;
 	}
 
@@ -310,6 +310,14 @@ void testDubProject()
 
 void testPlainScript()
 {
+	// This test relies on "rdmd" being available on the PATH
+	auto rdmdResult = tryRunCollect("rdmd --help");
+	if(rdmdResult.status != 0)
+	{
+		writeln(`Skipping `, testName, `: Couldn't find 'rdmd' on the PATH.`);
+		return;
+	}
+
 	version(Windows)
 		// This Posix artifact gets in the way of calling .myscript.exe
 		// Only an issue when Win/Posix machines are operating from the same directory.
