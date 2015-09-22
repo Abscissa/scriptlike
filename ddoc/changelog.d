@@ -2,7 +2,7 @@
 Scriptlike_Changelog:
 
 The latest version of this changelog is always available at:$(BR)
-$(LINK http://semitwist.com/scriptlike/changelog.html )
+$(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
@@ -21,6 +21,13 @@ $(UL
 		$(API_PATH_EXTR Path) and $(API_PATH_EXTR buildNormalizedPathFixed) now
 		convert back/forward slashes to native on BOTH Windows and Posix, not
 		just on Windows.
+	)
+	$(FIXED
+		Some links within changelog and API reference were pointing to the
+		reference docs for Scriptlike's latest version, instead of staying
+		within the same documentation version. This made 
+		$(LINK2 http://semitwist.com/scriptlike-docs/, archived docs for previous versions)
+		difficult to navigate.
 	)
 	$(ENHANCE
 		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
