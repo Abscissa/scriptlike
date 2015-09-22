@@ -1,7 +1,7 @@
 Scriptlike [![Build Status](https://travis-ci.org/Abscissa/scriptlike.svg)](https://travis-ci.org/Abscissa/scriptlike)
 ==========
 
-Utility to aid in writing script-like programs in the [D Programming Language](http://dlang.org).
+Scriptlike is a utility library to help you write script-like programs in the [D Programming Language](http://dlang.org).
 
 Officially supported compiler versions are shown in [.travis.yml](https://github.com/Abscissa/scriptlike/blob/master/.travis.yml).
 
