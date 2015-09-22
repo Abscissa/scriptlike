@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.9.4 - TBD)
+$(H2 v0.9.4 - 2015/09/22)
 
 $(UL
 	$(FIXED
@@ -14,8 +14,8 @@ $(UL
 	)
 	$(FIXED
 		In echo mode, several functions would echo the wrong "try*" or
-		non-"try*" version. Ex: `run` echoed `tryRun`, and `tryRename`
-		echoed `rename`.
+		non-"try*" version. Ex: $(API_PROCESS run) echoed $(API_PROCESS tryRun),
+		and $(API_FILE_EXTR tryRename) echoed $(API_FILE_WRAP rename).
 	)
 	$(FIXED
 		$(API_PATH_EXTR Path) and $(API_PATH_EXTR buildNormalizedPathFixed) now
@@ -33,8 +33,8 @@ $(UL
 		$(ISSUE 17),$(ISSUE 20): Added usage examples to readme.
 	)
 	$(ENHANCE
-		Add $(API_CORE interp) for interpolated strings:
-		`string s = mixin( interp!"Value is ${/+any D expression here+/}" )`
+		Add $(API_CORE interp) for interpolated strings:$(BR)
+		`string s = mixin( interp!"Value is ${variableOrExpression}" )`
 	)
 	$(ENHANCE
 		Add $(API_FILE_EXTR removePath)/$(API_FILE_EXTR tryRemovePath) for
