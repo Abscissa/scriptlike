@@ -33,7 +33,7 @@ struct Ext
 	private string str;
 	
 	/// Main constructor.
-	this(string extension = null) pure @safe nothrow
+	this(string extension) pure @safe nothrow
 	{
 		this.str = extension;
 	}
@@ -101,8 +101,9 @@ struct Path
 {
 	private string str = ".";
 	
+
 	/// Main constructor.
-	this(string path = ".") pure @safe nothrow
+	this(string path) pure @safe nothrow
 	{
 		this.str = buildNormalizedPathFixed(path);
 	}
