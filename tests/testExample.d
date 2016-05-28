@@ -128,6 +128,7 @@ void testAll()
 		if(status != 0)
 			failed = true;
 	}
+	writeln("Done running tests for examples.");
 
 	failEnforce(!failed, "Not all tests succeeded.");
 }
