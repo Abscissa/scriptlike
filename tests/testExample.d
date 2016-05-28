@@ -1,6 +1,13 @@
-/// This program runs and tests one or all of the "features" examples
-/// in this directory.
+/++
+This program runs and tests one or all of the "features" examples
+in this directory.
 
+Note: The tests for "DubProject" and "PlainScript" are only intended to
+test the APPROACHES they use for including Scriptlike in a script, not
+for testing Scriptlike itself (the rest of the tests do that). So IT'S OK
+they build against latest release version of Scriptlike instead of *this*
+copy of Scriptlike.
++/
 import scriptlike;
 
 void function()[string] lookupTest; // Lookup test by name
