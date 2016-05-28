@@ -305,6 +305,11 @@ What's your name?
 
 void testDubProject()
 {
+	// Force rebuild
+	tryRemove("../examples/dub-project/myscript");
+	tryRemove("../examples/dub-project/myscript.exe");
+
+	// Do test
 	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q -- ");
 }
 
@@ -318,11 +323,11 @@ void testPlainScript()
 		return;
 	}
 
-	version(Windows)
-		// This Posix artifact gets in the way of calling .myscript.exe
-		// Only an issue when Win/Posix machines are operating from the same directory.
-		tryRemove("../examples/plain-script/.myscript");
+	// Force rebuild
+	tryRemove("../examples/plain-script/.myscript");
+	tryRemove("../examples/plain-script/.myscript.exe");
 
+	// Do tests
 	writeln("    Testing from its own directory...");
 	testUseInScripts(
 		"plain-script",
