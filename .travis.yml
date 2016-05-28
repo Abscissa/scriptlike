@@ -2,7 +2,7 @@ language: d
 sudo: false
 
 before_script:
-    - mkdir -P ~/.dub/packages/scriptlike-0.9.4/
+    - mkdir -p ~/.dub/packages/scriptlike-0.9.4/
     - cp -R . ~/.dub/packages/scriptlike-0.9.4/
 
 matrix:
