@@ -15,7 +15,7 @@ Links:
 Sections
 --------
 
-**Features**
+**[Features](#features)**
 * [Automatic Phobos Import](#automatic-phobos-import)
 * [User Input Prompts](#user-input-prompts)
 * [String Interpolation](#string-interpolation)
