@@ -25,7 +25,9 @@ unittest
 {
 	import std.algorithm : equal;
 	import std.conv;
-	import std.datetime;
+	import std.datetime : SysTime;
+	static import std.file;
+	static import std.path;
 	import std.string;
 	import std.traits;
 	import std.typecons;
@@ -35,8 +37,7 @@ unittest
 	
 	import std.stdio : writeln;
 	import std.process : thisProcessID;
-	import core.thread;
-	alias copy = scriptlike.path.wrappers.copy;
+	alias copy = scriptlike.file.wrappers.copy;
 
 	writeln("Running Scriptlike unittests: std.file wrappers");
 	

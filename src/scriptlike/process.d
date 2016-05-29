@@ -9,6 +9,8 @@ module scriptlike.process;
 
 import std.array;
 import std.conv;
+static import std.file;
+static import std.path;
 import std.process;
 import std.range;
 
@@ -337,8 +339,10 @@ unittest
 /// start the process.
 auto tryRunCollect(string command)
 {
+	import std.typecons : Tuple;
+
 	yapFunc(command);
-	auto result = std.typecons.Tuple!(int, "status", string, "output")(0, null);
+	auto result = Tuple!(int, "status", string, "output")(0, null);
 
 	if(scriptlikeDryRun)
 		return result;

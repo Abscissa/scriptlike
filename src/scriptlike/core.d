@@ -8,6 +8,8 @@
 module scriptlike.core;
 
 import std.conv;
+static import std.file;
+static import std.path;
 import std.string;
 
 /// If true, all commands will be echoed. By default, they will be
