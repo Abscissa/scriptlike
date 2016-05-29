@@ -6,7 +6,9 @@ Note: The tests for "DubProject" and "PlainScript" are only intended to
 test the APPROACHES they use for including Scriptlike in a script, not
 for testing Scriptlike itself (the rest of the tests do that). So IT'S OK
 they build against latest release version of Scriptlike instead of *this*
-copy of Scriptlike.
+copy of Scriptlike. (This isn't an issue on travis builds - the .travis.yml
+file is set up to automatically copy *this* Scriptlike to the path where
+dub *would've* stored the latest Scriptlike release.)
 +/
 import scriptlike;
 
