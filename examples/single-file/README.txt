@@ -10,6 +10,7 @@ And then...
 
 On Linux/OSX:
 -------------
+$ chmod +x myscript.d
 $ ./myscript.d
 or
 $ ./myscript.d Frank
