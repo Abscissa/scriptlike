@@ -12,7 +12,7 @@ Older approaches:
 
 A Basic Script in D
 -------------------
-Make sure you have [DUB](http://code.dlang.org/download) v1.0.0 or later installed, and a D compiler (DMD, LDC, or GDC). You can check your version of DUB by running `dub --help`. Then, using Scriptlike in a D script is easy:
+Make sure you have [DUB](http://code.dlang.org/download) v1.0.0 or later installed, as well as a D compiler (DMD, LDC, or GDC). You can check your version of DUB by running `dub --help`. Then, using Scriptlike in a D script is easy:
 
 myscript.d:
 ```d
