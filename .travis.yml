@@ -20,7 +20,7 @@ matrix:
         - d: dmd-2.066.1
         - d: dmd-2.066.0
         - d: ldc
-        - d: ldc-ldc-1.1.0-beta6
+        - d: ldc-1.1.0-beta6
         - d: ldc-1.0.0
         - d: ldc-0.17.1
         - d: ldc-0.16.1
