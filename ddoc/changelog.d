@@ -13,6 +13,9 @@ $(UL
 		Docs/Examples: Now recommend DUB v1.0.0+'s single-file package support,
 		and test the provided example.
 	)
+	$(FIXED
+		$(ISSUE 31): Deprecation warnings on DMD 2.072 and up.
+	)
 )
 
 $(H2 v0.9.6 - 2016/05/28)

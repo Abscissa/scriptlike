@@ -33,7 +33,12 @@ class Fail : Exception
 	private static Fail opCall(string msg, string file=__FILE__, int line=__LINE__)
 	{
 		Fail.msg = msg;
-		throw cast(Fail) cast(void*) Fail.classinfo.init;
+		static if(__traits(compiles, Fail.classinfo.initializer))
+			// DMD 2.072 or 2.073 deprecates 'classinfo.init'
+			throw cast(Fail) cast(void*) Fail.classinfo.initializer;
+		else
+			// DMD 2.069.2 and below lack 'classinfo.initializer'
+			throw cast(Fail) cast(void*) Fail.classinfo.init;
 	}
 	
 	private static string fullMessage(string msg = Fail.msg)
