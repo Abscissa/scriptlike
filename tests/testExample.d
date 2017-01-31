@@ -54,7 +54,7 @@ void main(string[] args)
 		"    testExample features/UserInputPrompts\n",
 		"\n",
 		"Available Test Names:\n",
-		"    ", lookupTest.keys.sort.join("\n    "),
+		"    ", lookupTest.keys.sort().join("\n    "),
 	);
 
 	testName = args[1];
@@ -62,7 +62,7 @@ void main(string[] args)
 		(testName in lookupTest) != null,
 		"No such test '", testName, "'.\n",
 		"Available Test Names:\n",
-		"    ", lookupTest.keys.sort.join("\n    "),
+		"    ", lookupTest.keys.sort().join("\n    "),
 	);
 
 	// Setup for test
@@ -120,7 +120,7 @@ void testAll()
 {
 	bool failed = false; // Have any tests failed?
 	
-	foreach(name; lookupTest.keys.sort)
+	foreach(name; lookupTest.keys.sort())
 	if(lookupTest[name] != &testAll)
 	{
 		// Instead of running the test function directly, run it as a separate
