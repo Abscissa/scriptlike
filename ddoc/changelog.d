@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.9.7 - TBD)
+$(H2 v0.9.7 - 2017/07/23)
 
 $(UL
 	$(ENHANCE

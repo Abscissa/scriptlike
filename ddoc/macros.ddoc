@@ -4,6 +4,7 @@ Macros:
 	H2 = <h2>$0</h2>
 	BR = <br />
 	DOLLAR = $
+	EM       = $(B $(I $0) )
 	ISSUE    = $(LINK2 https://github.com/Abscissa/scriptlike/issues/$0, #$0)
 	ENHANCE  = $(LI $(B Enhancement:) $0)
 	CHANGE   = $(LI $(B Change:) $0)
