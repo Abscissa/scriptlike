@@ -349,7 +349,6 @@ Single function to bail out with an error message, exception-safe.
 
 ```d
 /++
-/++
 Example:
 --------
 $ test
