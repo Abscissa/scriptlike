@@ -340,9 +340,12 @@ unittest
 auto tryRunCollect(string command)
 {
 	import std.typecons : Tuple;
+	import std.traits : ReturnType;
 
 	yapFunc(command);
-	auto result = Tuple!(int, "status", string, "output")(0, null);
+	// Tuple!(int, "status", string, "output") on DMD 2.066 and up
+	// ProcessOutput on DMD 2.065
+	auto result = ReturnType!executeShell(0, null);
 
 	if(scriptlikeDryRun)
 		return result;

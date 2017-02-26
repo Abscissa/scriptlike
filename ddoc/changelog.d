@@ -16,6 +16,12 @@ $(UL
 		Deprecated `Ext.toRawString`. It didn't do anything
 		different from `Ext.toString` and thus wasn't needed.
 	)
+	$(FIX
+		$(ISSUE 19): Compile error with DMDFE 2.065. Note, Scriptlike
+		still *officially* requires at least DMDFE 2.066, mainly because
+		of a bugfix for Windows, but DMDFE 2.065 appears to still be
+		important for Debian's GDC.
+	)
 )
 
 $(H2 v0.9.7 - 2017/07/23)
