@@ -6,6 +6,14 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.10.1 - 2017/02/25)
+
+$(UL
+	$(FIXED
+		Fix some minor doc and travis-ci issues with v0.10.0's release.
+	)
+)
+
 $(H2 v0.10.0 - 2017/02/25)
 
 $(UL

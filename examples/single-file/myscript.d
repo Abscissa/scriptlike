@@ -1,7 +1,7 @@
 #!/usr/bin/env dub
 /+ dub.sdl:
 	name "myscript"
-	dependency "scriptlike" version="~>0.10.0"
+	dependency "scriptlike" version="~>0.10.1"
 +/
 import scriptlike;
 
