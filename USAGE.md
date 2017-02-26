@@ -22,7 +22,7 @@ myscript.d:
 #!/usr/bin/env dub
 /+ dub.sdl:
 	name "myscript"
-	dependency "scriptlike" version="~>0.9.7"
+	dependency "scriptlike" version="~>0.10.0"
 +/
 import scriptlike;
 
@@ -85,13 +85,13 @@ just include the scriptlike as a dependency in your
 dub.json:
 ```json
 "dependencies": {
-	"scriptlike": "~>0.9.7"
+	"scriptlike": "~>0.10.0"
 }
 ```
 
 dub.sdl:
 ```
-dependency "scriptlike" version="~>0.9.7"
+dependency "scriptlike" version="~>0.10.0"
 ```
 
 And then import with one of these:
@@ -138,27 +138,27 @@ myscript.sh:
 ```bash
 #!/bin/sh
 SCRIPT_DIR="$(dirname "$(dirname "$0")/$(readlink "$0")")"
-rdmd -I~/.dub/packages/scriptlike-0.9.7/scriptlike/src/ -of$SCRIPT_DIR/.myscript $SCRIPT_DIR/myscript.d "$@"
+rdmd -I~/.dub/packages/scriptlike-0.10.0/scriptlike/src/ -of$SCRIPT_DIR/.myscript $SCRIPT_DIR/myscript.d "$@"
 ```
 
 myscript.bat:
 ```batch
 @echo off
-rdmd -I%APPDATA%/dub/packages/scriptlike-0.9.7/scriptlike/src/ -of%~dp0.myscript %~dp0myscript.d %*
+rdmd -I%APPDATA%/dub/packages/scriptlike-0.10.0/scriptlike/src/ -of%~dp0.myscript %~dp0myscript.d %*
 ```
 
 On Linux/OSX:
 ```bash
 $ chmod +x myscript.sh
 $ ln -s myscript.sh myscript
-$ dub fetch scriptlike --version=0.9.7
+$ dub fetch scriptlike --version=0.10.0
 $ ./myscript Frank
 Hello, Frank!
 ```
 
 On Windows:
 ```batch
-> dub fetch scriptlike --version=0.9.7
+> dub fetch scriptlike --version=0.10.0
 > myscript Frank
 Hello, Frank!
 ```
@@ -174,7 +174,7 @@ FAQ
 `myscript` file and add the following to the top of `myscript.d`:
 
 ```bash
-#!/PATH/TO/rdmd --shebang -I~/.dub/packages/scriptlike-0.9.7/scriptlike/src/
+#!/PATH/TO/rdmd --shebang -I~/.dub/packages/scriptlike-0.10.0/scriptlike/src/
 ```
 
 Problem is, there's no way to make that portable across machines. The rdmd

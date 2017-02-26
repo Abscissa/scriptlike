@@ -6,7 +6,7 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.10.0 - TBD)
+$(H2 v0.10.0 - 2017/02/25)
 
 $(UL
 	$(CHANGE
@@ -302,7 +302,7 @@ $(UL
 )
 
 Copyright:
-Copyright (C) 2014-2016 Nick Sabalausky.
+Copyright (C) 2014-2017 Nick Sabalausky.
 Portions Copyright (C) 2010 Jesse Phillips.
 
 License: zlib/libpng
