@@ -311,6 +311,55 @@ unittest
 	assert(scriptlikeCustomEcho == &testEcho);
 }
 
+/++
+Debugging aid: Output current file/line to stderr.
+
+Also flushes stderr to ensure buffering and a subsequent crash don't
+cause the message to get lost.
+
+Example:
+--------
+// Output example:
+// src/myproj/myfile.d(42): trace
+trace();
+--------
++/
+template trace()
+{
+	void trace(string file = __FILE__, size_t line = __LINE__)()
+	{
+		stderr.writeln(file, "(", line, "): trace");
+		stderr.flush();
+	}
+}
+
+/++
+Debugging aid: Output variable name/value and file/line info to stderr.
+
+Also flushes stderr to ensure buffering and a subsequent crash don't
+cause the message to get lost.
+
+Example:
+--------
+auto x = 5;
+auto str = "Hello";
+
+// Output example:
+// src/myproj/myfile.d(42): x: 5
+// src/myproj/myfile.d(43): str: Hello
+trace!x;
+trace!str;
+--------
++/
+template trace(alias var)
+{
+	void trace(string file = __FILE__, size_t line = __LINE__)()
+	{
+		stderr.writeln(file, "(", line, "): ", var.stringof, ": ", var);
+		stderr.flush();
+	}
+}
+
 // Some tools for Scriptlike's unittests
 version(unittest_scriptlike_d)
 {

@@ -9,6 +9,10 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 $(H2 v0.10.2 - TBD)
 
 $(UL
+	$(ENHANCE
+		Added $(API_CORE trace) functions as debugging aid. Outputs
+		file/line info and optionally a variable name/value.
+	)
 	$(FIXED
 		$(ISSUE 34): Unable to build docs of own project with DUB.
 	)
