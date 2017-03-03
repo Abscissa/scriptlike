@@ -17,6 +17,9 @@ $(UL
 		the current scriptlike commit, instead of using a scriptlike release
 		from the published dub repos.
 	)
+	$(CHANGE
+		Removed outdated, messy and problematic "plain script" example.
+	)
 )
 
 $(H2 v0.10.1 - 2017/02/25)
