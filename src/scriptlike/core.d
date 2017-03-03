@@ -224,8 +224,8 @@ string _interp_text(T...)(T args)
 version(unittest_scriptlike_d)
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: interp");
+	import std.stdio;
+	writeln("Running Scriptlike unittests: interp"); stdout.flush();
 
 	assert(mixin(interp!"hello") == "hello");
 	assert(mixin(interp!"$") == "$");
@@ -259,8 +259,8 @@ immutable gagEcho = q{
 version(unittest_scriptlike_d)
 unittest
 {
-	import std.stdio : writeln;
-	writeln("Running Scriptlike unittests: gagecho");
+	import std.stdio;
+	writeln("Running Scriptlike unittests: gagecho"); stdout.flush();
 	
 	// Test 1
 	scriptlikeEcho = true;
@@ -370,6 +370,35 @@ version(unittest_scriptlike_d)
 	version(Posix)        enum quiet = " >/dev/null 2>/dev/null";
 	else version(Windows) enum quiet = " > NUL 2> NUL";
 	else static assert(0);
+
+	string openSandbox(string func=__FUNCTION__)()
+	{
+		import scriptlike.file.wrappers;
+		import scriptlike.file.extras;
+		import scriptlike.path;
+
+		// Space in path is deliberate
+		auto sandboxDir = tempDir() ~ "scriptlike-d/test sandboxes" ~ func;
+		//import std.stdio; writeln("sandboxDir: ", sandboxDir.raw);
+
+		tryRmdirRecurse(sandboxDir);
+		mkdirRecurse(sandboxDir);
+		chdir(sandboxDir);
+		return sandboxDir.raw;
+	}
+	
+	enum useSandbox = q{
+		import std.stdio;
+
+		auto oldCwd = std.file.getcwd();
+		auto sandboxDir = openSandbox();
+		scope(success) // Don't cleanup upon failure, so the remains can be manually insepcted.
+			tryRmdirRecurse(sandboxDir);
+		scope(failure)
+			writeln("Sandbox directory: '", sandboxDir, "'");
+		scope(exit)
+			std.file.chdir(oldCwd);
+	};
 
 	immutable initTest(string testName, string msg = null, string module_ = __MODULE__) = `
 		import std.stdio: writeln;

@@ -13,6 +13,10 @@ $(UL
 		Added $(API_CORE trace) functions as debugging aid. Outputs
 		file/line info and optionally a variable name/value.
 	)
+	$(ENHANCE
+		Added $(API_FILE_EXTR isUserExec), $(API_FILE_EXTR isGroupExec)
+		and $(API_FILE_EXTR isWorldExec) to check a file's executable bits on Posix.
+	)
 	$(FIXED
 		$(ISSUE 34): Unable to build docs of own project with DUB.
 	)
