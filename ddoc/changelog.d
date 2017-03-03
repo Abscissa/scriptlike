@@ -6,6 +6,14 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
+$(H2 v0.10.2 - TBD)
+
+$(UL
+	$(FIXED
+		$(ISSUE 34): Unable to build docs of own project with DUB.
+	)
+)
+
 $(H2 v0.10.1 - 2017/02/25)
 
 $(UL

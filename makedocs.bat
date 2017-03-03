@@ -18,7 +18,7 @@ echo all installed as described above.
 echo.
 
 dub run gen-package-version -- scriptlike --src=src --ddoc=ddoc
-rdmd -Isrc -Iddoc --build-only --force -c -Dddocs_tmp -X -Xfdocs\docs.json src\scriptlike\package.d
+rdmd -Isrc -Iddoc --build-only --force -c -Dddocs_tmp -X -Xfdocs\docs.json -version=docs_scriptlike_d src\scriptlike\package.d
 rmdir /S /Q docs_tmp > NUL 2> NUL
 del src\scriptlike\package.obj
 dub run ddox -- filter docs\docs.json --min-protection=Protected --ex=scriptlike.packageVersion

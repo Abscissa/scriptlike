@@ -42,7 +42,7 @@ module scriptlike;
 public import scriptlike.only;
 public import scriptlike.std;
 
-version(D_Ddoc) import changelog;
+version(docs_scriptlike_d) import changelog;
 version(unittest_scriptlike_d) void main() {}
 
 // Run tests for sample programs in 'examples'
