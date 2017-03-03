@@ -518,7 +518,7 @@ unittest
 	});
 }
 
-version(ddoc_scriptlike_d)
+version(docs_scriptlike_d)
 {
 	/// Posix-only. If 'original' exists, then symlink. Otherwise, do nothing and return false.
 	///
@@ -955,21 +955,21 @@ unittest
 	});
 }
 
-version(ddoc_scriptlike_d)
+version(docs_scriptlike_d)
 {
 	/// Posix-only. Check the user (ie "owner") executable bit of a file. File must exist.
 	bool isUserExec(Path path);
-	//ditto
+	///ditto
 	bool isUserExec(string path);
 
 	/// Posix-only. Check the group executable bit of a file. File must exist.
 	bool isGroupExec(Path path);
-	//ditto
+	///ditto
 	bool isGroupExec(string path);
 
 	/// Posix-only. Check the world (ie "other") executable bit of a file. File must exist.
 	bool isWorldExec(Path path);
-	//ditto
+	///ditto
 	bool isWorldExec(string path);
 }
 else version(Posix)

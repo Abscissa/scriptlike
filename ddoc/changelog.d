@@ -25,6 +25,10 @@ $(UL
 		the current scriptlike commit, instead of using a scriptlike release
 		from the published dub repos.
 	)
+	$(FIXED
+		Docs weren't being correctly built for $(API_FILE_WRAP symlink),
+		$(API_FILE_WRAP readLink), $(API_FILE_WRAP getTimesWin) and $(API_FILE_EXTR trySymlink).
+	)
 	$(CHANGE
 		Removed outdated, messy and problematic "plain script" example.
 	)
