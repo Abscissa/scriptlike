@@ -12,6 +12,11 @@ $(UL
 	$(FIXED
 		$(ISSUE 34): Unable to build docs of own project with DUB.
 	)
+	$(FIXED
+		Make sure the example tests, when run in travis-ci, always use
+		the current scriptlike commit, instead of using a scriptlike release
+		from the published dub repos.
+	)
 )
 
 $(H2 v0.10.1 - 2017/02/25)
