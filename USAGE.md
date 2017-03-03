@@ -18,7 +18,7 @@ myscript.d:
 #!/usr/bin/env dub
 /+ dub.sdl:
 	name "myscript"
-	dependency "scriptlike" version="~>0.10.1"
+	dependency "scriptlike" version="~>0.10.2"
 +/
 import scriptlike;
 
@@ -78,13 +78,13 @@ just include the scriptlike as a dependency in your
 dub.json:
 ```json
 "dependencies": {
-	"scriptlike": "~>0.10.1"
+	"scriptlike": "~>0.10.2"
 }
 ```
 
 dub.sdl:
 ```
-dependency "scriptlike" version="~>0.10.1"
+dependency "scriptlike" version="~>0.10.2"
 ```
 
 And then import with one of these:
