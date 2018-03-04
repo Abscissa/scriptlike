@@ -6,7 +6,6 @@ before_script:
 
 matrix:
     include:
-        - d: dmd
         - d: dmd-2.079.0
         - d: dmd-2.078.2
         - d: dmd-2.077.1
