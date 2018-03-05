@@ -32,9 +32,9 @@ matrix:
         - d: ldc-1.1.1
         - d: ldc-1.1.0
         - d: ldc-1.0.0
+        - d: ldc-0.17.5
         - d: ldc-0.17.1
         - d: ldc-0.16.1
-        - d: ldc-0.15.1
         - d: gdc-5.2.0
         - d: gdc-4.9.3
         - d: gdc-4.9.2
