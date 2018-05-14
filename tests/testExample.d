@@ -326,6 +326,19 @@ What's your name?
 	}
 }
 
+string getDubArgs()
+{
+	string args;
+	
+	if("Darch" in environment)
+		args ~= " --arch=" ~ environment["Darch"];
+
+	if("DC" in environment)
+		args ~= " --compiler=" ~ environment["DC"];
+
+	return args;
+}
+
 void testDubProject()
 {
 	// Force rebuild
@@ -333,20 +346,20 @@ void testDubProject()
 	tryRemove("../examples/dub-project/myscript.exe");
 
 	// Do test
-	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q -- ");
+	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q"~getDubArgs~" -- ");
 }
 
 void testSingleFile()
 {
 	// Do tests
 	writeln("    Testing from its own directory...");
-	testUseInScripts("single-file", Path("../examples/single-file"), "dub myscript.d", false);
+	testUseInScripts("single-file", Path("../examples/single-file"), "dub"~getDubArgs~" myscript.d", false);
 
 	writeln("    Testing from different directory...");
 	testUseInScripts(
 		"single-file",
 		Path("../tests/bin"),
-		"dub "~Path("../../examples/single-file/myscript.d").raw,
+		"dub"~getDubArgs~" "~Path("../../examples/single-file/myscript.d").raw,
 		false
 	);
 }
