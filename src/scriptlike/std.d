@@ -40,5 +40,8 @@ public import std.typetuple;
 public import std.uni;
 public import std.variant;
 
+public import std.path : dirSeparator, pathSeparator, isDirSeparator,
+	buildPath, buildNormalizedPath;
+
 public static import std.file;
 public static import std.path;

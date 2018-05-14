@@ -32,6 +32,7 @@ unittest
 	import std.conv;
 	import std.datetime;
 	import std.file;
+	import std.path : dirSeparator;
 	import std.process;
 	import std.range;
 	import std.stdio;
