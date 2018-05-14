@@ -67,14 +67,19 @@ void main(string[] args)
 
 string rdmdCommand(string testName)
 {
+	string archFlag = "";
+	auto envArch = environment.get("Darch", "");
+	if(envArch == "x86_64") archFlag = "-m64";
+	if(envArch == "x86")    archFlag = "-m32";
+
 	// Don't use rdmd on Posix, because it isn't included with travis-ci's ldc/gdc.
 	// Travis-ci doesn't do Windows, so it doesn't matter there. Which is good
 	// because I don't feel like figuring out globbing on Windows.
 	auto envDmd = environment.get("DMD", "dmd");
 	version(Windows)
-		return "rdmd --compiler="~envDmd~" --force -debug -g -I../src ../examples/"~testName~".d";
+		return "rdmd --compiler="~envDmd~" --force "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
 	else version(Posix)
-		return envDmd~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
+		return envDmd~"  "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
 	else
 		static assert(0);
 }
