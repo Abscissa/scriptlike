@@ -11,8 +11,8 @@ docs/public/scriptlike/
 src/scriptlike/packageVersion.d
 ddoc/packageVersion.ddoc
 
-examples/dub-project/myscript
-examples/plain-script/.myscript
+/examples/dub-project/myscript
+/examples/single-file/myscript
 tests/.testExample*
 tests/bin/
 

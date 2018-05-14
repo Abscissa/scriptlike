@@ -291,7 +291,6 @@ Hello, Frank!
 "Hello, Frank!
 ");
 		}
-
 		auto output = workingDir.runCollect( command~" Frank" ).normalizeNewlines;
 		assert(output == expected);
 	}
@@ -326,7 +325,7 @@ What's your name?
 	}
 }
 
-string getDubArgs()
+string getDubEnvArgs()
 {
 	string args;
 	
@@ -346,20 +345,20 @@ void testDubProject()
 	tryRemove("../examples/dub-project/myscript.exe");
 
 	// Do test
-	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q"~getDubArgs~" -- ");
+	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q "~getDubEnvArgs~" -- ");
 }
 
 void testSingleFile()
 {
 	// Do tests
 	writeln("    Testing from its own directory...");
-	testUseInScripts("single-file", Path("../examples/single-file"), "dub"~getDubArgs~" myscript.d", false);
+	testUseInScripts("single-file", Path("../examples/single-file"), "dub -q --single "~getDubEnvArgs~" myscript.d -- ", false);
 
 	writeln("    Testing from different directory...");
 	testUseInScripts(
 		"single-file",
 		Path("../tests/bin"),
-		"dub"~getDubArgs~" "~Path("../../examples/single-file/myscript.d").raw,
+		"dub -q --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
 		false
 	);
 }
