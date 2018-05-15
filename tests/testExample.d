@@ -174,25 +174,13 @@ exists: another-file
 
 void testFail()
 {
-auto envDmd = environment.get("DMD", "dmd");
-writeln("testName: ", testName);
-tryRun("rdmd --build-only --compiler="~envDmd~" --force -m64 -oftest -debug -g -I../src ../examples/"~testName~".d");
-tryRun("dir");
-
-	auto result = tryRunCollect( "test" );
-	//auto result = tryRunCollect( rdmdCommand(testName) );
+	auto result = tryRunCollect( rdmdCommand(testName) );
 	assert(result.status > 0);
-writeln("+++++++++++++++++++++++++RESULT:");
-writeln(result.output);
-writeln("+++++++++++++++++++++++++normalizeNewlines:");
-writeln(result.output.normalizeNewlines);
-writeln("=================================");
-stdout.flush();
-	assert(result.output.normalizeNewlines == "Fail: ERROR: Need two args, not 0!\n");
+	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: Need two args, not 0!");
 
 	result = tryRunCollect( rdmdCommand(testName) ~ " abc 123" );
 	assert(result.status > 0);
-	assert(result.output.normalizeNewlines == "Fail: ERROR: First arg must be 'foobar', not 'abc'!\n");
+	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: First arg must be 'foobar', not 'abc'!");
 
 	auto output = runCollect( rdmdCommand(testName) ~ " foobar 123" );
 	assert(output == "");
@@ -202,9 +190,9 @@ void testFilepaths()
 {
 	immutable expected = 
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes.quote) ~ "\n" ~
-		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes) ~ "\n";
+		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes);
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines.strip;
 	assert(output == expected);
 }
 
