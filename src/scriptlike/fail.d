@@ -37,8 +37,10 @@ class Fail : Exception
 	{
 		auto appName = thisExePath().baseName();
 
+	writeln("appName: <",appName,">");
 		version(Windows)
 			appName = appName.stripExtension();
+	writeln("appName: <",appName,">");
 
 		return appName~": ERROR: "~msg;
 	}
