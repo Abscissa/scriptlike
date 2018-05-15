@@ -16,6 +16,8 @@ void main(string[] args) {
 
 // Throws a Fail exception on bad args:
 void helper(string[] args) {
+	writeln("_+_+");
+	writeln("_+_+");
 	// Like std.exception.enforce, but bails with no ugly stack trace,
 	// and if uncaught, outputs the program name and "ERROR: "
 	failEnforce(args.length == 3, "Need two args, not ", args.length-1, "!");
