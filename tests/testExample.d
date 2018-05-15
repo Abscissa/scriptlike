@@ -79,7 +79,7 @@ string rdmdCommand(string testName)
 	version(Windows)
 		return "rdmd --compiler="~envDmd~" --force "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
 	else version(Posix)
-		return envDmd~"  "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
+		return envDmd~" "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
 	else
 		static assert(0);
 }
@@ -162,7 +162,7 @@ void testDisambiguatingWrite()
 
 void testDryRunAssistance()
 {
-	immutable expected = 
+	immutable expected =
 "copy: original.d -> app.d
 run: dmd app.d -ofbin/app
 exists: another-file
@@ -174,7 +174,11 @@ exists: another-file
 
 void testFail()
 {
-	auto result = tryRunCollect( rdmdCommand(testName) );
+auto envDmd = environment.get("DMD", "dmd");
+tryRunCollect("rdmd --build-only --compiler="~envDmd~" --force "~archFlag~" -debug -g -I../src ../examples/"~testName~".d");
+
+	auto result = tryRunCollect( testName );
+	//auto result = tryRunCollect( rdmdCommand(testName) );
 	assert(result.status > 0);
 writeln("+++++++++++++++++++++++++RESULT:");
 writeln(result.output);
