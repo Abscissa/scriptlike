@@ -175,7 +175,9 @@ exists: another-file
 void testFail()
 {
 auto envDmd = environment.get("DMD", "dmd");
-tryRunCollect("rdmd --build-only --compiler="~envDmd~" --force -m64 -of"~testName~" -debug -g -I../src ../examples/"~testName~".d");
+writeln("testName: ", testName);
+tryRun("rdmd --build-only --compiler="~envDmd~" --force -m64 -of"~testName~" -debug -g -I../src ../examples/"~testName~".d");
+tryRun("dir");
 
 	auto result = tryRunCollect( testName );
 	//auto result = tryRunCollect( rdmdCommand(testName) );
