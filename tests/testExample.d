@@ -176,6 +176,9 @@ void testFail()
 {
 	auto result = tryRunCollect( rdmdCommand(testName) );
 	assert(result.status > 0);
+writeln("+++++++++++++++++++++++++RESULT:");
+writeln(result.output);
+writeln("=================================");
 	assert(result.output.normalizeNewlines == "Fail: ERROR: Need two args, not 0!\n");
 
 	result = tryRunCollect( rdmdCommand(testName) ~ " abc 123" );
