@@ -175,6 +175,12 @@ exists: another-file
 void testFail()
 {
 	auto result = tryRunCollect( rdmdCommand(testName) );
+writeln("+++++++++++++++++++++++++RESULT:");
+writeln(result.output, "{}");
+writeln("+++++++++++++++++++++++++normalizeNewlines:");
+writeln(result.output.normalizeNewlines.strip, "{}");
+writeln("=================================");
+stdout.flush();
 	assert(result.status > 0);
 	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: Need two args, not 0!");
 
@@ -190,9 +196,9 @@ void testFilepaths()
 {
 	immutable expected = 
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes.quote) ~ "\n" ~
-		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes);
+		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes) ~ "\n";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines.strip;
+	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
 	assert(output == expected);
 }
 
