@@ -176,10 +176,10 @@ void testFail()
 {
 auto envDmd = environment.get("DMD", "dmd");
 writeln("testName: ", testName);
-tryRun("rdmd --build-only --compiler="~envDmd~" --force -m64 -of"~testName~" -debug -g -I../src ../examples/"~testName~".d");
+tryRun("rdmd --build-only --compiler="~envDmd~" --force -m64 -oftest -debug -g -I../src ../examples/"~testName~".d");
 tryRun("dir");
 
-	auto result = tryRunCollect( testName );
+	auto result = tryRunCollect( "test" );
 	//auto result = tryRunCollect( rdmdCommand(testName) );
 	assert(result.status > 0);
 writeln("+++++++++++++++++++++++++RESULT:");
