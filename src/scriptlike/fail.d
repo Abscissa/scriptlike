@@ -37,6 +37,7 @@ class Fail : Exception
 	{
 		auto appName = thisExePath().baseName();
 
+	import std.stdio;
 	writeln("appName: <",appName,">");
 		version(Windows)
 			appName = appName.stripExtension();
