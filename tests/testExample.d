@@ -143,30 +143,22 @@ string compilerCommand(string testName)
 
 string normalizeNewlines(string str)
 {
-	version(Windows)
-		return str.replace("\r\n", "\n");
-	else
-		return str;
+	version(Windows) return str.replace("\r\n", "\n");
+	else             return str;
 }
 
 string fixSlashes(string path)
 {
-	version(Windows)
-		return path.replace(`/`, `\`);
-	else version(Posix)
-		return path.replace(`\`, `/`);
-	else
-		static assert(0);
+	version(Windows)    return path.replace(`/`, `\`);
+	else version(Posix) return path.replace(`\`, `/`);
+	else static assert(0);
 }
 
 string quote(string str)
 {
-	version(Windows)
-		return `"` ~ str ~ `"`;
-	else version(Posix)
-		return `'` ~ str ~ `'`;
-	else
-		static assert(0);
+	version(Windows)    return `"` ~ str ~ `"`;
+	else version(Posix) return `'` ~ str ~ `'`;
+	else static assert(0);
 }
 
 void testAll()
