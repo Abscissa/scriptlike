@@ -236,12 +236,6 @@ void testFail()
 	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: Need two args, not 0!");
 
 	result = tryCompileAndRun(testName, " abc 123");
-writeln("+++++++++++++++++++++++++RESULT:");
-writeln(result.output, "{}");
-writeln("+++++++++++++++++++++++++normalizeNewlines:");
-writeln(result.output.normalizeNewlines.strip, "{}");
-writeln("=================================");
-stdout.flush();
 	assert(result.status > 0);
 	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: First arg must be 'foobar', not 'abc'!");
 
