@@ -84,7 +84,7 @@ Compiles and runs a test, returning the status code and the test's output.
 
 Always displays, but does not return, the compiler output.
 +/
-string tryCompileAndRun(string testName, string runCmdSuffix=null)
+RunResult tryCompileAndRun(string testName, string runCmdSuffix=null)
 {
 	return _compileAndRunImpl(false, testName, runCmdSuffix);
 }
