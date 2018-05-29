@@ -89,6 +89,6 @@ test_script:
  - echo %Darch%
  - echo %DC%
  - echo %PATH%
- - '%DC%'
+ - '%DC% --help'
  - dub add-local .
  - dub test --arch=%Darch% --compiler=%DC%
