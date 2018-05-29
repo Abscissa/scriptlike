@@ -65,7 +65,63 @@ void main(string[] args)
 	lookupTest[testName]();
 }
 
-string rdmdCommand(string testName)
+alias RunResult = Tuple!(int, "status", string, "output");
+
+/++
+Compiles and runs a test, returning the test's output.
+
+Always displays, but does not return, the compiler output.
+
+Throws upon failure.
++/
+string compileAndRun(string testName, string runCmdSuffix=null)
+{
+	return _compileAndRunImpl(true, testName, runCmdSuffix).output;
+}
+
+/++
+Compiles and runs a test, returning the status code and the test's output.
+
+Always displays, but does not return, the compiler output.
++/
+string tryCompileAndRun(string testName, string runCmdSuffix=null)
+{
+	return _compileAndRunImpl(false, testName, runCmdSuffix);
+}
+
+/++
+Separating the compile & build steps is important here because on
+AppVeyor/Windows the linker outputs a non-fatal message:
+    "[...] not found or not built by the last incremental link; performing full link)"
+
+Any such non-fatal compilation messages MUST NOT be included in this
+function's return value or they will cause the tests to fail.
++/
+RunResult _compileAndRunImpl(bool throwOnError, string testName, string runCmdSuffix)
+{
+	version(Windows) auto exeSuffix = ".exe";
+	else             auto exeSuffix = "";
+
+	auto compileCmd = compilerCommand(testName);
+	auto runCmd = "bin/"~testName~exeSuffix~runCmdSuffix;
+
+	if(throwOnError)
+	{
+		run(compileCmd);
+		auto output = runCollect(runCmd);
+		return RunResult(0, output);
+	}
+	else
+	{
+		auto status = tryRun(compileCmd);
+		if(status != 0)
+			return RunResult(status, null);
+
+		return tryRunCollect(runCmd);
+	}
+}
+
+string compilerCommand(string testName)
 {
 	string archFlag = "";
 	auto envArch = environment.get("Darch", "");
@@ -77,9 +133,9 @@ string rdmdCommand(string testName)
 	// because I don't feel like figuring out globbing on Windows.
 	auto envDmd = environment.get("DMD", "dmd");
 	version(Windows)
-		return "rdmd --compiler="~envDmd~" --force "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
+		return "rdmd --compiler="~envDmd~" --force --build-only -ofbin/"~testName~" "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
 	else version(Posix)
-		return envDmd~" "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
+		return envDmd~" "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d";
 	else
 		static assert(0);
 }
@@ -134,7 +190,7 @@ void testAll()
 
 void testAutomaticPhobosImport()
 {
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == "Works!\n");
 }
 
@@ -148,7 +204,7 @@ Gonna run foo() now...
 foo: i = 42
 ";
 	
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
@@ -156,7 +212,7 @@ void testDisambiguatingWrite()
 {
 	immutable expected =  "Hello worldHello world";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
@@ -168,17 +224,17 @@ run: dmd app.d -ofbin/app
 exists: another-file
 ";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
 void testFail()
 {
-	auto result = tryRunCollect( rdmdCommand(testName) );
+	auto result = tryCompileAndRun(testName);
 	assert(result.status > 0);
 	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: Need two args, not 0!");
 
-	result = tryRunCollect( rdmdCommand(testName) ~ " abc 123" );
+	result = tryCompileAndRun(testName, " abc 123");
 writeln("+++++++++++++++++++++++++RESULT:");
 writeln(result.output, "{}");
 writeln("+++++++++++++++++++++++++normalizeNewlines:");
@@ -188,7 +244,7 @@ stdout.flush();
 	assert(result.status > 0);
 	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: First arg must be 'foobar', not 'abc'!");
 
-	auto output = runCollect( rdmdCommand(testName) ~ " foobar 123" );
+	auto output = compileAndRun(testName,  " foobar 123");
 	assert(output == "");
 }
 
@@ -198,7 +254,7 @@ void testFilepaths()
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes.quote) ~ "\n" ~
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes) ~ "\n";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
@@ -224,7 +280,7 @@ void testScriptStyleShellCommands()
 	immutable expectedExcerpt =
 		"Press "~key~" to continue...Error: unrecognized switch '--bad-flag'\n";
 
-	auto output = runCollect( rdmdCommand(testName) ~ " < " ~ inFile ).normalizeNewlines;
+	auto output = compileAndRun(testName, " < " ~ inFile).normalizeNewlines;
 	assert(output.canFind(expectedExcerpt));
 }
 
@@ -236,13 +292,13 @@ Empty braces output nothing.
 Multiple params: John Doe.
 ";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
 void testTryAsFilesystemOperations()
 {
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == "");
 }
 
@@ -278,7 +334,7 @@ No Input. Quit
 > Enter a number from 1 to 10
 > Press "~key~" to continue...Hit Enter again, dood!!";
 
-	auto output = runCollect( rdmdCommand(testName) ~ " < " ~ inFile ).normalizeNewlines;
+	auto output = compileAndRun(testName, " < " ~ inFile).normalizeNewlines;
 	assert(output.canFind(expectedExcerpt));
 }
 
