@@ -75,8 +75,8 @@ before_build:
          }
          elseif($env:DC -eq "ldc"){
            $version = $env:DVersion;
-           $env:PATH += ";C:\ldc2-$($version)-win64-msvc\bin";
-           $env:DC = "ldc2";
+           $env:PATH += ";C:\ldc2-$($version)-windows-x64\bin";
+           $env:DC = "ldmd2";
          }
   - ps: $env:compilersetup = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall";
   - '"%compilersetup%" %compilersetupargs%'
@@ -89,6 +89,6 @@ test_script:
  - echo %Darch%
  - echo %DC%
  - echo %PATH%
- - '%DC% --version'
+ - '%DC%'
  - dub add-local .
  - dub test --arch=%Darch% --compiler=%DC%
