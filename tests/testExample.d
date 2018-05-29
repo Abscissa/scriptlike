@@ -103,7 +103,7 @@ RunResult _compileAndRunImpl(bool throwOnError, string testName, string runCmdSu
 	else             auto exeSuffix = "";
 
 	auto compileCmd = compilerCommand(testName);
-	auto runCmd = "bin/"~testName~exeSuffix~runCmdSuffix;
+	auto runCmd = "bin"~dirSep~testName~exeSuffix~runCmdSuffix;
 
 	if(throwOnError)
 	{
