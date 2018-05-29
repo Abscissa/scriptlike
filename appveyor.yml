@@ -48,10 +48,10 @@ install:
               }
               $env:toolchain = "msvc";
               $version = $env:DVersion;
-              Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-windows-x64.zip" -OutFile "c:\ldc.zip";
+              Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-windows-x64.7z" -OutFile "c:\ldc.7z";
               echo "finished.";
               pushd c:\\;
-              7z x ldc.zip > $null;
+              7z x ldc.7z > $null;
               popd;
             }
         }
