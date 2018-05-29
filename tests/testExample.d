@@ -103,7 +103,8 @@ RunResult _compileAndRunImpl(bool throwOnError, string testName, string runCmdSu
 	else             auto exeSuffix = "";
 
 	auto compileCmd = compilerCommand(testName);
-	auto runCmd = "bin"~dirSeparator~testName~exeSuffix~runCmdSuffix;
+	auto runBinary = fixSlashes("bin/"~dirSeparator~testName~exeSuffix);
+	auto runCmd = runBinary~runCmdSuffix;
 
 	if(throwOnError)
 	{
