@@ -105,15 +105,17 @@ install:
               }
               $env:toolchain = "msvc";
               $version = $env:DVersion;
+              $ldcArchive = "ldc.7z";
               try{
                 Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-windows-x64.7z" -OutFile "c:\ldc.7z";
               }
               catch [Net.WebException]{
-                Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-win64-msvc.7z" -OutFile "c:\ldc.7z";
+                Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-win64-msvc.zip" -OutFile "c:\ldc.zip";
+                $ldcArchive = "ldc.zip";
               }
               echo "finished.";
               pushd c:\\;
-              7z x ldc.7z > $null;
+              7z x $ldcArchive > $null;
               popd;
             }
         }
