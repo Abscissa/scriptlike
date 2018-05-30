@@ -129,16 +129,15 @@ string compilerCommand(string testName)
 	if(envArch == "x86_64") archFlag = "-m64";
 	if(envArch == "x86")    archFlag = "-m32";
 
-	// Don't use rdmd on Posix, because it isn't included with travis-ci's ldc/gdc.
-	// Travis-ci doesn't do Windows, so it doesn't matter there. Which is good
-	// because I don't feel like figuring out globbing on Windows.
+	auto libSourceFiles = cast(string)
+		dirEntries("../src", "*.d", SpanMode.breadth).
+		map!(a => cast(const(ubyte)[]) escapeShellArg(a)).
+		joiner(cast(const(ubyte)[]) " ").
+		array;
+
 	auto envDmd = environment.get("DMD", "dmd");
-	version(Windows)
-		return "rdmd --compiler="~envDmd~" --force --build-only -ofbin/"~testName~" "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
-	else version(Posix)
-		return envDmd~" "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d";
-	else
-		static assert(0);
+	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~testName~" ../examples/"~testName~".d";
+
 }
 
 string normalizeNewlines(string str)

@@ -273,7 +273,7 @@ string buildNormalizedPathFixed(string[] paths...)
 
 /// Properly escape arguments containing spaces for the command shell, if necessary.
 ///
-/// Although Path doesn't stricktly need this (since Path.toString automatically
+/// Although Path doesn't strictly need this (since Path.toString automatically
 /// calls this anyway), an overload of escapeShellArg which accepts a Path is
 /// provided for the sake of generic code.
 const(string) escapeShellArg(in string str)
