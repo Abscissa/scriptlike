@@ -61,7 +61,7 @@ void main(string[] args)
 	tryMkdirRecurse("bin/features"); // gdmd doesn't automatically create the output directory.
 
 	// Run test
-	writeln("Testing ", testName);
+	writeln("Testing ", testName); stdout.flush();
 	lookupTest[testName]();
 }
 
@@ -106,30 +106,30 @@ RunResult _compileAndRunImpl(bool throwOnError, string testName, string runCmdSu
 	auto runBinary = fixSlashes("bin/"~testName~exeSuffix);
 	auto runCmd = runBinary~runCmdSuffix;
 
-writeln("compileCmd: ", compileCmd);
-writeln("runCmd: ", runCmd);
+writeln("compileCmd: ", compileCmd); stdout.flush();
+writeln("runCmd: ", runCmd); stdout.flush();
 
 	if(throwOnError)
 	{
 		run(compileCmd);
-writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"); stdout.flush();
 run("echo %cd%");
 run("dir");
 run("dir bin");
 run("dir bin\\features");
-writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); stdout.flush();
 		auto output = runCollect(runCmd);
 		return RunResult(0, output);
 	}
 	else
 	{
 		auto status = tryRun(compileCmd);
-writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"); stdout.flush();
 run("echo %cd%");
 run("dir");
 run("dir bin");
 run("dir bin\\features");
-writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); stdout.flush();
 		if(status != 0)
 			return RunResult(status, null);
 
@@ -149,6 +149,9 @@ string compilerCommand(string testName)
 		map!(a => cast(const(ubyte)[]) escapeShellArg(a)).
 		joiner(cast(const(ubyte)[]) " ").
 		array;
+
+	version(Windows) auto execName = testName~".exe";
+	else             auto execName = testName;
 
 	auto envDmd = environment.get("DMD", "dmd");
 	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~testName~" ../examples/"~testName~".d";
@@ -189,7 +192,7 @@ void testAll()
 		if(status != 0)
 			failed = true;
 	}
-	writeln("Done running tests for examples.");
+	writeln("Done running tests for examples."); stdout.flush();
 
 	failEnforce(!failed, "Not all tests succeeded.");
 }
@@ -264,7 +267,7 @@ void testScriptStyleShellCommands()
 	auto dmdResult = tryRunCollect("dmd --help");
 	if(dmdResult.status != 0)
 	{
-		writeln(`Skipping `, testName, `: Couldn't find 'dmd' on the PATH.`);
+		writeln(`Skipping `, testName, `: Couldn't find 'dmd' on the PATH.`); stdout.flush();
 		return;
 	}
 
@@ -366,6 +369,7 @@ Hello, Frank!
 			writeln("output:========================");
 			writeln(output);
 			writeln("========================");
+			stdout.flush();
 		}
 		assert(output.endsWith(expected));
 	}
@@ -426,10 +430,10 @@ void testDubProject()
 void testSingleFile()
 {
 	// Do tests
-	writeln("    Testing from its own directory...");
+	writeln("    Testing from its own directory..."); stdout.flush();
 	testUseInScripts("single-file", Path("../examples/single-file"), "dub --vquiet --single "~getDubEnvArgs~" myscript.d -- ", false);
 
-	writeln("    Testing from different directory...");
+	writeln("    Testing from different directory..."); stdout.flush();
 	testUseInScripts(
 		"single-file",
 		Path("../tests/bin"),
