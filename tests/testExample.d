@@ -346,11 +346,14 @@ Hello, Frank!
 ");
 		}
 		auto output = workingDir.runCollect( command~" Frank" ).normalizeNewlines;
-writeln("expected:========================");
-writeln(expected);
-writeln("output:========================");
-writeln(output);
-writeln("========================");
+		if(output != expected)
+		{
+			writeln("expected:========================");
+			writeln(expected);
+			writeln("output:========================");
+			writeln(output);
+			writeln("========================");
+		}
 		assert(output == expected);
 	}
 
@@ -404,20 +407,20 @@ void testDubProject()
 	tryRemove("../examples/dub-project/myscript.exe");
 
 	// Do test
-	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub --verror "~getDubEnvArgs~" -- ");
+	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub --vquiet "~getDubEnvArgs~" -- ");
 }
 
 void testSingleFile()
 {
 	// Do tests
 	writeln("    Testing from its own directory...");
-	testUseInScripts("single-file", Path("../examples/single-file"), "dub --verror --single "~getDubEnvArgs~" myscript.d -- ", false);
+	testUseInScripts("single-file", Path("../examples/single-file"), "dub --vquiet --single "~getDubEnvArgs~" myscript.d -- ", false);
 
 	writeln("    Testing from different directory...");
 	testUseInScripts(
 		"single-file",
 		Path("../tests/bin"),
-		"dub --verror --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
+		"dub --vquiet --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
 		false
 	);
 }
