@@ -112,24 +112,12 @@ writeln("runCmd: ", runCmd); stdout.flush();
 	if(throwOnError)
 	{
 		run(compileCmd);
-writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"); stdout.flush();
-run("echo %cd%");
-run("dir");
-run("dir bin");
-run("dir bin\\features");
-writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); stdout.flush();
 		auto output = runCollect(runCmd);
 		return RunResult(0, output);
 	}
 	else
 	{
 		auto status = tryRun(compileCmd);
-writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"); stdout.flush();
-run("echo %cd%");
-run("dir");
-run("dir bin");
-run("dir bin\\features");
-writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"); stdout.flush();
 		if(status != 0)
 			return RunResult(status, null);
 
