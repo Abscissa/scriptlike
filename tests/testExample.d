@@ -154,7 +154,7 @@ string compilerCommand(string testName)
 	else             auto execName = testName;
 
 	auto envDmd = environment.get("DMD", "dmd");
-	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~testName~" ../examples/"~testName~".d";
+	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~execName~" ../examples/"~testName~".d";
 }
 
 string normalizeNewlines(string str)
