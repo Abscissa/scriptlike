@@ -388,7 +388,16 @@ What's your name?
 		}
 
 		auto output = workingDir.runCollect( command~" < "~inFile ).normalizeNewlines;
-		assert(output == expected);
+		if(output != expected)
+		{
+			writeln("expected:========================");
+			writeln(expected);
+			writeln("output:========================");
+			writeln(output);
+			writeln("========================");
+			stdout.flush();
+		}
+		assert(output.endsWith(expected));
 	}
 }
 
