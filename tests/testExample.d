@@ -61,55 +61,108 @@ void main(string[] args)
 	tryMkdirRecurse("bin/features"); // gdmd doesn't automatically create the output directory.
 
 	// Run test
-	writeln("Testing ", testName);
+	writeln("Testing ", testName); stdout.flush();
 	lookupTest[testName]();
 }
 
-string rdmdCommand(string testName)
+alias RunResult = Tuple!(int, "status", string, "output");
+
+/++
+Compiles and runs a test, returning the test's output.
+
+Always displays, but does not return, the compiler output.
+
+Throws upon failure.
++/
+string compileAndRun(string testName, string runCmdSuffix=null)
+{
+	return _compileAndRunImpl(true, testName, runCmdSuffix).output;
+}
+
+/++
+Compiles and runs a test, returning the status code and the test's output.
+
+Always displays, but does not return, the compiler output.
++/
+RunResult tryCompileAndRun(string testName, string runCmdSuffix=null)
+{
+	return _compileAndRunImpl(false, testName, runCmdSuffix);
+}
+
+/++
+Separating the compile & build steps is important here because on
+AppVeyor/Windows the linker outputs a non-fatal message:
+    "[...] not found or not built by the last incremental link; performing full link)"
+
+Any such non-fatal compilation messages MUST NOT be included in this
+function's return value or they will cause the tests to fail.
++/
+RunResult _compileAndRunImpl(bool throwOnError, string testName, string runCmdSuffix)
+{
+	version(Windows) auto exeSuffix = ".exe";
+	else             auto exeSuffix = "";
+
+	auto compileCmd = compilerCommand(testName);
+	auto runBinary = fixSlashes("bin/"~testName~exeSuffix);
+	auto runCmd = runBinary~runCmdSuffix;
+
+writeln("compileCmd: ", compileCmd); stdout.flush();
+writeln("runCmd: ", runCmd); stdout.flush();
+
+	if(throwOnError)
+	{
+		run(compileCmd);
+		auto output = runCollect(runCmd);
+		return RunResult(0, output);
+	}
+	else
+	{
+		auto status = tryRun(compileCmd);
+		if(status != 0)
+			return RunResult(status, null);
+
+		return tryRunCollect(runCmd);
+	}
+}
+
+string compilerCommand(string testName)
 {
 	string archFlag = "";
 	auto envArch = environment.get("Darch", "");
 	if(envArch == "x86_64") archFlag = "-m64";
 	if(envArch == "x86")    archFlag = "-m32";
 
-	// Don't use rdmd on Posix, because it isn't included with travis-ci's ldc/gdc.
-	// Travis-ci doesn't do Windows, so it doesn't matter there. Which is good
-	// because I don't feel like figuring out globbing on Windows.
+	auto libSourceFiles = cast(string)
+		dirEntries("../src", "*.d", SpanMode.breadth).
+		map!(a => cast(const(ubyte)[]) escapeShellArg(a)).
+		joiner(cast(const(ubyte)[]) " ").
+		array;
+
+	version(Windows) auto execName = testName~".exe";
+	else             auto execName = testName;
+
 	auto envDmd = environment.get("DMD", "dmd");
-	version(Windows)
-		return "rdmd --compiler="~envDmd~" --force "~archFlag~" -debug -g -I../src ../examples/"~testName~".d";
-	else version(Posix)
-		return envDmd~"  "~archFlag~" -debug -g -I../src ../src/**/*.d ../src/scriptlike/**/*.d -ofbin/"~testName~" ../examples/"~testName~".d && bin/"~testName;
-	else
-		static assert(0);
+	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~execName~" ../examples/"~testName~".d";
 }
 
 string normalizeNewlines(string str)
 {
-	version(Windows)
-		return str.replace("\r\n", "\n");
-	else
-		return str;
+	version(Windows) return str.replace("\r\n", "\n");
+	else             return str;
 }
 
 string fixSlashes(string path)
 {
-	version(Windows)
-		return path.replace(`/`, `\`);
-	else version(Posix)
-		return path.replace(`\`, `/`);
-	else
-		static assert(0);
+	version(Windows)    return path.replace(`/`, `\`);
+	else version(Posix) return path.replace(`\`, `/`);
+	else static assert(0);
 }
 
 string quote(string str)
 {
-	version(Windows)
-		return `"` ~ str ~ `"`;
-	else version(Posix)
-		return `'` ~ str ~ `'`;
-	else
-		static assert(0);
+	version(Windows)    return `"` ~ str ~ `"`;
+	else version(Posix) return `'` ~ str ~ `'`;
+	else static assert(0);
 }
 
 void testAll()
@@ -127,14 +180,14 @@ void testAll()
 		if(status != 0)
 			failed = true;
 	}
-	writeln("Done running tests for examples.");
+	writeln("Done running tests for examples."); stdout.flush();
 
 	failEnforce(!failed, "Not all tests succeeded.");
 }
 
 void testAutomaticPhobosImport()
 {
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == "Works!\n");
 }
 
@@ -148,7 +201,7 @@ Gonna run foo() now...
 foo: i = 42
 ";
 	
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
@@ -156,33 +209,33 @@ void testDisambiguatingWrite()
 {
 	immutable expected =  "Hello worldHello world";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
 void testDryRunAssistance()
 {
-	immutable expected = 
+	immutable expected =
 "copy: original.d -> app.d
 run: dmd app.d -ofbin/app
 exists: another-file
 ";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
 void testFail()
 {
-	auto result = tryRunCollect( rdmdCommand(testName) );
+	auto result = tryCompileAndRun(testName);
 	assert(result.status > 0);
-	assert(result.output.normalizeNewlines == "Fail: ERROR: Need two args, not 0!\n");
+	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: Need two args, not 0!");
 
-	result = tryRunCollect( rdmdCommand(testName) ~ " abc 123" );
+	result = tryCompileAndRun(testName, " abc 123");
 	assert(result.status > 0);
-	assert(result.output.normalizeNewlines == "Fail: ERROR: First arg must be 'foobar', not 'abc'!\n");
+	assert(result.output.normalizeNewlines.strip == "Fail: ERROR: First arg must be 'foobar', not 'abc'!");
 
-	auto output = runCollect( rdmdCommand(testName) ~ " foobar 123" );
+	auto output = compileAndRun(testName,  " foobar 123");
 	assert(output == "");
 }
 
@@ -192,7 +245,7 @@ void testFilepaths()
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes.quote) ~ "\n" ~
 		("foo/bar/different subdir/Filename with spaces.txt".fixSlashes) ~ "\n";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
@@ -202,7 +255,7 @@ void testScriptStyleShellCommands()
 	auto dmdResult = tryRunCollect("dmd --help");
 	if(dmdResult.status != 0)
 	{
-		writeln(`Skipping `, testName, `: Couldn't find 'dmd' on the PATH.`);
+		writeln(`Skipping `, testName, `: Couldn't find 'dmd' on the PATH.`); stdout.flush();
 		return;
 	}
 
@@ -218,7 +271,7 @@ void testScriptStyleShellCommands()
 	immutable expectedExcerpt =
 		"Press "~key~" to continue...Error: unrecognized switch '--bad-flag'\n";
 
-	auto output = runCollect( rdmdCommand(testName) ~ " < " ~ inFile ).normalizeNewlines;
+	auto output = compileAndRun(testName, " < " ~ inFile).normalizeNewlines;
 	assert(output.canFind(expectedExcerpt));
 }
 
@@ -230,13 +283,13 @@ Empty braces output nothing.
 Multiple params: John Doe.
 ";
 
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == expected);
 }
 
 void testTryAsFilesystemOperations()
 {
-	auto output = runCollect( rdmdCommand(testName) ).normalizeNewlines;
+	auto output = compileAndRun(testName).normalizeNewlines;
 	assert(output == "");
 }
 
@@ -272,7 +325,7 @@ No Input. Quit
 > Enter a number from 1 to 10
 > Press "~key~" to continue...Hit Enter again, dood!!";
 
-	auto output = runCollect( rdmdCommand(testName) ~ " < " ~ inFile ).normalizeNewlines;
+	auto output = compileAndRun(testName, " < " ~ inFile).normalizeNewlines;
 	assert(output.canFind(expectedExcerpt));
 }
 
@@ -297,7 +350,16 @@ Hello, Frank!
 ");
 		}
 		auto output = workingDir.runCollect( command~" Frank" ).normalizeNewlines;
-		assert(output == expected);
+		if(output != expected)
+		{
+			writeln("expected:========================");
+			writeln(expected);
+			writeln("output:========================");
+			writeln(output);
+			writeln("========================");
+			stdout.flush();
+		}
+		assert(output.endsWith(expected));
 	}
 
 	// Test interactive
@@ -326,7 +388,16 @@ What's your name?
 		}
 
 		auto output = workingDir.runCollect( command~" < "~inFile ).normalizeNewlines;
-		assert(output == expected);
+		if(output != expected)
+		{
+			writeln("expected:========================");
+			writeln(expected);
+			writeln("output:========================");
+			writeln(output);
+			writeln("========================");
+			stdout.flush();
+		}
+		assert(output.endsWith(expected));
 	}
 }
 
@@ -334,10 +405,10 @@ string getDubEnvArgs()
 {
 	string args;
 	
-	if("Darch" in environment)
+	if(environment.get("Darch") !is null)
 		args ~= " --arch=" ~ environment["Darch"];
 
-	if("DC" in environment)
+	if(environment.get("DC") !is null)
 		args ~= " --compiler=" ~ environment["DC"];
 
 	return args;
@@ -350,20 +421,20 @@ void testDubProject()
 	tryRemove("../examples/dub-project/myscript.exe");
 
 	// Do test
-	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub -q "~getDubEnvArgs~" -- ");
+	testUseInScripts("dub-project", Path("../examples/dub-project"), "dub --vquiet "~getDubEnvArgs~" -- ");
 }
 
 void testSingleFile()
 {
 	// Do tests
-	writeln("    Testing from its own directory...");
-	testUseInScripts("single-file", Path("../examples/single-file"), "dub -q --single "~getDubEnvArgs~" myscript.d -- ", false);
+	writeln("    Testing from its own directory..."); stdout.flush();
+	testUseInScripts("single-file", Path("../examples/single-file"), "dub --vquiet --single "~getDubEnvArgs~" myscript.d -- ", false);
 
-	writeln("    Testing from different directory...");
+	writeln("    Testing from different directory..."); stdout.flush();
 	testUseInScripts(
 		"single-file",
 		Path("../tests/bin"),
-		"dub -q --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
+		"dub --vquiet --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
 		false
 	);
 }
