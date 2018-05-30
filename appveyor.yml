@@ -140,7 +140,7 @@ before_build:
          }
          elseif($env:DC -eq "ldc"){
            $version = $env:DVersion;
-           $env:PATH += ";C:\ldc2-$($version)-windows-x64\bin";
+           $env:PATH += ";C:\ldc2-$($version)-windows-x64\bin;C:\ldc2-$($version)-win64-msvc\bin";
            $env:DC = "ldmd2";
            $env:DMD = "ldmd2";
          }
