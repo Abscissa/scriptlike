@@ -391,10 +391,10 @@ string getDubEnvArgs()
 {
 	string args;
 	
-	if("Darch" in environment)
+	if(environment.get("Darch") !is null)
 		args ~= " --arch=" ~ environment["Darch"];
 
-	if("DC" in environment)
+	if(environment.get("DC") !is null)
 		args ~= " --compiler=" ~ environment["DC"];
 
 	return args;
