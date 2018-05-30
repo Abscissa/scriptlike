@@ -346,6 +346,11 @@ Hello, Frank!
 ");
 		}
 		auto output = workingDir.runCollect( command~" Frank" ).normalizeNewlines;
+writeln("expected:========================");
+writeln(expected);
+writeln("output:========================");
+writeln(output);
+writeln("========================");
 		assert(output == expected);
 	}
 
