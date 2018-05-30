@@ -1,4 +1,4 @@
-Scriptlike [![Build Status](https://travis-ci.org/Abscissa/scriptlike.svg)](https://travis-ci.org/Abscissa/scriptlike)
+Scriptlike [![Build Status](https://travis-ci.org/Abscissa/scriptlike.svg)](https://travis-ci.org/Abscissa/scriptlike) [![Build status](https://ci.appveyor.com/api/projects/status/yvel4q7dekn0k1cb/branch/master?svg=true)](https://ci.appveyor.com/project/Abscissa/scriptlike/branch/master)
 ==========
 
 Scriptlike is a utility library to help you write script-like programs in the
