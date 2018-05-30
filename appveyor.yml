@@ -136,10 +136,10 @@ install:
                 pushd c:\\;
                 7z x -ordmd-dmd rdmd-dmd.7z > $null;
                 popd;
-                set PATH=%PATH%;c:\\rdmd-dmd\\dmd2\\windows\\bin
             }
         }
   - ps: SetUpRDMD
+  - set PATH=%PATH%;c:\rdmd-dmd\dmd2\windows\bin
 
 before_build:
   - ps: if($env:arch -eq "x86"){
