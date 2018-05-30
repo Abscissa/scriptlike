@@ -89,7 +89,6 @@ install:
               echo "downloading ...";
               $env:toolchain = "msvc";
               $version = $env:DVersion;
-              # Windows DMD releases are only offerred in 7z starting at 2.069.0
               Invoke-WebRequest "http://downloads.dlang.org/releases/2.x/$($version)/dmd.$($version).windows.zip" -OutFile "c:\dmd.zip";
               echo "finished.";
               pushd c:\\;
