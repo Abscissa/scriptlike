@@ -353,7 +353,7 @@ Hello, Frank!
 			writeln(output);
 			writeln("========================");
 		}
-		assert(output == expected);
+		assert(output.endsWith(expected));
 	}
 
 	// Test interactive
