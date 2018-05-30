@@ -72,11 +72,13 @@ before_build:
         }
   - ps : if($env:DC -eq "dmd"){
            $env:PATH += ";C:\dmd2\windows\bin;";
+           $env:DMD = "dmd";
          }
          elseif($env:DC -eq "ldc"){
            $version = $env:DVersion;
            $env:PATH += ";C:\ldc2-$($version)-windows-x64\bin";
            $env:DC = "ldmd2";
+           $env:DMD = "ldmd2";
          }
   - ps: $env:compilersetup = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall";
   - '"%compilersetup%" %compilersetupargs%'
@@ -88,6 +90,7 @@ test_script:
  - echo %PLATFORM%
  - echo %Darch%
  - echo %DC%
+ - echo %DMD%
  - echo %PATH%
  - '%DC% --help'
  - dub add-local .
