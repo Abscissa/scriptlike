@@ -127,6 +127,19 @@ install:
   - 7z x dub.zip -odub > nul
   - set PATH=%CD%\%binpath%;%CD%\dub;%PATH%
   - dub --version
+  # Some older non-DMD compilers don't come with rdmd
+  - ps: function SetUpRDMD
+        {
+            if((Get-Command "rdmd.exe" -ErrorAction SilentlyContinue) -eq $null)
+            {
+                Invoke-WebRequest "http://downloads.dlang.org/releases/2.x/2.080.0/dmd.2.080.0.windows.7z" -OutFile "c:\rdmd-dmd.7z";
+                pushd c:\\;
+                7z x -ordmd-dmd rdmd-dmd.7z > $null;
+                popd;
+                set PATH=%PATH%;c:\\rdmd-dmd\\dmd2\\windows\\bin
+            }
+        }
+  - ps: SetUpRDMD
 
 before_build:
   - ps: if($env:arch -eq "x86"){
