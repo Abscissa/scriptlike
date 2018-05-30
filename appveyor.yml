@@ -1,48 +1,48 @@
 platform: x64
 environment:
  matrix:
-  - DC: dmd
-    DVersion: 2.079.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.078.3
-    arch: x64
-  - DC: dmd
-    DVersion: 2.077.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.076.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.075.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.074.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.073.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.072.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.071.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.070.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.069.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.068.2
-    arch: x64
-  - DC: dmd
-    DVersion: 2.067.1
-    arch: x64
-  - DC: dmd
-    DVersion: 2.066.0
-    arch: x64
+  #- DC: dmd
+  #  DVersion: 2.079.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.078.3
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.077.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.076.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.075.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.074.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.073.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.072.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.071.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.070.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.069.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.068.2
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.067.1
+  #  arch: x64
+  #- DC: dmd
+  #  DVersion: 2.066.0
+  #  arch: x64
   - DC: ldc
     DVersion: 1.7.0
     arch: x64
@@ -105,7 +105,12 @@ install:
               }
               $env:toolchain = "msvc";
               $version = $env:DVersion;
-              Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-windows-x64.7z" -OutFile "c:\ldc.7z";
+              try{
+                Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-windows-x64.7z" -OutFile "c:\ldc.7z";
+              }
+              catch [Net.WebException]{
+                Invoke-WebRequest "https://github.com/ldc-developers/ldc/releases/download/v$($version)/ldc2-$($version)-win64-msvc.7z" -OutFile "c:\ldc.7z";
+              }
               echo "finished.";
               pushd c:\\;
               7z x ldc.7z > $null;
