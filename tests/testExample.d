@@ -112,12 +112,24 @@ writeln("runCmd: ", runCmd);
 	if(throwOnError)
 	{
 		run(compileCmd);
+writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+run("echo %cd%");
+run("dir");
+run("dir bin");
+run("dir bin\\features");
+writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		auto output = runCollect(runCmd);
 		return RunResult(0, output);
 	}
 	else
 	{
 		auto status = tryRun(compileCmd);
+writeln("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+run("echo %cd%");
+run("dir");
+run("dir bin");
+run("dir bin\\features");
+writeln(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		if(status != 0)
 			return RunResult(status, null);
 
@@ -140,7 +152,6 @@ string compilerCommand(string testName)
 
 	auto envDmd = environment.get("DMD", "dmd");
 	return envDmd~" "~archFlag~" -debug -g -I../src "~libSourceFiles~" -ofbin/"~testName~" ../examples/"~testName~".d";
-
 }
 
 string normalizeNewlines(string str)
