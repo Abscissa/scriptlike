@@ -136,7 +136,7 @@ install:
             foreach($tryUrl in $urls){
                 $dloadOk = $true;
                 echo $url;
-                try(
+                try{
                     Invoke-WebRequest $tryUrl -OutFile "c:\compiler-archive";
                 }
                 catch [Net.WebException]{
