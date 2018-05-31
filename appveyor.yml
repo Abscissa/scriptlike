@@ -84,13 +84,13 @@ install:
             echo "downloading...";
             echo urls=$urls;
             foreach($tryUrl in $urls){
-                $dloadOk = $false;
+                $dloadOk = $true;
                 echo Trying $tryUrl;
                 try{
                     Invoke-WebRequest $tryUrl -OutFile "c:\compiler.archive";
                 }
                 catch [Net.WebException]{
-                    $dloadOk = $true;
+                    $dloadOk = $false;
                 }
                 if($dloadOk -eq $true){
                     break;
