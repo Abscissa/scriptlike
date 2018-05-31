@@ -82,9 +82,10 @@ install:
                 $urls = ResolveLDC;
             }
             echo "downloading...";
+            echo urls=$urls;
             foreach($tryUrl in $urls){
-                $dloadOk = $true;
-                echo $tryUrl;
+                $dloadOk = $false;
+                echo Trying $tryUrl;
                 try{
                     Invoke-WebRequest $tryUrl -OutFile "c:\compiler-archive";
                 }
