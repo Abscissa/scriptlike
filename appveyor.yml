@@ -87,7 +87,7 @@ install:
                 $dloadOk = $false;
                 echo Trying $tryUrl;
                 try{
-                    Invoke-WebRequest $tryUrl -OutFile "c:\compiler-archive";
+                    Invoke-WebRequest $tryUrl -OutFile "c:\compiler.archive";
                 }
                 catch [Net.WebException]{
                     $dloadOk = $true;
@@ -98,7 +98,7 @@ install:
             }
             echo "extracting...";
             pushd c:\\;
-            7z x compiler-archive > $null;
+            7z x compiler.archive > $null;
             popd;
             echo "finished.";
         }
