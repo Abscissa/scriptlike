@@ -6,11 +6,17 @@ $(LINK http://semitwist.com/scriptlike/changelog.html)
 
 (Dates below are YYYY/MM/DD)
 
-$(H2 v0.10.3 - TBD)
+$(H2 v0.10.3 - 2019/07/15)
+
+Maintenance release.
 
 $(UL
 	$(CHANGE
 		Fixed deprecations for DMD 2.075+ and 2.079+. Dropped support for LDC 0.15.1.
+	)
+	$(TESTS
+		Added Windows CI testing via
+		$(LINK2 https://ci.appveyor.com/project/Abscissa/scriptlike, AppVeyor).
 	)
 )
 

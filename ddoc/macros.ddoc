@@ -10,6 +10,8 @@ Macros:
 	ENHANCE  = $(LI $(B Enhancement$(COLON)) $0)
 	CHANGE   = $(LI $(B Change$(COLON)) $0)
 	FIXED    = $(LI $(B Fixed$(COLON)) $0)
+	INTERNAL = $(LI $(B Internal$(COLON)) $0)
+	TESTS    = $(LI $(B Tests$(COLON)) $0)
 	API_BASE = $(DDOX_ROOT_DIR)scriptlike/
 	API_CORE      = $(D_INLINECODE $(LINK2 $(API_BASE)core/$0.html, $0))
 	API_FAIL      = $(D_INLINECODE $(LINK2 $(API_BASE)fail/$0.html, $0))
