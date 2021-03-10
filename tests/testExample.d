@@ -15,6 +15,7 @@ void main(string[] args)
 
 		"features/AutomaticPhobosImport":     &testAutomaticPhobosImport,
 		"features/CommandEchoing":            &testCommandEchoing,
+        "features/DirectoryChangeStack":      &testDirectoryChangeStack,
 		"features/DisambiguatingWrite":       &testDisambiguatingWrite,
 		"features/DryRunAssistance":          &testDryRunAssistance,
 		"features/Fail":                      &testFail,
@@ -437,4 +438,10 @@ void testSingleFile()
 		"dub --vquiet --single "~getDubEnvArgs~" "~Path("../../examples/single-file/myscript.d").raw~" -- ",
 		false
 	);
+}
+
+void testDirectoryChangeStack()
+{
+    auto output = compileAndRun(testName).normalizeNewlines;
+	assert(output == "");
 }

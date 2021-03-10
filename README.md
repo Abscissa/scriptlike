@@ -27,6 +27,7 @@ Sections
 * [Command Echoing](#command-echoing)
 * [Dry Run Assistance](#dry-run-assistance)
 * [Fail](#fail)
+* [Directory Change Stack](#directory-change-stack)
 
 **[Disambiguating write and write](#disambiguating-write-and-write)**
 
@@ -378,6 +379,30 @@ void helper(string[] args) {
 See: [```fail```](http://semitwist.com/scriptlike/scriptlike/fail/fail.html),
 [```failEnforce```](http://semitwist.com/scriptlike/scriptlike/fail/failEnforce.html),
 [```Fail```](http://semitwist.com/scriptlike/scriptlike/fail/Fail.html)
+
+### Directory Change Stack
+
+Push the current directory onto a stack every time you change directory, 
+then easily restore the original location(s) as needed.
+
+```d
+// Move into a subdirectory and do some work, 
+// then easily move back into the old directory!
+tryPushDir("dir1");
+/* tryRun... tryCopy.. etc.*/
+tryPopDir();
+
+// Since it's stack based, you can push and pop freely.
+tryPushDir("dir1"); // ./dir1
+tryPushDir("dir2"); // ./dir1/dir2
+popDirRecurse();    // ./
+```
+
+See: [```tryPushDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryPushDir.html),
+[```pushDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/pushDir.html),
+[```tryPopDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/tryPopDir.html),
+[```popDir```](http://semitwist.com/scriptlike/scriptlike/file/extras/popDir.html),
+[```popDirRecurse```](http://semitwist.com/scriptlike/scriptlike/file/extras/popDirRecurse.html)
 
 Disambiguating write and write
 ------------------------------

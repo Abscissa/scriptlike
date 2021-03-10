@@ -11,6 +11,7 @@ module scriptlike.file.extras;
 
 import std.algorithm;
 import std.datetime;
+import std.exception : enforce;
 import std.traits;
 import std.typecons;
 
@@ -20,6 +21,8 @@ static import std.path;
 import scriptlike.core;
 import scriptlike.path;
 import scriptlike.file.wrappers;
+
+private string[] g_dirPathStack;
 
 /// Checks if the path exists as a directory.
 ///
@@ -1047,4 +1050,154 @@ unittest
 	assert(!isWorldExec("groupX.txt"));
 	assert(isWorldExec("otherX.txt"));
 	assert(isWorldExec("allX.txt"));
+}
+
+/// Tries to change directory into the given path, and if it succeeds then
+/// the current (pre-change) directory is pushed onto the directory stack.
+///
+/// Returns: Success?
+bool tryPushDir(in Path path) @trusted
+{
+    return tryPushDir(path.raw);
+}
+
+/// ditto
+bool tryPushDir(in string path) @trusted
+{
+    yapFunc(path.escapeShellArg());
+
+    if(!path.existsAsDir)
+        return false;
+
+    g_dirPathStack ~= std.file.getcwd();
+    std.file.chdir(path);
+    return true;
+}
+
+/// This is like `scriptlike.file.extras.tryPushDir` except that it throws on failure
+/// instead of returning a success flag.
+void pushDir(in Path path) @trusted
+{
+    pushDir(path.raw);
+}
+
+/// ditto
+void pushDir(in string path) @trusted
+{
+    yapFunc(path.escapeShellArg());
+    mixin(gagEcho);
+    enforce(tryPushDir(path), "Path does not exist: "~path);
+}
+
+private bool tryPopDirImpl(in string yapName) @trusted
+{
+    if(g_dirPathStack.length == 0)
+    {
+        yap(yapName, ": ", "<Empty Stack>");
+        return false;
+    }
+
+    const path = g_dirPathStack[$-1];
+    g_dirPathStack.length--;
+
+    yap(yapName, ": ", path.escapeShellArg());
+    std.file.chdir(path);
+
+    return true;
+}
+
+/// If the directory stack is not empty, then the current directory
+/// is changed to the directory that is on top of the stack. The stack is then popped.
+///
+/// Returns: Success?
+bool tryPopDir() @trusted
+{
+    return tryPopDirImpl("tryPopDir");
+}
+
+/// This is like `scriptlike.file.extras.tryPopDir` except that is throws on failure
+/// instead of returning a success flag.
+void popDir() @trusted
+{
+    enforce(tryPopDirImpl("popDir"), "Cannot pop directory path as stack is empty.");
+}
+
+/// Completely pops the directory stack, returning the current directory to its
+/// original location. An empty directory stack results in no directory change.
+void popDirRecurse() @trusted
+{
+    // idk whether the verbose output like this is useful or not.
+    while(tryPopDirImpl("popDirRecurse")){}
+}
+
+version(unittest_scriptlike_d)
+unittest
+{
+    import std.path      : buildPath;
+    import std.exception : assertThrown, assertNotThrown;
+
+    mixin(useSandbox);
+    const originalDir = std.file.getcwd();
+
+    foreach(path; ["a", "b", "a/b/"])
+        std.file.mkdir(path);
+
+    void assertInOriginalDir()
+    {
+        const cwd = std.file.getcwd();
+        assert(cwd == originalDir, 
+            "Expected to be in dir:\n\t"~originalDir~"\nBut we're in:\n\t"~cwd
+        );
+        assert(g_dirPathStack.length == 0, "The path stack isn't empty.");
+    }
+
+    testFileOperation!("pushDir", "basic usage")(() {
+        assertInOriginalDir();
+
+        pushDir("a");
+        assert(g_dirPathStack.length == 1);
+        assert(g_dirPathStack[0] == originalDir);
+
+        pushDir("b");
+        assert(std.file.getcwd() == originalDir.buildPath("a", "b"));
+
+        // Kind of have to test both here at the same time.
+        assert(tryPopDir());
+        assert(g_dirPathStack.length == 1);
+        assert(tryPopDir());
+        assert(!tryPopDir());
+        assertInOriginalDir();
+    });
+
+    testFileOperation!("popDir", "empty stack")(() {
+        assertInOriginalDir();
+        pushDir("b");
+        assertNotThrown(popDir());
+        assertThrown(popDir());
+        assertInOriginalDir();
+    });
+
+    testFileOperation!("tryPushDir", "basic usage")(() {
+        assertInOriginalDir();
+        assert(tryPushDir("a"));
+        assert(tryPushDir("b"));
+        assert(!tryPushDir("c"));
+        assert(tryPopDir());
+        assert(tryPopDir());
+        assert(!tryPopDir());
+        assertInOriginalDir();
+    });
+
+    testFileOperation!("popDirRecurse", "basic usage")(() {
+        assertInOriginalDir();
+        pushDir("a");
+        pushDir("b");
+        popDirRecurse();
+        assertInOriginalDir();
+    });
+
+    testFileOperation!("popDirRecurse", "empty stack")(() {
+        popDirRecurse();
+        assertInOriginalDir();
+    });
 }
